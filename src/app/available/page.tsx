@@ -25,7 +25,7 @@ export default function AvailablePage() {
 
   return (
     <PageBackground backgroundSrc="/availablepics/back-full.png">
-      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-5 px-4 py-8">
+      <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-3 px-2 py-4 md:px-4">
         <h1 className="text-center text-3xl font-semibold">Готовые работы</h1>
         <SpotlightCarousel
           items={availablePics.slice(0, 20)}

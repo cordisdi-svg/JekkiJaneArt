@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { TouchEvent, useEffect, useMemo, useState } from "react";
 
 export type SpotlightItem = { id: string; src: string; alt: string };
 
@@ -11,13 +11,17 @@ export function SpotlightCarousel({
   initialIndex = 0,
   onCenterActionLeft,
   onCenterActionRight,
-  centerButtons
+  centerButtons,
+  onCenterImageClick,
+  className = ""
 }: {
   items: SpotlightItem[];
   initialIndex?: number;
   onCenterActionLeft?: (item: SpotlightItem) => void;
   onCenterActionRight?: (item: SpotlightItem) => void;
   centerButtons?: { leftLabel: string; rightLabel: string };
+  onCenterImageClick?: (item: SpotlightItem) => void;
+  className?: string;
 }) {
   const [index, setIndex] = useState(initialIndex);
   const [isMobile, setIsMobile] = useState(false);
@@ -28,7 +32,6 @@ export function SpotlightCarousel({
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
-
   useEffect(() => setIndex(initialIndex), [initialIndex]);
 
   const previous = () => setIndex((prev) => (prev - 1 + items.length) % items.length);
@@ -42,27 +45,54 @@ export function SpotlightCarousel({
   }, [index, items]);
 
   return (
-    <div className="relative w-full overflow-hidden px-2 md:px-8" onWheel={(e) => (e.deltaY > 0 ? next() : previous())}>
-      <button type="button" onClick={previous} className="absolute left-0 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-white/80 p-2 md:block">◀</button>
-      <button type="button" onClick={next} className="absolute right-0 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-white/80 p-2 md:block">▶</button>
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 md:grid-cols-3">
-        {!isMobile ? (
-          <div className="hidden md:block">
-            <CarouselCard item={visible.left} dim />
-          </div>
-        ) : null}
+    <div className={`relative w-full ${className}`} onWheel={(e) => (e.deltaY > 0 ? next() : previous())}>
+      <button type="button" onClick={previous} className="absolute left-0 top-0 z-20 hidden h-full w-10 items-center justify-center bg-black/25 md:flex">
+        <Triangle direction="left" />
+      </button>
+      <button type="button" onClick={next} className="absolute right-0 top-0 z-20 hidden h-full w-10 items-center justify-center bg-black/25 md:flex">
+        <Triangle direction="right" />
+      </button>
+
+      <div className="mx-auto grid h-full max-w-6xl grid-cols-1 gap-3 px-1 md:grid-cols-3 md:px-12">
+        {!isMobile ? <CarouselCard item={visible.left} dim /> : null}
         <AnimatePresence mode="wait">
-          <motion.div key={visible.center.id} initial={{ opacity: 0.4, x: 80 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0.4, x: -80 }} transition={{ duration: 0.35 }}>
-            <CarouselCard item={visible.center} center buttons={centerButtons} onLeft={onCenterActionLeft} onRight={onCenterActionRight} />
+          <motion.div
+            key={visible.center.id}
+            initial={{ opacity: 0.45, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0.45, x: -60 }}
+            transition={{ duration: 0.35 }}
+            onTouchStart={(e: TouchEvent<HTMLDivElement>) => (e.currentTarget.dataset.touchX = String(e.touches[0].clientX))}
+            onTouchEnd={(e: TouchEvent<HTMLDivElement>) => {
+              const startX = Number(e.currentTarget.dataset.touchX ?? 0);
+              const diff = e.changedTouches[0].clientX - startX;
+              if (Math.abs(diff) > 35) {
+                if (diff < 0) next();
+                if (diff > 0) previous();
+              }
+            }}
+          >
+            <CarouselCard
+              item={visible.center}
+              center
+              buttons={centerButtons}
+              onLeft={onCenterActionLeft}
+              onRight={onCenterActionRight}
+              onImageClick={onCenterImageClick}
+            />
           </motion.div>
         </AnimatePresence>
-        {!isMobile ? (
-          <div className="hidden md:block">
-            <CarouselCard item={visible.right} dim />
-          </div>
-        ) : null}
+        {!isMobile ? <CarouselCard item={visible.right} dim /> : null}
       </div>
     </div>
+  );
+}
+
+function Triangle({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg viewBox="0 0 20 20" className="h-6 w-6 fill-white" aria-hidden>
+      {direction === "left" ? <path d="M13 3 5 10l8 7V3Z" /> : <path d="M7 3v14l8-7-8-7Z" />}
+    </svg>
   );
 }
 
@@ -72,7 +102,8 @@ function CarouselCard({
   center,
   buttons,
   onLeft,
-  onRight
+  onRight,
+  onImageClick
 }: {
   item: SpotlightItem;
   dim?: boolean;
@@ -80,16 +111,19 @@ function CarouselCard({
   buttons?: { leftLabel: string; rightLabel: string };
   onLeft?: (item: SpotlightItem) => void;
   onRight?: (item: SpotlightItem) => void;
+  onImageClick?: (item: SpotlightItem) => void;
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-xl border border-white/50 bg-black/20 ${center ? "scale-100 md:scale-105" : "scale-95"}`}>
-      <div className={`relative h-[55vh] w-full ${dim ? "opacity-45 blur-[2px]" : "opacity-100"} transition-all`}>
+    <div className={`relative h-[calc(100vh-var(--nav-height-mobile)-8.5rem)] lg:h-[calc(100vh-var(--nav-height-desktop)-8.5rem)] overflow-hidden rounded-xl ${center ? "md:scale-[1.02]" : "scale-[0.96]"}`}>
+      <button type="button" onClick={() => onImageClick?.(item)} className={`relative block h-full w-full ${dim ? "opacity-45 blur-[1px] md:blur-[2px]" : "opacity-100"} transition-all`}>
         <Image src={item.src} alt={item.alt} fill className="object-contain" />
-      </div>
+      </button>
       {center && buttons ? (
-        <div className="absolute bottom-2 left-2 right-2 flex h-[8.5%] min-h-10 gap-2">
-          <button type="button" onClick={() => onLeft?.(item)} className="w-2/3 rounded-lg border border-[#C2185B] bg-white text-xs text-[#D81B60] md:text-sm">{buttons.leftLabel}</button>
-          <button type="button" onClick={() => onRight?.(item)} className="w-1/3 rounded-lg border border-[#C2185B] bg-white text-xs text-[#D81B60] md:text-sm">{buttons.rightLabel}</button>
+        <div className="absolute bottom-3 left-3 right-3 rounded-lg bg-black/20 p-2">
+          <div className="flex h-10 gap-2">
+            <button type="button" onClick={() => onLeft?.(item)} className="w-2/3 rounded-lg border border-[#C2185B] bg-white text-xs text-[#D81B60] md:text-sm">{buttons.leftLabel}</button>
+            <button type="button" onClick={() => onRight?.(item)} className="w-1/3 rounded-lg border border-[#C2185B] bg-white text-xs text-[#D81B60] md:text-sm">{buttons.rightLabel}</button>
+          </div>
         </div>
       ) : null}
     </div>

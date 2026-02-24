@@ -4,103 +4,84 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-type Sector = { id: number; label: string; image: string; href: string };
+type Sector = { id: number; label: string; href: string };
 
 const sectors: Sector[] = [
-  { id: 1, label: "Доступные картины", image: "/availablepics/(tech).JPEG", href: "/available" },
-  { id: 2, label: "Роспись стен и мебели", image: "/walls/1.png", href: "/walls" },
-  { id: 3, label: "Роспись одежды и обуви", image: "/wear-and-shoes/3-(tech).png", href: "/wear-and-shoes" },
-  { id: 4, label: "Картины-талиманы", image: "/amulets/1-(tech).png", href: "/amulets" },
-  { id: 5, label: "Тату эскизы", image: "/tattoo/1-(tech).png", href: "/tattoo" },
-  { id: 6, label: "Картины на заказ", image: "/picstoorder/pic2.JPG", href: "/custom-paintings" }
+  { id: 1, label: "Доступные картины", href: "/available" },
+  { id: 2, label: "Роспись стен и мебели", href: "/walls" },
+  { id: 3, label: "Роспись одежды и обуви", href: "/wear-and-shoes" },
+  { id: 4, label: "Картины-талиманы", href: "/amulets" },
+  { id: 5, label: "Тату эскизы", href: "/tattoo" },
+  { id: 6, label: "Картины на заказ", href: "/custom-paintings" }
 ];
 
-const SIZE = 760;
-const CENTER = SIZE / 2;
-const OUTER = 350;
-const INNER = 105;
+const W = 980;
+const H = 760;
+const CX = W / 2;
+const CY = H / 2;
+const INNER = 155;
+const FAR = 1300;
 
-const polar = (angle: number, radius: number) => {
-  const rad = ((angle - 90) * Math.PI) / 180;
-  return { x: CENTER + radius * Math.cos(rad), y: CENTER + radius * Math.sin(rad) };
+const polar = (deg: number, r: number) => {
+  const rad = ((deg - 90) * Math.PI) / 180;
+  return { x: CX + Math.cos(rad) * r, y: CY + Math.sin(rad) * r };
 };
 
-const wedgePath = (start: number, end: number) => {
-  const a = polar(start, OUTER);
-  const b = polar(end, OUTER);
-  const c = polar(end, INNER);
-  const d = polar(start, INNER);
-  return `M ${a.x} ${a.y} A ${OUTER} ${OUTER} 0 0 1 ${b.x} ${b.y} L ${c.x} ${c.y} A ${INNER} ${INNER} 0 0 0 ${d.x} ${d.y} Z`;
+const sectorPath = (start: number, end: number) => {
+  const p1 = polar(start, INNER);
+  const p2 = polar(start, FAR);
+  const p3 = polar(end, FAR);
+  const p4 = polar(end, INNER);
+  return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} L ${p3.x} ${p3.y} L ${p4.x} ${p4.y} Z`;
 };
 
 export function HomeSectorsDesktop() {
   const router = useRouter();
   const [hovered, setHovered] = useState<number | "center" | null>(null);
 
-  const sectorsWithPath = useMemo(
+  const shaped = useMemo(
     () =>
-      sectors.map((sector, index) => {
-        const start = index * 60;
-        const end = start + 60;
-        const mid = start + 30;
-        const labelP = polar(mid, 235);
-        return { ...sector, path: wedgePath(start, end), labelP };
+      sectors.map((sector, i) => {
+        const mid = i * 60;
+        const start = mid - 30;
+        const end = mid + 30;
+        const labelPos = polar(mid, 340);
+        return { ...sector, path: sectorPath(start, end), labelPos };
       }),
     []
   );
 
   return (
-    <section className="hidden min-h-screen items-center justify-center lg:flex">
-      <div className="relative h-[min(84vh,760px)] w-[min(84vw,760px)]">
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-full w-full overflow-visible">
-          <defs>
-            {sectorsWithPath.map((sector) => (
-              <clipPath id={`sector-clip-${sector.id}`} key={sector.id}>
-                <path d={sector.path} />
-              </clipPath>
-            ))}
-          </defs>
-          {sectorsWithPath.map((sector) => {
+    <section className="hidden min-h-screen items-center justify-center px-4 lg:flex">
+      <div className="relative h-[min(78vh,760px)] w-[min(92vw,980px)]">
+        <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full">
+          {shaped.map((sector) => {
             const isHovered = hovered === sector.id;
-            const shouldDim = hovered !== null && hovered !== sector.id;
+            const dim = hovered !== null && hovered !== sector.id;
             return (
               <g
                 key={sector.id}
-                style={{
-                  transformOrigin: `${CENTER}px ${CENTER}px`,
-                  transform: isHovered ? "scale(1.02)" : "scale(1)",
-                  opacity: shouldDim ? 0.35 : 1,
-                  filter: shouldDim ? "blur(1px)" : "none",
-                  transition: "all .25s ease"
-                }}
+                className="cursor-pointer"
                 onMouseEnter={() => setHovered(sector.id)}
                 onMouseLeave={() => setHovered(null)}
                 onClick={() => router.push(sector.href)}
-                className="cursor-pointer"
+                style={{ opacity: dim ? 0.32 : 1, transform: isHovered ? "translateY(-6px)" : "none", transition: "all .2s ease" }}
               >
-                {isHovered ? (
-                  <>
-                    <image href={sector.image} x="0" y="0" width={SIZE} height={SIZE} preserveAspectRatio="xMidYMid slice" clipPath={`url(#sector-clip-${sector.id})`} />
-                    <path d={sector.path} fill="rgba(0,0,0,0.35)" />
-                  </>
-                ) : null}
-                <path d={sector.path} fill="transparent" stroke={isHovered ? "#ffffff" : "rgba(255,255,255,0.7)"} strokeWidth={isHovered ? 4 : 2} />
-                <text x={sector.labelP.x} y={sector.labelP.y} textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="white" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
+                <path d={sector.path} fill={isHovered ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)"} stroke={isHovered ? "#fff" : "rgba(255,255,255,0.8)"} strokeWidth={isHovered ? 4 : 2} />
+                <text x={sector.labelPos.x} y={sector.labelPos.y} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="30" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
                   {sector.label}
                 </text>
               </g>
             );
           })}
-          <g onMouseEnter={() => setHovered("center")} onMouseLeave={() => setHovered(null)} onClick={() => router.push("/about")} className="cursor-pointer">
-            <circle cx={CENTER} cy={CENTER} r={INNER - 8} fill="rgba(20,20,20,0.38)" stroke={hovered === "center" ? "#fff" : "rgba(255,255,255,0.6)"} strokeWidth={hovered === "center" ? 4 : 2} />
+          <g className="cursor-pointer" onMouseEnter={() => setHovered("center")} onMouseLeave={() => setHovered(null)} onClick={() => router.push("/about")}> 
+            <circle cx={CX} cy={CY} r={INNER} fill="rgba(20,20,20,0.38)" stroke={hovered === "center" ? "#fff" : "rgba(255,255,255,0.7)"} strokeWidth={hovered === "center" ? 4 : 2} />
             {hovered === "center" ? (
-              <text x={CENTER} y={CENTER + 4} textAnchor="middle" dominantBaseline="middle" fontSize="28" fill="white">
-                О художнице
-              </text>
+              <text x={CX} y={CY + 126} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="30">О художнице</text>
             ) : null}
           </g>
         </svg>
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[180px] w-[180px] -translate-x-1/2 -translate-y-1/2">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[210px] w-[210px] -translate-x-1/2 -translate-y-1/2">
           <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
       </div>
