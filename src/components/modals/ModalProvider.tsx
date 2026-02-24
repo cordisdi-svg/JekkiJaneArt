@@ -2,6 +2,9 @@
 
 import { createContext, useContext, useMemo, useState } from "react";
 import { BaseModal } from "@/components/modals/BaseModal";
+import { OrderModalContent } from "@/components/modals/OrderModalContent";
+import { CertificatesModalContent } from "@/components/modals/CertificatesModalContent";
+import { SiteCreatorModalContent } from "@/components/modals/SiteCreatorModalContent";
 
 type ModalType = "order" | "certificates" | "siteCreator";
 
@@ -13,10 +16,10 @@ type ModalContextValue = {
 
 const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
-const modalPlaceholders: Record<ModalType, string> = {
-  order: "ORDER MODAL",
-  certificates: "CERTIFICATES MODAL",
-  siteCreator: "SITE CREATOR MODAL"
+const modalContent: Record<ModalType, React.ReactNode> = {
+  order: <OrderModalContent />,
+  certificates: <CertificatesModalContent />,
+  siteCreator: <SiteCreatorModalContent />
 };
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
@@ -35,7 +38,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
     <ModalContext.Provider value={value}>
       {children}
       <BaseModal isOpen={Boolean(activeModal)} onClose={value.closeModal}>
-        {activeModal ? modalPlaceholders[activeModal] : null}
+        {activeModal ? modalContent[activeModal] : null}
       </BaseModal>
     </ModalContext.Provider>
   );

@@ -5,7 +5,7 @@ import { orderedRoutes } from "@/data/routes";
 import { useModal } from "@/components/modals/ModalProvider";
 
 function navButtonClass(isActive: boolean) {
-  return `rounded border px-3 py-2 text-sm ${isActive ? "font-bold" : "font-normal"}`;
+  return `rounded border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] ${isActive ? "font-bold" : "font-normal"}`;
 }
 
 export function BottomNavigation() {

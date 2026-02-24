@@ -38,18 +38,17 @@ export function BaseModal({ isOpen, onClose, children }: BaseModalProps) {
   }
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 p-4"
-      onClick={onClose}
-      role="presentation"
-    >
-      <div
-        className="w-full max-w-lg rounded-md bg-white p-6"
-        role="dialog"
-        aria-modal="true"
-        onClick={(event) => event.stopPropagation()}
-      >
-        {children}
+    <div className="fixed inset-0 z-[1000]" onClick={onClose} role="presentation">
+      <div className="absolute inset-0 bg-[var(--modal-bg)]" />
+      <div className="relative flex h-full items-end justify-center p-0 lg:items-center lg:p-4">
+        <div
+          className="max-h-[80vh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 lg:max-h-none lg:max-w-lg lg:rounded-xl"
+          role="dialog"
+          aria-modal="true"
+          onClick={(event) => event.stopPropagation()}
+        >
+          {children}
+        </div>
       </div>
     </div>,
     portalTarget
