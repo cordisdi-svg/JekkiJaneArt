@@ -25,15 +25,18 @@ export default function AvailablePage() {
 
   return (
     <PageBackground backgroundSrc="/availablepics/back-full.png">
-      <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-3 px-2 py-4 md:px-4">
+      <section className="mx-auto flex min-h-[calc(100vh-var(--nav-height-mobile))] w-full max-w-none flex-col gap-4 px-0 py-4 md:min-h-[calc(100vh-var(--nav-height-desktop))]">
         <h1 className="text-center text-3xl font-semibold">Готовые работы</h1>
-        <SpotlightCarousel
+        <div className="flex-1 px-2 md:px-0">
+          <SpotlightCarousel
           items={availablePics.slice(0, 20)}
           initialIndex={index}
           centerButtons={{ leftLabel: "Забронировать", rightLabel: "О картине" }}
           onCenterActionLeft={() => openModal("order")}
           onCenterActionRight={(item) => setViewerSrc(item.src)}
+          className="h-full"
         />
+        </div>
       </section>
       {viewerSrc ? <ImageViewerModal src={viewerSrc} alt="О картине" onClose={() => setViewerSrc(null)} /> : null}
     </PageBackground>

@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const items = [
-  { label: "Доступные картины", href: "/available", y: -140 },
-  { label: "Роспись стен и мебели", href: "/walls", y: -84 },
-  { label: "Роспись одежды и обуви", href: "/wear-and-shoes", y: -28 },
-  { label: "Картины на заказ", href: "/custom-paintings", y: 28 },
-  { label: "Картины-талиманы", href: "/amulets", y: 84 },
-  { label: "Тату эскизы", href: "/tattoo", y: 140 }
+const rows = [
+  { label: "Доступные картины", href: "/available" },
+  { label: "Роспись стен и мебели", href: "/walls" },
+  { label: "Роспись одежды и обуви", href: "/wear-and-shoes" },
+  { label: "Картины на заказ", href: "/custom-paintings" },
+  { label: "Картины-талисманы", href: "/amulets" },
+  { label: "Тату эскизы", href: "/tattoo" }
 ];
 
 export function HomeSectorsMobile() {
@@ -25,27 +25,27 @@ export function HomeSectorsMobile() {
   };
 
   return (
-    <section className="relative flex min-h-[calc(100vh-var(--nav-height-mobile))] items-center lg:hidden">
-      <div className="absolute left-0 top-1/2 h-40 w-40 -translate-y-1/2">
-        <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />
-      </div>
-      <div className="relative ml-14 h-[74vh] w-[calc(100vw-3.5rem)]">
-        {items.map((item, index) => (
-          <motion.button
-            key={item.href}
-            type="button"
-            onClick={() => tap(index, item.href)}
-            animate={{ opacity: active === null || active === index ? 1 : 0.28, scale: active === index ? 1.04 : 1 }}
-            transition={{ duration: 1 }}
-            className="absolute left-0 top-1/2 flex h-14 items-center rounded-r-full border-2 border-white/70 bg-white/10 px-4 text-left text-sm text-white"
-            style={{
-              width: "calc(100% - 0.25rem)",
-              transform: `translateY(calc(-50% + ${item.y}px))`
-            }}
-          >
-            <span className="max-w-[95%] leading-tight">{item.label}</span>
-          </motion.button>
-        ))}
+    <section className="relative min-h-[calc(100vh-var(--nav-height-mobile))] overflow-hidden lg:hidden">
+      <div className="relative grid h-[calc(100vh-var(--nav-height-mobile))] grid-rows-[12.5fr_12.5fr_21fr_21fr_12.5fr_12.5fr] px-2 py-2">
+        <div className="pointer-events-none absolute left-0 top-1/2 aspect-square h-1/2 -translate-y-1/2">
+          <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />
+        </div>
+        {rows.map((row, index) => {
+          const middle = index === 2 || index === 3;
+          return (
+            <motion.button
+              key={row.href}
+              type="button"
+              onClick={() => tap(index, row.href)}
+              animate={{ opacity: active === null || active === index ? 1 : 0.28, scale: active === index ? 1.02 : 1 }}
+              transition={{ duration: 1 }}
+              className="my-1 rounded-r-2xl border border-white/70 bg-white/10 px-4 text-left text-sm text-white"
+              style={{ marginLeft: middle ? "min(50vh,72vw)" : "0.25rem" }}
+            >
+              {row.label}
+            </motion.button>
+          );
+        })}
       </div>
     </section>
   );
