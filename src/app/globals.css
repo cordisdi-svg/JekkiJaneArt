@@ -6,6 +6,11 @@
   --accent: #7a4cff;
   --accent-strong: #5f35d5;
   --surface: #ffffff;
+  --text: #111111;
+  --muted: #6b7280;
+  --border: rgba(0, 0, 0, 0.12);
+  --modal-bg: rgba(0, 0, 0, 0.45);
+  --card-bg: rgba(255, 255, 255, 0.78);
   --radius: 0.75rem;
   --nav-height-desktop: 7vh;
   --nav-height-mobile: 17vh;
@@ -20,4 +25,5 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  color: var(--text);
 }
