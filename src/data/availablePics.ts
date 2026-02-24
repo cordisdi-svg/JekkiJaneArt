@@ -1,1 +1,22 @@
-export const availablePics: Array<{ id: string; src: string; alt: string }> = [];
+export const availablePics: Array<{ id: string; src: string; alt: string }> = [
+  { id: "pic1", src: "/availablepics/pic1.png", alt: "Доступная картина 1" },
+  { id: "pic2", src: "/availablepics/pic2.JPEG", alt: "Доступная картина 2" },
+  { id: "pic3", src: "/availablepics/pic3.png", alt: "Доступная картина 3" },
+  { id: "pic4", src: "/availablepics/pic4.png", alt: "Доступная картина 4" },
+  { id: "pic5", src: "/availablepics/pic5.JPEG", alt: "Доступная картина 5" },
+  { id: "pic6", src: "/availablepics/pic6.png", alt: "Доступная картина 6" },
+  { id: "pic8", src: "/availablepics/pic8.png", alt: "Доступная картина 8" },
+  { id: "pic10", src: "/availablepics/pic10.png", alt: "Доступная картина 10" },
+  { id: "pic11", src: "/availablepics/pic11.JPEG", alt: "Доступная картина 11" },
+  { id: "pic12", src: "/availablepics/pic12.JPEG", alt: "Доступная картина 12" },
+  { id: "pic13", src: "/availablepics/pic13.png", alt: "Доступная картина 13" },
+  { id: "pic14", src: "/availablepics/pic14.png", alt: "Доступная картина 14" },
+  { id: "pic15", src: "/availablepics/pic15.png", alt: "Доступная картина 15" },
+  { id: "pic16", src: "/availablepics/pic16.png", alt: "Доступная картина 16" },
+  { id: "pic17", src: "/availablepics/pic17.png", alt: "Доступная картина 17" },
+  { id: "pic18", src: "/availablepics/pic18.png", alt: "Доступная картина 18" },
+  { id: "pic19", src: "/availablepics/pic19.png", alt: "Доступная картина 19" },
+  { id: "pic20", src: "/availablepics/pic20.png", alt: "Доступная картина 20" },
+  { id: "pic21", src: "/availablepics/pic21.png", alt: "Доступная картина 21" },
+  { id: "pic22", src: "/availablepics/pic22.png", alt: "Доступная картина 22" }
+];

@@ -6,7 +6,6 @@ import { useModal } from "@/components/modals/ModalProvider";
 
 export default function TattooPage() {
   const { openModal } = useModal();
-
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
       <section className="mx-auto grid min-h-screen w-full max-w-6xl gap-4 px-4 py-8 lg:grid-cols-2 lg:items-center">
@@ -26,16 +25,10 @@ export default function TattooPage() {
 Стоимость: от 2000 р
 
 Работаю в авторском стиле, с учетом анатомии и места нанесения.`}</p>
-          <button
-            type="button"
-            onClick={() => openModal("order")}
-            className="mt-4 rounded-lg border border-[var(--border)] bg-white px-4 py-2 text-sm font-medium"
-          >
-            начать работу над эскизом
-          </button>
+          <button type="button" onClick={() => openModal("order")} className="mt-4 rounded-lg border border-[var(--border)] bg-white px-4 py-2 text-sm font-medium">начать работу над эскизом</button>
         </div>
-        <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card-bg)]">
-          <Image src="/tattoo/1.png" alt="Эскиз тату" width={900} height={1200} className="h-full w-full object-cover" />
+        <div className="max-h-[80vh] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card-bg)]">
+          <Image src="/tattoo/1.png" alt="Эскиз тату" width={900} height={1200} className="h-full max-h-[80vh] w-full object-contain" />
         </div>
       </section>
     </PageBackground>

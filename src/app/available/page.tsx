@@ -1,12 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { PageBackground } from "@/components/layout/PageBackground";
+import { SpotlightCarousel } from "@/components/carousel/SpotlightCarousel";
+import { useModal } from "@/components/modals/ModalProvider";
+import { ImageViewerModal } from "@/components/modals/ImageViewerModal";
+import { availablePics } from "@/data/availablePics";
 
 export default function AvailablePage() {
+  const { openModal } = useModal();
+  const [index, setIndex] = useState(0);
+  const [viewerSrc, setViewerSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("availableCarouselIndex");
+    if (saved) {
+      setIndex(Number(saved));
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * availablePics.length);
+    sessionStorage.setItem("availableCarouselIndex", String(randomIndex));
+    setIndex(randomIndex);
+  }, []);
+
   return (
     <PageBackground backgroundSrc="/availablepics/back-full.png">
-      <section className="mx-auto flex min-h-screen w-full max-w-4xl flex-col items-center justify-center gap-4 px-4 text-center">
-        <h1 className="text-3xl font-semibold">Готовые работы</h1>
-        <p className="rounded-lg bg-[var(--card-bg)] px-4 py-2">Карусель будет добавлена на следующем шаге.</p>
+      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-5 px-4 py-8">
+        <h1 className="text-center text-3xl font-semibold">Готовые работы</h1>
+        <SpotlightCarousel
+          items={availablePics.slice(0, 20)}
+          initialIndex={index}
+          centerButtons={{ leftLabel: "Забронировать", rightLabel: "О картине" }}
+          onCenterActionLeft={() => openModal("order")}
+          onCenterActionRight={(item) => setViewerSrc(item.src)}
+        />
       </section>
+      {viewerSrc ? <ImageViewerModal src={viewerSrc} alt="О картине" onClose={() => setViewerSrc(null)} /> : null}
     </PageBackground>
   );
 }
