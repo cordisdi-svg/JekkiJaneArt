@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 type MobileSlot = { label: string; href: string };
 
@@ -22,29 +22,28 @@ const slots: MobileSlot[] = [
   { label: "Тату эскизы", href: "/tattoo" }
 ];
 
-const cumulativeRows = ROW_WEIGHTS.reduce<number[]>((acc, value, index) => {
-  const prev = index === 0 ? 0 : acc[index - 1];
-  acc.push(prev + value);
-  return acc;
-}, []);
-
-const yByRow = cumulativeRows.map((sum) => (sum / cumulativeRows[cumulativeRows.length - 1]) * H);
-
-const circleCutoutPath = () => {
+const circlePath = () => {
   const x = CIRCLE_CX;
   const y = CIRCLE_CY;
   const r = CIRCLE_R;
   return `M ${x - r} ${y} A ${r} ${r} 0 1 0 ${x + r} ${y} A ${r} ${r} 0 1 0 ${x - r} ${y} Z`;
 };
 
+const rowBounds = (() => {
+  const total = ROW_WEIGHTS.reduce((sum, value) => sum + value, 0);
+  let current = 0;
+
+  return ROW_WEIGHTS.map((weight) => {
+    const y0 = (current / total) * H;
+    current += weight;
+    const y1 = (current / total) * H;
+    return { y0, y1 };
+  });
+})();
+
 export function HomeSectorsMobile() {
   const router = useRouter();
   const [active, setActive] = useState<number | "center" | null>(null);
-
-  const slotBounds = useMemo(() => {
-    const starts = [0, ...yByRow.slice(0, -1)];
-    return starts.map((start, i) => ({ y0: start, y1: yByRow[i] }));
-  }, []);
 
   const tap = (target: number | "center", href: string) => {
     if (active !== null) return;
@@ -55,21 +54,20 @@ export function HomeSectorsMobile() {
   return (
     <section className="relative h-[calc(100vh-var(--nav-height-mobile))] w-full lg:hidden">
       <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full">
-        <defs>
-          <path id="mobile-circle-cutout" d={circleCutoutPath()} />
-        </defs>
-
-        {slotBounds.map((slot, index) => {
+        {rowBounds.map((slot, index) => {
           const isActive = active === index;
           const dim = active !== null && active !== index;
           const rectPath = `M 0 ${slot.y0} H ${W} V ${slot.y1} H 0 Z`;
+          const path = `${rectPath} ${circlePath()}`;
+          const centered = index < 2 || index > 3;
 
           return (
             <g key={slots[index].href} onClick={() => tap(index, slots[index].href)} className="cursor-pointer" style={{ transition: "opacity .22s ease", opacity: dim ? 0.3 : 1 }}>
-              <path d={`${rectPath} ${circleCutoutPath()}`} fill={isActive ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.06)"} fillRule="evenodd" />
+              <path d={path} fill={isActive ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.06)"} fillRule="evenodd" />
               <text
-                x={CIRCLE_R * 2 + 28}
+                x={centered ? (W + CIRCLE_R * 2) / 2 : CIRCLE_R * 2 + 28}
                 y={(slot.y0 + slot.y1) / 2}
+                textAnchor={centered ? "middle" : "start"}
                 dominantBaseline="middle"
                 fill="white"
                 fontSize="32"
@@ -89,7 +87,7 @@ export function HomeSectorsMobile() {
       <button
         type="button"
         onClick={() => tap("center", "/about")}
-        className="absolute left-0 top-1/2 block aspect-square h-1/2 -translate-y-1/2 rounded-full"
+        className="absolute left-0 top-1/2 z-10 block aspect-square h-1/2 -translate-y-1/2 rounded-full"
         aria-label="О художнице"
       >
         <span className="sr-only">О художнице</span>

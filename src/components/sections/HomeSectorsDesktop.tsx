@@ -11,16 +11,16 @@ const W = 1400;
 const H = 900;
 const CX = W / 2;
 const CY = H / 2;
-const CENTER_RADIUS = 309;
-const ICON_PADDING = 16;
+const CENTER_RADIUS = 309 * 0.8;
+const ICON_PADDING = 16 * 0.8;
 
 const sectors: Sector[] = [
-  { id: 1, label: "Доступные картины", href: "/available", start: -30, end: 30 },
-  { id: 2, label: "Роспись стен и мебели", href: "/walls", start: 30, end: 90 },
-  { id: 3, label: "Роспись одежды и обуви", href: "/wear-and-shoes", start: 90, end: 150 },
-  { id: 4, label: "Картины-талиманы", href: "/amulets", start: 150, end: 210 },
-  { id: 5, label: "Тату эскизы", href: "/tattoo", start: 210, end: 270 },
-  { id: 6, label: "Картины на заказ", href: "/custom-paintings", start: 270, end: 330 }
+  { id: 1, label: "Доступные картины", href: "/available", start: -50, end: 50 },
+  { id: 2, label: "Роспись стен и мебели", href: "/walls", start: 50, end: 90 },
+  { id: 3, label: "Роспись одежды и обуви", href: "/wear-and-shoes", start: 90, end: 130 },
+  { id: 4, label: "Картины-талиманы", href: "/amulets", start: 130, end: 230 },
+  { id: 5, label: "Тату эскизы", href: "/tattoo", start: 230, end: 270 },
+  { id: 6, label: "Картины на заказ", href: "/custom-paintings", start: 270, end: 310 }
 ];
 
 const normalize = (angle: number) => ((angle % 360) + 360) % 360;
@@ -36,29 +36,30 @@ const rayRectIntersection = (angle: number): Point => {
   const rad = ((angle - 90) * Math.PI) / 180;
   const dx = Math.cos(rad);
   const dy = Math.sin(rad);
-  const candidates: Point[] = [];
+  const candidates: Array<Point & { t: number }> = [];
 
   if (Math.abs(dx) > 1e-6) {
     const tLeft = (0 - CX) / dx;
     const yLeft = CY + tLeft * dy;
-    if (tLeft > 0 && yLeft >= 0 && yLeft <= H) candidates.push({ x: 0, y: yLeft });
+    if (tLeft > 0 && yLeft >= 0 && yLeft <= H) candidates.push({ t: tLeft, x: 0, y: yLeft });
 
     const tRight = (W - CX) / dx;
     const yRight = CY + tRight * dy;
-    if (tRight > 0 && yRight >= 0 && yRight <= H) candidates.push({ x: W, y: yRight });
+    if (tRight > 0 && yRight >= 0 && yRight <= H) candidates.push({ t: tRight, x: W, y: yRight });
   }
 
   if (Math.abs(dy) > 1e-6) {
     const tTop = (0 - CY) / dy;
     const xTop = CX + tTop * dx;
-    if (tTop > 0 && xTop >= 0 && xTop <= W) candidates.push({ x: xTop, y: 0 });
+    if (tTop > 0 && xTop >= 0 && xTop <= W) candidates.push({ t: tTop, x: xTop, y: 0 });
 
     const tBottom = (H - CY) / dy;
     const xBottom = CX + tBottom * dx;
-    if (tBottom > 0 && xBottom >= 0 && xBottom <= W) candidates.push({ x: xBottom, y: H });
+    if (tBottom > 0 && xBottom >= 0 && xBottom <= W) candidates.push({ t: tBottom, x: xBottom, y: H });
   }
 
-  return candidates[0] ?? { x: CX, y: CY };
+  const closest = candidates.sort((a, b) => a.t - b.t)[0];
+  return closest ? { x: closest.x, y: closest.y } : { x: CX, y: CY };
 };
 
 const cornersClockwise: Point[] = [
