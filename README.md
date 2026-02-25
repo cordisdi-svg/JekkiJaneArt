@@ -34,7 +34,7 @@ npm run start
 - Выберите репозиторий в Netlify, команда сборки: `npm run build`.
 - Версия Node: 20 (указать в настройках Netlify Environment / Build).
 
-## Структура папок
+## Структура папок 
 
 ```text
 src/
