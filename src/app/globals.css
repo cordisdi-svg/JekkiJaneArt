@@ -27,3 +27,17 @@ body {
   min-height: 100%;
   color: var(--text);
 }
+
+@keyframes mobileTrianglePulse {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.62;
+  }
+}
+
+.mobile-triangle-hint {
+  animation: mobileTrianglePulse 1.4s ease-in-out infinite;
+}

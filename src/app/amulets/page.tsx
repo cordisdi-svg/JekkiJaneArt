@@ -1,8 +1,29 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { useModal } from "@/components/modals/ModalProvider";
+import { AmuletsDesktopControls } from "@/components/sections/AmuletsDesktopControls";
+import { AmuletsFeed } from "@/components/sections/AmuletsFeed";
+import { AmuletsMobileDrawer } from "@/components/sections/AmuletsMobileDrawer";
+import { amuletsPics } from "@/data/amuletsPics";
+
 export default function AmuletsPage() {
+  const { openModal } = useModal();
+  const [openGroup, setOpenGroup] = useState<"men" | "women" | "pairs" | null>(null);
+
+  const feedItems = useMemo(() => {
+    const extra = openGroup ? amuletsPics.groups[openGroup].map((item) => ({ ...item, group: openGroup })) : [];
+    return [...extra, ...amuletsPics.base];
+  }, [openGroup]);
+
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-4xl flex-col items-center justify-center gap-4 px-4 text-center">
-      <h1 className="text-3xl font-semibold">Картины-талисманы</h1>
-      <p className="rounded-lg bg-[var(--card-bg)] px-4 py-2">Лента амулетов и drawer будут добавлены на следующем шаге.</p>
+    <section className="relative min-h-screen">
+      <AmuletsMobileDrawer onToggle={(group) => setOpenGroup((prev) => (prev === group ? null : group))} />
+      <AmuletsDesktopControls onToggle={(group) => setOpenGroup((prev) => (prev === group ? null : group))} onOrder={() => openModal("order")} />
+      <motion.div key={openGroup ?? "base"} initial={{ opacity: 0.65, scaleY: 0.98 }} animate={{ opacity: 1, scaleY: 1 }} transition={{ duration: 0.35 }}>
+        <AmuletsFeed items={feedItems} />
+      </motion.div>
     </section>
   );
 }
