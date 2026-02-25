@@ -28,7 +28,7 @@ npm run build
 npm run start
 ```
 
-## Деплой на Netlify
+## Деплой на Netlify 
 
 - Проект совместим с стандартным деплоем Next.js App Router на Netlify.
 - Выберите репозиторий в Netlify, команда сборки: `npm run build`.
