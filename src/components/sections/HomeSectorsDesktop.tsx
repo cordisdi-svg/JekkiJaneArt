@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState } from "react"; 
 
 import { useElementSize } from "@/hooks/useElementSize";
 
