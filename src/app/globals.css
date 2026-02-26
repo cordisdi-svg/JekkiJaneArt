@@ -14,6 +14,15 @@
   --radius: 0.75rem;
   --nav-height-desktop: 7vh;
   --nav-height-mobile: 17vh;
+  --nav-h: var(--nav-height-mobile);
+  --bottom-nav-h: var(--nav-h);
+  --home-circle-mobile-size: min(44vh, 44vw);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: var(--nav-height-desktop);
+  }
 }
 
 * {
@@ -28,16 +37,9 @@ body {
   color: var(--text);
 }
 
-@keyframes mobileTrianglePulse {
-  0%,
-  100% {
-    opacity: 0.28;
-  }
-  50% {
-    opacity: 0.62;
-  }
-}
-
-.mobile-triangle-hint {
-  animation: mobileTrianglePulse 1.4s ease-in-out infinite;
+.home-active-zone {
+  position: relative;
+  width: 100%;
+  height: calc(100svh - var(--bottom-nav-h));
+  overflow: hidden;
 }
