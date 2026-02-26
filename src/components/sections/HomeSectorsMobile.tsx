@@ -51,61 +51,61 @@ export function HomeSectorsMobile() {
     window.setTimeout(() => router.push(href), 1000);
   };
 
+  if (width < 10 || height < 10) {
+    return <div ref={ref} className="relative h-full w-full overflow-hidden lg:hidden" />;
+  }
+
   return (
-    <section ref={ref} className="relative h-[calc(100vh-var(--nav-height-mobile))] w-full lg:hidden">
-      {!width || !height ? null : (
-        <>
-          <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
-            {slotBounds.map((slot, index) => {
-              const isActive = active === index;
-              const dim = active !== null && active !== index;
-              const rectPath = `M 0 ${slot.y0} H ${width} V ${slot.y1} H 0 Z`;
-              const isMiddleSlot = index === 2 || index === 3;
-              const labelX = isMiddleSlot ? radius * 2 + 24 : radius * 2 + (width - radius * 2) / 2;
+    <div ref={ref} className="relative h-full w-full overflow-hidden lg:hidden">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+        {slotBounds.map((slot, index) => {
+          const isActive = active === index;
+          const dim = active !== null && active !== index;
+          const rectPath = `M 0 ${slot.y0} H ${width} V ${slot.y1} H 0 Z`;
+          const isMiddleSlot = index === 2 || index === 3;
+          const labelX = isMiddleSlot ? radius * 2 + 24 : radius * 2 + (width - radius * 2) / 2;
 
-              return (
-                <g key={slots[index].href} onClick={() => tap(index, slots[index].href)} className="cursor-pointer" style={{ opacity: dim ? 0.35 : 1, transition: "opacity .22s ease" }}>
-                  <path d={`${rectPath} ${circleCutoutPath}`} fill={isActive ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0)"} fillRule="evenodd" pointerEvents="all" />
-                  <text
-                    x={labelX}
-                    y={(slot.y0 + slot.y1) / 2}
-                    textAnchor={isMiddleSlot ? "start" : "middle"}
-                    dominantBaseline="middle"
-                    fill="white"
-                    fontSize="32"
-                    style={{ textShadow: "0 1px 2px rgba(0,0,0,.75)" }}
-                  >
-                    {slots[index].label}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+          return (
+            <g key={slots[index].href} onClick={() => tap(index, slots[index].href)} className="cursor-pointer" style={{ opacity: dim ? 0.35 : 1, transition: "opacity .22s ease" }}>
+              <path d={`${rectPath} ${circleCutoutPath}`} fill={isActive ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0)"} fillRule="evenodd" pointerEvents="all" />
+              <text
+                x={labelX}
+                y={(slot.y0 + slot.y1) / 2}
+                textAnchor={isMiddleSlot ? "start" : "middle"}
+                dominantBaseline="middle"
+                fill="white"
+                fontSize="32"
+                style={{ textShadow: "0 1px 2px rgba(0,0,0,.75)" }}
+              >
+                {slots[index].label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
 
-          <button
-            type="button"
-            onClick={() => tap("center", "/about")}
-            className="absolute"
-            style={{
-              left: 0,
-              top: "50%",
-              width: radius * 2,
-              height: radius * 2,
-              transform: "translateY(-50%)",
-              clipPath: "circle(50% at 50% 50%)",
-              opacity: active !== null && active !== "center" ? 0.35 : 1,
-              background: active === "center" ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0)"
-            }}
-            aria-label="О художнице"
-          >
-            <span className="sr-only">О художнице</span>
-          </button>
+      <button
+        type="button"
+        onClick={() => tap("center", "/about")}
+        className="absolute"
+        style={{
+          left: 0,
+          top: "50%",
+          width: radius * 2,
+          height: radius * 2,
+          transform: "translateY(-50%)",
+          clipPath: "circle(50% at 50% 50%)",
+          opacity: active !== null && active !== "center" ? 0.35 : 1,
+          background: active === "center" ? "rgba(255,255,255,0.14)" : "rgba(0,0,0,0)"
+        }}
+        aria-label="О художнице"
+      >
+        <span className="sr-only">О художнице</span>
+      </button>
 
-          <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2" style={{ width: radius * 2, height: radius * 2 }}>
-            <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />
-          </div>
-        </>
-      )}
-    </section>
+      <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2" style={{ width: radius * 2, height: radius * 2 }}>
+        <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />
+      </div>
+    </div>
   );
 }

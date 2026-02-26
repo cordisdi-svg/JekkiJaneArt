@@ -14,6 +14,13 @@
   --radius: 0.75rem;
   --nav-height-desktop: 7vh;
   --nav-height-mobile: 17vh;
+  --nav-h: var(--nav-height-mobile);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: var(--nav-height-desktop);
+  }
 }
 
 * {

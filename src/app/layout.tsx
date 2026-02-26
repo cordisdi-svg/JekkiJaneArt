@@ -13,8 +13,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru">
       <body>
         <ModalProvider>
-          <div className="min-h-screen">
-            <main className="pb-[calc(var(--nav-height-mobile)+env(safe-area-inset-bottom))] lg:pb-[var(--nav-height-desktop)]">
+          <div className="h-svh overflow-hidden">
+            <main className="mainContent relative h-[calc(100svh-var(--nav-h))] overflow-hidden">
               {children}
             </main>
             <BottomNavigation />
