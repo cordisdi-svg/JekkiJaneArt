@@ -5,8 +5,10 @@ import { HomeSectorsMobile } from "@/components/sections/HomeSectorsMobile";
 export default function HomePage() {
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
-      <HomeSectorsDesktop />
-      <HomeSectorsMobile />
+      <div className="h-full w-full overflow-hidden">
+        <HomeSectorsDesktop />
+        <HomeSectorsMobile />
+      </div>
     </PageBackground>
   );
 }

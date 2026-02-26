@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react"; 
+import { useMemo, useState } from "react";
 
 import { useElementSize } from "@/hooks/useElementSize";
 
@@ -115,46 +115,46 @@ export function HomeSectorsDesktop() {
     });
   }, [centerRadius, cx, cy, height, width]);
 
+  if (width < 10 || height < 10) {
+    return <div ref={ref} className="relative hidden h-full w-full lg:block" />;
+  }
+
   return (
-    <section ref={ref} className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full lg:block">
-      {!width || !height ? null : (
-        <>
-          <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
-            {shaped.map((sector) => {
-              const isHovered = hovered === sector.id;
-              const dim = hovered !== null && hovered !== sector.id;
+    <div ref={ref} className="relative hidden h-full w-full lg:block">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+        {shaped.map((sector) => {
+          const isHovered = hovered === sector.id;
+          const dim = hovered !== null && hovered !== sector.id;
 
-              return (
-                <g
-                  key={sector.id}
-                  className="cursor-pointer"
-                  onMouseEnter={() => setHovered(sector.id)}
-                  onMouseLeave={() => setHovered(null)}
-                  onClick={() => router.push(sector.href)}
-                  style={{ opacity: dim ? 0.28 : 1, transform: isHovered ? "translateY(-6px)" : "none", transition: "all .2s ease" }}
-                >
-                  <path d={sector.path} fill={isHovered ? "rgba(255,255,255,0.13)" : "rgba(255,255,255,0.05)"} stroke={isHovered ? "#fff" : "rgba(255,255,255,0.78)"} strokeWidth={isHovered ? 4 : 2} />
-                  <text x={sector.labelPos.x} y={sector.labelPos.y} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="42" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
-                    {sector.label}
-                  </text>
-                </g>
-              );
-            })}
-            <g className="cursor-pointer" onMouseEnter={() => setHovered("center")} onMouseLeave={() => setHovered(null)} onClick={() => router.push("/about")}>
-              <circle cx={cx} cy={cy} r={centerRadius} fill="rgba(20,20,20,0.42)" stroke={hovered === "center" ? "#fff" : "rgba(255,255,255,0.72)"} strokeWidth={hovered === "center" ? 4 : 2} />
-              {hovered === "center" ? (
-                <text x={cx} y={cy + centerRadius * 0.52} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="40" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
-                  О художнице
-                </text>
-              ) : null}
+          return (
+            <g
+              key={sector.id}
+              className="cursor-pointer"
+              onMouseEnter={() => setHovered(sector.id)}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => router.push(sector.href)}
+              style={{ opacity: dim ? 0.28 : 1, transform: isHovered ? "translateY(-6px)" : "none", transition: "all .2s ease" }}
+            >
+              <path d={sector.path} fill={isHovered ? "rgba(255,255,255,0.13)" : "rgba(255,255,255,0.05)"} stroke={isHovered ? "#fff" : "rgba(255,255,255,0.78)"} strokeWidth={isHovered ? 4 : 2} />
+              <text x={sector.labelPos.x} y={sector.labelPos.y} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="42" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
+                {sector.label}
+              </text>
             </g>
-          </svg>
+          );
+        })}
+        <g className="cursor-pointer" onMouseEnter={() => setHovered("center")} onMouseLeave={() => setHovered(null)} onClick={() => router.push("/about")}>
+          <circle cx={cx} cy={cy} r={centerRadius} fill="rgba(20,20,20,0.42)" stroke={hovered === "center" ? "#fff" : "rgba(255,255,255,0.72)"} strokeWidth={hovered === "center" ? 4 : 2} />
+          {hovered === "center" ? (
+            <text x={cx} y={cy + centerRadius * 0.52} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="40" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
+              О художнице
+            </text>
+          ) : null}
+        </g>
+      </svg>
 
-          <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: centerRadius * 2 - ICON_PADDING, height: centerRadius * 2 - ICON_PADDING }}>
-            <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
-          </div>
-        </>
-      )}
-    </section>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: centerRadius * 2 - ICON_PADDING, height: centerRadius * 2 - ICON_PADDING }}>
+        <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
+      </div>
+    </div>
   );
 }
