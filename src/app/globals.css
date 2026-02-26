@@ -14,6 +14,7 @@
   --radius: 0.75rem;
   --nav-height-desktop: 7vh;
   --nav-height-mobile: 17vh;
+  --nav-h: 17vh;
 }
 
 * {
@@ -40,4 +41,10 @@ body {
 
 .mobile-triangle-hint {
   animation: mobileTrianglePulse 1.4s ease-in-out infinite;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 7vh;
+  }
 }
