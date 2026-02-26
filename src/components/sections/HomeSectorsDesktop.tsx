@@ -137,7 +137,7 @@ export function HomeSectorsDesktop() {
   };
 
   return (
-    <section ref={hostRef} className="relative hidden h-[calc(100svh-var(--nav-height-desktop))] w-full overflow-hidden lg:block" aria-label="Главные разделы">
+    <section ref={hostRef} className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full overflow-hidden lg:block" aria-label="Главные разделы">
       {shaped.map((sector) => {
         const isDim = active !== null && active !== sector.id;
         const isHovered = hovered === sector.id;
@@ -150,7 +150,7 @@ export function HomeSectorsDesktop() {
             onMouseLeave={() => setHovered(null)}
             onClick={() => trigger(sector.id, sector.href)}
             aria-label={sector.ariaLabel}
-            className="absolute inset-0 border-0 bg-transparent p-0 text-white outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
+            className="absolute inset-0 border-0 bg-transparent p-0 outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
             style={{
               zIndex: isHovered ? 6 : 2,
               clipPath: sector.clipPath,
@@ -162,32 +162,34 @@ export function HomeSectorsDesktop() {
               filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
             }}
           >
-            <span className="absolute inset-0">
+            <span className="absolute inset-0 opacity-0 transition-opacity duration-300" style={{ opacity: isHovered ? 1 : 0 }}>
               <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
             </span>
-            <span
-              className="absolute inset-0 transition-colors duration-200"
-              style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.20)" : "rgba(0,0,0,0.30)" }}
-            />
-            <span
-              className="absolute inset-0"
-              style={{ boxShadow: `inset 0 0 0 2px ${isHovered ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)"}` }}
-            />
-            <span
-              className="absolute -translate-x-1/2 -translate-y-1/2 text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-medium leading-[1.1] text-white"
-              style={{
-                left: sector.labelPos.left,
-                top: sector.labelPos.top,
-                maxWidth: "clamp(180px,20vw,420px)",
-                textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)"
-              }}
-            >
-              {sector.lines[0]}
-              {sector.lines[1] ? <><br />{sector.lines[1]}</> : null}
-            </span>
+            <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
+            <span className="absolute inset-0" style={{ boxShadow: `inset 0 0 0 2px ${isHovered ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)"}` }} />
           </button>
         );
       })}
+
+      <div className="pointer-events-none absolute inset-0 z-10">
+        {shaped.map((sector) => (
+          <div
+            key={`label-${sector.id}`}
+            className="absolute -translate-x-1/2 -translate-y-1/2 text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
+            style={{
+              left: sector.labelPos.left,
+              top: sector.labelPos.top,
+              maxWidth: "clamp(180px,20vw,420px)",
+              textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
+              WebkitTextStroke: "3px rgba(0,0,0,0.65)",
+              paintOrder: "stroke"
+            }}
+          >
+            {sector.lines[0]}
+            {sector.lines[1] ? <><br />{sector.lines[1]}</> : null}
+          </div>
+        ))}
+      </div>
 
       <button
         type="button"
@@ -206,15 +208,17 @@ export function HomeSectorsDesktop() {
         }}
       >
         <span className="absolute inset-0 bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)" }} />
-        <div className="absolute inset-[5%]">
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain scale-90" />
+        <div className="absolute inset-[5%]" style={{ transform: "scale(0.963)" }}>
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
         <span
-          className="absolute left-1/2 z-30 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-medium text-white transition-opacity duration-200"
+          className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
           style={{
             bottom: "15%",
             opacity: hovered === "center" ? 1 : 0,
-            textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)"
+            textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
+            WebkitTextStroke: "2px rgba(0,0,0,0.65)",
+            paintOrder: "stroke"
           }}
         >
           О художнице
