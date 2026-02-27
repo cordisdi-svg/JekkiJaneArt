@@ -140,7 +140,6 @@ export function HomeSectorsDesktop() {
   const holeRadius = Math.min(size.width, size.height) * 0.27;
   const centerDiameter = holeRadius * 2;
   const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 1}px)`;
-
   const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
 
   const trigger = (target: number | "center", href: string) => {
@@ -180,7 +179,10 @@ export function HomeSectorsDesktop() {
               <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
-            <span className="absolute inset-0" style={{ boxShadow: `inset 0 0 0 2px ${isHovered ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)"}` }} />
+            <span
+              className="absolute inset-0 pointer-events-none transition-all duration-200"
+              style={{ boxSizing: "border-box", border: `${isHovered ? 6 : 3}px solid ${isHovered ? "#9c0f06" : "#42545f"}`, clipPath: "inherit", WebkitClipPath: "inherit", zIndex: 2 }}
+            />
             <span
               className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
               style={{
@@ -191,7 +193,8 @@ export function HomeSectorsDesktop() {
                 textWrap: "balance",
                 textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
                 WebkitTextStroke: "3px rgba(0,0,0,0.65)",
-                paintOrder: "stroke"
+                paintOrder: "stroke",
+                zIndex: 3
               }}
             >
               {sector.lines[0]}
@@ -207,22 +210,26 @@ export function HomeSectorsDesktop() {
         onMouseLeave={() => setHovered(null)}
         onClick={() => trigger("center", "/about")}
         aria-label="О художнице"
-        className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-2 transition-[transform,opacity,border-color,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
+        className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 border-0 bg-transparent p-0 outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
         style={{
           width: centerDiameter,
           height: centerDiameter,
+          overflow: "visible",
           opacity: active !== null && active !== "center" ? 0.35 : 1,
           transform: hovered === "center" ? "translate(-50%,-50%) translateY(-10px) scale(1.01)" : "translate(-50%,-50%)",
-          borderColor: hovered === "center" ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.72)",
           filter: hovered === "center" ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
         }}
       >
-        <span className="absolute inset-0 bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)" }} />
-        <div className="absolute inset-0">
+        <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
+        <span
+          className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200"
+          style={{ boxSizing: "border-box", border: `${hovered === "center" ? 6 : 3}px solid ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }}
+        />
+        <div className="absolute inset-0" style={{ zIndex: 3 }}>
           <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-cover" />
         </div>
         <span
-          className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
+          className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
           style={{
             bottom: "15%",
             opacity: hovered === "center" ? 1 : 0,

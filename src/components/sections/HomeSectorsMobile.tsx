@@ -53,11 +53,11 @@ export function HomeSectorsMobile() {
         })}
       </div>
 
-      <div className="pointer-events-none absolute left-0 top-1/2 z-20 aspect-square h-1/2 -translate-y-1/2 overflow-hidden rounded-full">
-        <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-cover" />
+      <div className="absolute left-0 top-1/2 z-20 h-1/2 w-[50vw] -translate-y-1/2" style={{ pointerEvents: "none" }}>
+        <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />
       </div>
 
-      <div className="absolute left-0 top-1/2 z-30 aspect-square h-1/2 -translate-y-1/2 overflow-hidden rounded-full">
+      <div className="absolute left-0 top-1/2 z-30 h-1/2 w-[50vw] -translate-y-1/2" style={{ pointerEvents: "none" }}>
         <button
           type="button"
           onClick={() => trigger("center", "/about")}
@@ -66,9 +66,12 @@ export function HomeSectorsMobile() {
           style={{
             width: "70.710678%",
             height: "70.710678%",
+            pointerEvents: "auto",
             opacity: active !== null && active !== "center" ? 0.35 : 1
           }}
-        />
+        >
+          <span className="pointer-events-none absolute inset-0" style={{ boxSizing: "border-box", border: "3px solid #42545f" }} />
+        </button>
       </div>
     </section>
   );
