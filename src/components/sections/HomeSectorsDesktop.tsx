@@ -22,6 +22,15 @@ type SectorShape = Sector & {
   labelPos: { left: string; top: string };
 };
 
+const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
+  1: { dx: 0, dy: -100 },
+  2: { dx: 100, dy: 0 },
+  3: { dx: 100, dy: 0 },
+  4: { dx: 0, dy: 90 },
+  5: { dx: -135, dy: 0 },
+  6: { dx: -135, dy: 0 }
+};
+
 const DESKTOP_SECTORS: Sector[] = [
   { id: 1, lines: ["Доступные", "картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -140, end: -40 },
   { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/1.png", start: -40, end: 0 },
@@ -145,6 +154,7 @@ export function HomeSectorsDesktop() {
       {shaped.map((sector) => {
         const isDim = active !== null && active !== sector.id;
         const isHovered = hovered === sector.id;
+        const offset = LABEL_OFFSET[sector.id] ?? { dx: 0, dy: 0 };
 
         return (
           <button
@@ -172,10 +182,11 @@ export function HomeSectorsDesktop() {
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
             <span className="absolute inset-0" style={{ boxShadow: `inset 0 0 0 2px ${isHovered ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)"}` }} />
             <span
-              className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
+              className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
               style={{
                 left: sector.labelPos.left,
                 top: sector.labelPos.top,
+                transform: `translate(-50%, -50%) translate(${offset.dx}px, ${offset.dy}px)`,
                 maxWidth: "80%",
                 textWrap: "balance",
                 textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
@@ -207,8 +218,8 @@ export function HomeSectorsDesktop() {
         }}
       >
         <span className="absolute inset-0 bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)" }} />
-        <div className="absolute inset-[5%]" style={{ transform: "scale(0.963)" }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
+        <div className="absolute inset-0">
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-cover" />
         </div>
         <span
           className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"

@@ -2,16 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 type MobileSlot = { label: string; href: string };
-
-const W = 1000;
-const H = 1000;
-const ROW_WEIGHTS = [12.5, 12.5, 21, 21, 12.5, 12.5];
-const CIRCLE_R = H * 0.25;
-const CIRCLE_CX = CIRCLE_R;
-const CIRCLE_CY = H / 2;
 
 const slots: MobileSlot[] = [
   { label: "Доступные картины", href: "/available" },
@@ -22,81 +15,60 @@ const slots: MobileSlot[] = [
   { label: "Тату эскизы", href: "/tattoo" }
 ];
 
-const cumulativeRows = ROW_WEIGHTS.reduce<number[]>((acc, value, index) => {
-  const prev = index === 0 ? 0 : acc[index - 1];
-  acc.push(prev + value);
-  return acc;
-}, []);
-
-const yByRow = cumulativeRows.map((sum) => (sum / cumulativeRows[cumulativeRows.length - 1]) * H);
-
-const circleCutoutPath = () => {
-  const x = CIRCLE_CX;
-  const y = CIRCLE_CY;
-  const r = CIRCLE_R;
-  return `M ${x - r} ${y} A ${r} ${r} 0 1 0 ${x + r} ${y} A ${r} ${r} 0 1 0 ${x - r} ${y} Z`;
-};
+const centered = new Set([0, 1, 4, 5]);
 
 export function HomeSectorsMobile() {
   const router = useRouter();
   const [active, setActive] = useState<number | "center" | null>(null);
 
-  const slotBounds = useMemo(() => {
-    const starts = [0, ...yByRow.slice(0, -1)];
-    return starts.map((start, i) => ({ y0: start, y1: yByRow[i] }));
-  }, []);
-
-  const tap = (target: number | "center", href: string) => {
+  const trigger = (target: number | "center", href: string) => {
     if (active !== null) return;
     setActive(target);
     window.setTimeout(() => router.push(href), 1000);
   };
 
   return (
-    <section className="relative h-[calc(100vh-var(--nav-height-mobile))] w-full lg:hidden">
-      <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full">
-        <defs>
-          <path id="mobile-circle-cutout" d={circleCutoutPath()} />
-        </defs>
-
-        {slotBounds.map((slot, index) => {
+    <section className="relative h-[calc(100dvh-var(--nav-height-mobile))] w-full overflow-hidden lg:hidden" aria-label="Мобильные разделы">
+      <div className="absolute inset-0 grid" style={{ gridTemplateRows: "12.5fr 21fr 21fr 12.5fr 12.5fr 12.5fr" }}>
+        {slots.map((slot, index) => {
+          const isDim = active !== null && active !== index;
           const isActive = active === index;
-          const dim = active !== null && active !== index;
-          const rectPath = `M 0 ${slot.y0} H ${W} V ${slot.y1} H 0 Z`;
-
           return (
-            <g key={slots[index].href} onClick={() => tap(index, slots[index].href)} className="cursor-pointer" style={{ transition: "opacity .22s ease", opacity: dim ? 0.3 : 1 }}>
-              <path d={`${rectPath} ${circleCutoutPath()}`} fill={isActive ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.06)"} fillRule="evenodd" />
-              <text
-                x={CIRCLE_R * 2 + 28}
-                y={(slot.y0 + slot.y1) / 2}
-                dominantBaseline="middle"
-                fill="white"
-                fontSize="32"
-                style={{ textShadow: "0 1px 2px rgba(0,0,0,.75)" }}
-              >
-                {slots[index].label}
-              </text>
-            </g>
+            <button
+              key={slot.href}
+              type="button"
+              onClick={() => trigger(index, slot.href)}
+              aria-label={slot.label}
+              className="relative w-full border-0 text-white transition-opacity duration-200"
+              style={{
+                opacity: isDim ? 0.32 : 1,
+                backgroundColor: isActive ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.07)",
+                textAlign: centered.has(index) ? "center" : "left",
+                paddingLeft: centered.has(index) ? "1rem" : "56%"
+              }}
+            >
+              <span className="pointer-events-none text-2xl leading-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.75)]">{slot.label}</span>
+            </button>
           );
         })}
+      </div>
 
-        <g onClick={() => tap("center", "/about")} className="cursor-pointer" style={{ opacity: active !== null && active !== "center" ? 0.3 : 1, transition: "opacity .22s ease" }}>
-          <circle cx={CIRCLE_CX} cy={CIRCLE_CY} r={CIRCLE_R} fill={active === "center" ? "rgba(255,255,255,0.18)" : "rgba(20,20,20,0.45)"} />
-        </g>
-      </svg>
+      <div className="pointer-events-none absolute left-0 top-1/2 z-20 aspect-square h-1/2 -translate-y-1/2 overflow-hidden rounded-full">
+        <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-cover" />
+      </div>
 
-      <button
-        type="button"
-        onClick={() => tap("center", "/about")}
-        className="absolute left-0 top-1/2 block aspect-square h-1/2 -translate-y-1/2 rounded-full"
-        aria-label="О художнице"
-      >
-        <span className="sr-only">О художнице</span>
-      </button>
-
-      <div className="pointer-events-none absolute left-0 top-1/2 aspect-square h-1/2 -translate-y-1/2">
-        <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />
+      <div className="absolute left-0 top-1/2 z-30 aspect-square h-1/2 -translate-y-1/2 overflow-hidden rounded-full">
+        <button
+          type="button"
+          onClick={() => trigger("center", "/about")}
+          aria-label="О художнице"
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-transparent"
+          style={{
+            width: "70.710678%",
+            height: "70.710678%",
+            opacity: active !== null && active !== "center" ? 0.35 : 1
+          }}
+        />
       </div>
     </section>
   );
