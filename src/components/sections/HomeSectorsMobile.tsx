@@ -30,7 +30,7 @@ export function HomeSectorsMobile() {
   };
 
   return (
-    <section className="relative h-[calc(100dvh-var(--nav-height-mobile))] w-full overflow-hidden lg:hidden" aria-label="Мобильные разделы">
+    <section className="relative h-full w-full overflow-hidden lg:hidden" aria-label="Мобильные разделы">
       <div className="absolute inset-0 grid" style={{ gridTemplateRows: ROWS }}>
         {slots.map((slot, index) => {
           const isDim = active !== null && active !== index;
@@ -49,14 +49,28 @@ export function HomeSectorsMobile() {
                 paddingLeft: centered.has(index) ? "1rem" : "56%"
               }}
             >
-              <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-                <path d="M 50 0 L 100 0 L 100 100 L 50 100 Z" fill="none" stroke="#42545f" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-              </svg>
               <span className="pointer-events-none text-2xl leading-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.75)]">{slot.label}</span>
             </button>
           );
         })}
       </div>
+
+      <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+        <defs>
+          <mask id="mobile-slot-border-cutout">
+            <rect x="0" y="0" width="100" height="100" fill="white" />
+            <circle cx="25" cy="50" r="25" fill="black" />
+          </mask>
+        </defs>
+        <g mask="url(#mobile-slot-border-cutout)" fill="none" stroke="#42545f" strokeWidth="3" vectorEffect="non-scaling-stroke">
+          <rect x="0" y="0" width="100" height="13.5135135" />
+          <rect x="0" y="13.5135135" width="100" height="22.7027027" />
+          <rect x="0" y="36.2162162" width="100" height="22.7027027" />
+          <rect x="0" y="58.9189189" width="100" height="13.5135135" />
+          <rect x="0" y="72.4324324" width="100" height="13.5135135" />
+          <rect x="0" y="85.9459459" width="100" height="14.0540541" />
+        </g>
+      </svg>
 
       <div className="absolute left-0 top-1/2 z-20 h-1/2 w-[50vw] -translate-y-1/2" style={{ pointerEvents: "none" }}>
         <Image src="/mainpage/mainpage-icon-mobile.png" alt="JEKKI JANE ART" fill className="object-contain" />

@@ -25,15 +25,15 @@ type SectorShape = Sector & {
 
 const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
   1: { dx: 0, dy: -100 },
-  2: { dx: 100, dy: 0 },
-  3: { dx: 100, dy: 0 },
+  2: { dx: 100, dy: 80 },
+  3: { dx: 100, dy: -60 },
   4: { dx: 0, dy: 90 },
-  5: { dx: -135, dy: 0 },
-  6: { dx: -135, dy: 0 }
+  5: { dx: -135, dy: -60 },
+  6: { dx: -135, dy: 80 }
 };
 
 const DESKTOP_SECTORS: Sector[] = [
-  { id: 1, lines: ["Доступные", "картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -148, end: -32 },
+  { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -148, end: -32 },
   { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/1.png", start: -32, end: 0 },
   { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/3-(tech).png", start: 0, end: 32 },
   { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
@@ -244,7 +244,7 @@ export function HomeSectorsDesktop() {
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
         <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
         <div className="absolute inset-0" style={{ zIndex: 3 }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain scale-105" />
         </div>
         <span
           className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
