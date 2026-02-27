@@ -17,11 +17,16 @@ type Sector = {
 type Point = { x: number; y: number };
 type Size = { width: number; height: number };
 
-const sectors: Sector[] = [
+type SectorShape = Sector & {
+  clipPath: string;
+  labelPos: { left: string; top: string };
+};
+
+const DESKTOP_SECTORS: Sector[] = [
   { id: 1, lines: ["Доступные", "картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -140, end: -40 },
   { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/1.png", start: -40, end: 0 },
   { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/3-(tech).png", start: 0, end: 40 },
-  { id: 4, lines: ["Картины-талиманы"], ariaLabel: "Картины-талиманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 40, end: 140 },
+  { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 40, end: 140 },
   { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/1-(tech).png", start: 140, end: 180 },
   { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/custom-paintings", imageSrc: "/picstoorder/pic2.JPG", start: -180, end: -140 }
 ];
@@ -41,6 +46,7 @@ const normalize = (angle: number) => {
 };
 
 const toMathRad = (angle: number) => (angle * Math.PI) / 180;
+const toPercent = (value: number, max: number) => `${(value / max) * 100}%`;
 
 const angleFromCenter = (p: Point, cx: number, cy: number) => normalize((Math.atan2(p.y - cy, p.x - cx) * 180) / Math.PI);
 
@@ -80,27 +86,28 @@ const rayRectIntersection = (cx: number, cy: number, width: number, height: numb
   return intersections[0]?.point ?? { x: cx, y: cy };
 };
 
-const toPercent = (value: number, max: number) => `${(value / max) * 100}%`;
-const pointToClip = (p: Point, w: number, h: number) => `${toPercent(p.x, w)} ${toPercent(p.y, h)}`;
-
-const polygonForSector = (sector: Sector, size: Size) => {
+const buildSectorShape = (sector: Sector, size: Size): SectorShape => {
   const { width, height } = size;
   const cx = width / 2;
   const cy = height / 2;
   const pStart = rayRectIntersection(cx, cy, width, height, sector.start);
   const pEnd = rayRectIntersection(cx, cy, width, height, sector.end);
   const corners = rectCornersClockwise(width, height).filter((corner) => isBetweenCCW(angleFromCenter(corner, cx, cy), sector.start, sector.end));
-  return `polygon(${[pStart, ...corners, pEnd, { x: cx, y: cy }].map((point) => pointToClip(point, width, height)).join(",")})`;
-};
+  const points = [pStart, ...corners, pEnd, { x: cx, y: cy }];
+  const clipPath = `polygon(${points.map((point) => `${toPercent(point.x, width)} ${toPercent(point.y, height)}`).join(",")})`;
 
-const labelPosition = (sector: Sector, size: Size, holeRadius: number) => {
-  const mid = normalize(sector.start + (((sector.end - sector.start) % 360) + 360) / 2);
-  const span = ((sector.end - sector.start) % 360 + 360) % 360;
-  const distance = holeRadius + Math.min(size.width, size.height) * (span >= 90 ? 0.24 : 0.18);
-  const rad = toMathRad(mid);
+  const minX = Math.min(...points.map((p) => p.x));
+  const maxX = Math.max(...points.map((p) => p.x));
+  const minY = Math.min(...points.map((p) => p.y));
+  const maxY = Math.max(...points.map((p) => p.y));
+
   return {
-    left: `${((size.width / 2 + Math.cos(rad) * distance) / size.width) * 100}%`,
-    top: `${((size.height / 2 + Math.sin(rad) * distance) / size.height) * 100}%`
+    ...sector,
+    clipPath,
+    labelPos: {
+      left: `${((minX + maxX) / 2 / width) * 100}%`,
+      top: `${((minY + maxY) / 2 / height) * 100}%`
+    }
   };
 };
 
@@ -125,10 +132,7 @@ export function HomeSectorsDesktop() {
   const centerDiameter = holeRadius * 2;
   const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 1}px)`;
 
-  const shaped = useMemo(
-    () => sectors.map((sector) => ({ ...sector, clipPath: polygonForSector(sector, size), labelPos: labelPosition(sector, size, holeRadius) })),
-    [holeRadius, size]
-  );
+  const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
 
   const trigger = (target: number | "center", href: string) => {
     if (active !== null) return;
@@ -167,29 +171,24 @@ export function HomeSectorsDesktop() {
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
             <span className="absolute inset-0" style={{ boxShadow: `inset 0 0 0 2px ${isHovered ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)"}` }} />
+            <span
+              className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
+              style={{
+                left: sector.labelPos.left,
+                top: sector.labelPos.top,
+                maxWidth: "80%",
+                textWrap: "balance",
+                textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
+                WebkitTextStroke: "3px rgba(0,0,0,0.65)",
+                paintOrder: "stroke"
+              }}
+            >
+              {sector.lines[0]}
+              {sector.lines[1] ? <><br />{sector.lines[1]}</> : null}
+            </span>
           </button>
         );
       })}
-
-      <div className="pointer-events-none absolute inset-0 z-10">
-        {shaped.map((sector) => (
-          <div
-            key={`label-${sector.id}`}
-            className="absolute -translate-x-1/2 -translate-y-1/2 text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
-            style={{
-              left: sector.labelPos.left,
-              top: sector.labelPos.top,
-              maxWidth: "clamp(180px,20vw,420px)",
-              textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
-              WebkitTextStroke: "3px rgba(0,0,0,0.65)",
-              paintOrder: "stroke"
-            }}
-          >
-            {sector.lines[0]}
-            {sector.lines[1] ? <><br />{sector.lines[1]}</> : null}
-          </div>
-        ))}
-      </div>
 
       <button
         type="button"
