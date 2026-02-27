@@ -6,6 +6,8 @@ import { useState } from "react";
 
 type MobileSlot = { label: string; href: string };
 
+const ROWS = "12.5fr 21fr 21fr 12.5fr 12.5fr 12.5fr";
+
 const slots: MobileSlot[] = [
   { label: "Доступные картины", href: "/available" },
   { label: "Роспись стен и мебели", href: "/walls" },
@@ -29,7 +31,7 @@ export function HomeSectorsMobile() {
 
   return (
     <section className="relative h-[calc(100dvh-var(--nav-height-mobile))] w-full overflow-hidden lg:hidden" aria-label="Мобильные разделы">
-      <div className="absolute inset-0 grid" style={{ gridTemplateRows: "12.5fr 21fr 21fr 12.5fr 12.5fr 12.5fr" }}>
+      <div className="absolute inset-0 grid" style={{ gridTemplateRows: ROWS }}>
         {slots.map((slot, index) => {
           const isDim = active !== null && active !== index;
           const isActive = active === index;
@@ -47,7 +49,9 @@ export function HomeSectorsMobile() {
                 paddingLeft: centered.has(index) ? "1rem" : "56%"
               }}
             >
-              <span className="pointer-events-none absolute inset-0" style={{ boxShadow: "inset 0 0 0 3px #42545f", clipPath: "polygon(50% 0, 100% 0, 100% 100%, 50% 100%)" }} />
+              <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+                <path d="M 50 0 L 100 0 L 100 100 L 50 100 Z" fill="none" stroke="#42545f" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+              </svg>
               <span className="pointer-events-none text-2xl leading-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.75)]">{slot.label}</span>
             </button>
           );

@@ -157,6 +157,7 @@ export function HomeSectorsDesktop() {
         const isDim = active !== null && active !== sector.id;
         const isHovered = hovered === sector.id;
         const offset = LABEL_OFFSET[sector.id] ?? { dx: 0, dy: 0 };
+        const maskId = `sector-border-hole-mask-${sector.id}`;
 
         return (
           <button
@@ -182,6 +183,27 @@ export function HomeSectorsDesktop() {
               <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
+
+            <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden>
+              <defs>
+                <mask id={maskId} x="0" y="0" width={size.width} height={size.height} maskUnits="userSpaceOnUse">
+                  <rect x="0" y="0" width={size.width} height={size.height} fill="white" />
+                  <circle cx={size.width / 2} cy={size.height / 2} r={holeRadius} fill="black" />
+                </mask>
+              </defs>
+              <g mask={`url(#${maskId})`}>
+                <path
+                  d={pointsToPath(sector.points)}
+                  fill="none"
+                  stroke={isHovered ? "#9c0f06" : "#42545f"}
+                  strokeWidth={isHovered ? 6 : 3}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+            </svg>
+
             <span
               className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
               style={{
@@ -203,29 +225,6 @@ export function HomeSectorsDesktop() {
         );
       })}
 
-      <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden>
-        <defs>
-          <mask id="desktop-sector-hole-mask" x="0" y="0" width={size.width} height={size.height} maskUnits="userSpaceOnUse">
-            <rect x="0" y="0" width={size.width} height={size.height} fill="white" />
-            <circle cx={size.width / 2} cy={size.height / 2} r={holeRadius} fill="black" />
-          </mask>
-        </defs>
-        <g mask="url(#desktop-sector-hole-mask)">
-          {shaped.map((sector) => (
-            <path
-              key={`border-${sector.id}`}
-              d={pointsToPath(sector.points)}
-              fill="none"
-              stroke={hovered === sector.id ? "#9c0f06" : "#42545f"}
-              strokeWidth={hovered === sector.id ? 6 : 3}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          ))}
-        </g>
-      </svg>
-
       <button
         type="button"
         onMouseEnter={() => setHovered("center")}
@@ -245,7 +244,7 @@ export function HomeSectorsDesktop() {
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
         <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
         <div className="absolute inset-0" style={{ zIndex: 3 }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-cover" />
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
         <span
           className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
