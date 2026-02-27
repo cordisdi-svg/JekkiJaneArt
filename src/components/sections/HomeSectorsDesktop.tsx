@@ -32,12 +32,12 @@ const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
 };
 
 const DESKTOP_SECTORS: Sector[] = [
-  { id: 1, lines: ["Доступные", "картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -140, end: -40 },
-  { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/1.png", start: -40, end: 0 },
-  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/3-(tech).png", start: 0, end: 40 },
-  { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 40, end: 140 },
-  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/1-(tech).png", start: 140, end: 180 },
-  { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/custom-paintings", imageSrc: "/picstoorder/pic2.JPG", start: -180, end: -140 }
+  { id: 1, lines: ["Доступные", "картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -148, end: -32 },
+  { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/1.png", start: -32, end: 0 },
+  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/3-(tech).png", start: 0, end: 32 },
+  { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
+  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/1-(tech).png", start: 148, end: 180 },
+  { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/custom-paintings", imageSrc: "/picstoorder/pic2.JPG", start: -180, end: -148 }
 ];
 
 const rectCornersClockwise = (w: number, h: number): Point[] => [
@@ -181,7 +181,7 @@ export function HomeSectorsDesktop() {
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
             <span
               className="absolute inset-0 pointer-events-none transition-all duration-200"
-              style={{ boxSizing: "border-box", border: `${isHovered ? 6 : 3}px solid ${isHovered ? "#9c0f06" : "#42545f"}`, clipPath: "inherit", WebkitClipPath: "inherit", zIndex: 2 }}
+              style={{ boxShadow: `inset 0 0 0 ${isHovered ? 6 : 3}px ${isHovered ? "#9c0f06" : "#42545f"}`, clipPath: "inherit", WebkitClipPath: "inherit", zIndex: 2 }}
             />
             <span
               className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
@@ -223,10 +223,10 @@ export function HomeSectorsDesktop() {
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
         <span
           className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200"
-          style={{ boxSizing: "border-box", border: `${hovered === "center" ? 6 : 3}px solid ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }}
+          style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }}
         />
         <div className="absolute inset-0" style={{ zIndex: 3 }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-cover" />
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="scale-105 object-cover" />
         </div>
         <span
           className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"

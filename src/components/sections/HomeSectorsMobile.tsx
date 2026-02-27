@@ -47,6 +47,7 @@ export function HomeSectorsMobile() {
                 paddingLeft: centered.has(index) ? "1rem" : "56%"
               }}
             >
+              <span className="pointer-events-none absolute inset-0" style={{ boxShadow: "inset 0 0 0 3px #42545f" }} />
               <span className="pointer-events-none text-2xl leading-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.75)]">{slot.label}</span>
             </button>
           );
@@ -70,7 +71,7 @@ export function HomeSectorsMobile() {
             opacity: active !== null && active !== "center" ? 0.35 : 1
           }}
         >
-          <span className="pointer-events-none absolute inset-0" style={{ boxSizing: "border-box", border: "3px solid #42545f" }} />
+          <span className="pointer-events-none absolute inset-0" style={{ boxShadow: "inset 0 0 0 3px #42545f" }} />
         </button>
       </div>
     </section>
