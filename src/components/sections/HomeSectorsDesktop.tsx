@@ -20,6 +20,7 @@ type Size = { width: number; height: number };
 type SectorShape = Sector & {
   clipPath: string;
   labelPos: { left: string; top: string };
+  points: Point[];
 };
 
 const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
@@ -56,6 +57,7 @@ const normalize = (angle: number) => {
 
 const toMathRad = (angle: number) => (angle * Math.PI) / 180;
 const toPercent = (value: number, max: number) => `${(value / max) * 100}%`;
+const pointsToPath = (points: Point[]) => `M ${points.map((p) => `${p.x} ${p.y}`).join(" L ")} Z`;
 
 const angleFromCenter = (p: Point, cx: number, cy: number) => normalize((Math.atan2(p.y - cy, p.x - cx) * 180) / Math.PI);
 
@@ -113,6 +115,7 @@ const buildSectorShape = (sector: Sector, size: Size): SectorShape => {
   return {
     ...sector,
     clipPath,
+    points,
     labelPos: {
       left: `${((minX + maxX) / 2 / width) * 100}%`,
       top: `${((minY + maxY) / 2 / height) * 100}%`
@@ -138,7 +141,7 @@ export function HomeSectorsDesktop() {
   }, []);
 
   const holeRadius = Math.min(size.width, size.height) * 0.27;
-  const centerDiameter = holeRadius * 2;
+  const centerDiameter = holeRadius * 2 * 1.05;
   const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 1}px)`;
   const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
 
@@ -149,7 +152,7 @@ export function HomeSectorsDesktop() {
   };
 
   return (
-    <section ref={hostRef} className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full overflow-hidden lg:block" aria-label="Главные разделы">
+    <section ref={hostRef} className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full lg:block" aria-label="Главные разделы">
       {shaped.map((sector) => {
         const isDim = active !== null && active !== sector.id;
         const isHovered = hovered === sector.id;
@@ -180,10 +183,6 @@ export function HomeSectorsDesktop() {
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
             <span
-              className="absolute inset-0 pointer-events-none transition-all duration-200"
-              style={{ boxShadow: `inset 0 0 0 ${isHovered ? 6 : 3}px ${isHovered ? "#9c0f06" : "#42545f"}`, clipPath: "inherit", WebkitClipPath: "inherit", zIndex: 2 }}
-            />
-            <span
               className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
               style={{
                 left: sector.labelPos.left,
@@ -204,13 +203,36 @@ export function HomeSectorsDesktop() {
         );
       })}
 
+      <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden>
+        <defs>
+          <mask id="desktop-sector-hole-mask" x="0" y="0" width={size.width} height={size.height} maskUnits="userSpaceOnUse">
+            <rect x="0" y="0" width={size.width} height={size.height} fill="white" />
+            <circle cx={size.width / 2} cy={size.height / 2} r={holeRadius} fill="black" />
+          </mask>
+        </defs>
+        <g mask="url(#desktop-sector-hole-mask)">
+          {shaped.map((sector) => (
+            <path
+              key={`border-${sector.id}`}
+              d={pointsToPath(sector.points)}
+              fill="none"
+              stroke={hovered === sector.id ? "#9c0f06" : "#42545f"}
+              strokeWidth={hovered === sector.id ? 6 : 3}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </g>
+      </svg>
+
       <button
         type="button"
         onMouseEnter={() => setHovered("center")}
         onMouseLeave={() => setHovered(null)}
         onClick={() => trigger("center", "/about")}
         aria-label="О художнице"
-        className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 border-0 bg-transparent p-0 outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
+        className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 border-0 bg-transparent p-0 outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
         style={{
           width: centerDiameter,
           height: centerDiameter,
@@ -221,12 +243,9 @@ export function HomeSectorsDesktop() {
         }}
       >
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
-        <span
-          className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200"
-          style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }}
-        />
+        <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
         <div className="absolute inset-0" style={{ zIndex: 3 }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="scale-105 object-cover" />
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-cover" />
         </div>
         <span
           className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
