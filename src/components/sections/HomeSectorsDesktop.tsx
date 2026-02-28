@@ -2,150 +2,265 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-type Sector = { id: number; label: string; href: string; start: number; end: number };
+type Sector = {
+  id: number;
+  lines: [string, string?];
+  ariaLabel: string;
+  href: string;
+  imageSrc: string;
+  start: number;
+  end: number;
+};
+
 type Point = { x: number; y: number };
+type Size = { width: number; height: number };
 
-const W = 1400;
-const H = 900;
-const CX = W / 2;
-const CY = H / 2;
-const CENTER_RADIUS = 309;
-const ICON_PADDING = 16;
+type SectorShape = Sector & {
+  clipPath: string;
+  labelPos: { left: string; top: string };
+  points: Point[];
+};
 
-const sectors: Sector[] = [
-  { id: 1, label: "Доступные картины", href: "/available", start: -30, end: 30 },
-  { id: 2, label: "Роспись стен и мебели", href: "/walls", start: 30, end: 90 },
-  { id: 3, label: "Роспись одежды и обуви", href: "/wear-and-shoes", start: 90, end: 150 },
-  { id: 4, label: "Картины-талиманы", href: "/amulets", start: 150, end: 210 },
-  { id: 5, label: "Тату эскизы", href: "/tattoo", start: 210, end: 270 },
-  { id: 6, label: "Картины на заказ", href: "/custom-paintings", start: 270, end: 330 }
+const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
+  1: { dx: 0, dy: -100 },
+  2: { dx: 100, dy: 80 },
+  3: { dx: 100, dy: -60 },
+  4: { dx: 0, dy: 90 },
+  5: { dx: -135, dy: -60 },
+  6: { dx: -135, dy: 80 }
+};
+
+const DESKTOP_SECTORS: Sector[] = [
+  { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", start: -148, end: -32 },
+  { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/tech.png", start: -32, end: 0 },
+  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", start: 0, end: 32 },
+  { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
+  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", start: 148, end: 180 },
+  { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/custom-paintings", imageSrc: "/picstoorder/pic1(tech).JPG", start: -180, end: -148 }
 ];
 
-const normalize = (angle: number) => ((angle % 360) + 360) % 360;
-
-const pointOnRay = (angle: number, r: number): Point => {
-  const rad = ((angle - 90) * Math.PI) / 180;
-  return { x: CX + Math.cos(rad) * r, y: CY + Math.sin(rad) * r };
-};
-
-const angleFromCenter = (p: Point) => normalize((Math.atan2(p.y - CY, p.x - CX) * 180) / Math.PI + 90);
-
-const rayRectIntersection = (angle: number): Point => {
-  const rad = ((angle - 90) * Math.PI) / 180;
-  const dx = Math.cos(rad);
-  const dy = Math.sin(rad);
-  const candidates: Point[] = [];
-
-  if (Math.abs(dx) > 1e-6) {
-    const tLeft = (0 - CX) / dx;
-    const yLeft = CY + tLeft * dy;
-    if (tLeft > 0 && yLeft >= 0 && yLeft <= H) candidates.push({ x: 0, y: yLeft });
-
-    const tRight = (W - CX) / dx;
-    const yRight = CY + tRight * dy;
-    if (tRight > 0 && yRight >= 0 && yRight <= H) candidates.push({ x: W, y: yRight });
-  }
-
-  if (Math.abs(dy) > 1e-6) {
-    const tTop = (0 - CY) / dy;
-    const xTop = CX + tTop * dx;
-    if (tTop > 0 && xTop >= 0 && xTop <= W) candidates.push({ x: xTop, y: 0 });
-
-    const tBottom = (H - CY) / dy;
-    const xBottom = CX + tBottom * dx;
-    if (tBottom > 0 && xBottom >= 0 && xBottom <= W) candidates.push({ x: xBottom, y: H });
-  }
-
-  return candidates[0] ?? { x: CX, y: CY };
-};
-
-const cornersClockwise: Point[] = [
-  { x: W, y: 0 },
-  { x: W, y: H },
-  { x: 0, y: H },
+const rectCornersClockwise = (w: number, h: number): Point[] => [
+  { x: w, y: 0 },
+  { x: w, y: h },
+  { x: 0, y: h },
   { x: 0, y: 0 }
 ];
 
-const withinClockwiseArc = (angle: number, start: number, end: number) => {
-  const a = normalize(angle);
-  const s = normalize(start);
-  const e = normalize(end);
-  return s <= e ? a >= s && a <= e : a >= s || a <= e;
+const normalize = (angle: number) => {
+  let value = angle;
+  while (value <= -180) value += 360;
+  while (value > 180) value -= 360;
+  return value;
 };
 
-const buildSectorPath = (start: number, end: number) => {
-  const cStart = pointOnRay(start, CENTER_RADIUS);
-  const cEnd = pointOnRay(end, CENTER_RADIUS);
-  const pStart = rayRectIntersection(start);
-  const pEnd = rayRectIntersection(end);
-  const corners = cornersClockwise.filter((corner) => withinClockwiseArc(angleFromCenter(corner), start, end));
-  const sweep = end - start >= 0 ? 1 : 0;
+const toMathRad = (angle: number) => (angle * Math.PI) / 180;
+const toPercent = (value: number, max: number) => `${(value / max) * 100}%`;
+const pointsToPath = (points: Point[]) => `M ${points.map((p) => `${p.x} ${p.y}`).join(" L ")} Z`;
 
-  return [
-    `M ${cStart.x} ${cStart.y}`,
-    `A ${CENTER_RADIUS} ${CENTER_RADIUS} 0 0 ${sweep} ${cEnd.x} ${cEnd.y}`,
-    `L ${pEnd.x} ${pEnd.y}`,
-    ...corners.map((c) => `L ${c.x} ${c.y}`),
-    `L ${pStart.x} ${pStart.y}`,
-    "Z"
-  ].join(" ");
+const angleFromCenter = (p: Point, cx: number, cy: number) => normalize((Math.atan2(p.y - cy, p.x - cx) * 180) / Math.PI);
+
+const isBetweenCCW = (angle: number, start: number, end: number) => {
+  const span = ((end - start) % 360 + 360) % 360;
+  const rel = ((angle - start) % 360 + 360) % 360;
+  return rel > 0 && rel < span;
+};
+
+const rayRectIntersection = (cx: number, cy: number, width: number, height: number, angle: number): Point => {
+  const rad = toMathRad(angle);
+  const dx = Math.cos(rad);
+  const dy = Math.sin(rad);
+  const intersections: Array<{ t: number; point: Point }> = [];
+
+  if (Math.abs(dx) > 1e-9) {
+    const tLeft = (0 - cx) / dx;
+    const yLeft = cy + tLeft * dy;
+    if (tLeft > 0 && yLeft >= 0 && yLeft <= height) intersections.push({ t: tLeft, point: { x: 0, y: yLeft } });
+
+    const tRight = (width - cx) / dx;
+    const yRight = cy + tRight * dy;
+    if (tRight > 0 && yRight >= 0 && yRight <= height) intersections.push({ t: tRight, point: { x: width, y: yRight } });
+  }
+
+  if (Math.abs(dy) > 1e-9) {
+    const tTop = (0 - cy) / dy;
+    const xTop = cx + tTop * dx;
+    if (tTop > 0 && xTop >= 0 && xTop <= width) intersections.push({ t: tTop, point: { x: xTop, y: 0 } });
+
+    const tBottom = (height - cy) / dy;
+    const xBottom = cx + tBottom * dx;
+    if (tBottom > 0 && xBottom >= 0 && xBottom <= width) intersections.push({ t: tBottom, point: { x: xBottom, y: height } });
+  }
+
+  intersections.sort((a, b) => a.t - b.t);
+  return intersections[0]?.point ?? { x: cx, y: cy };
+};
+
+const buildSectorShape = (sector: Sector, size: Size): SectorShape => {
+  const { width, height } = size;
+  const cx = width / 2;
+  const cy = height / 2;
+  const pStart = rayRectIntersection(cx, cy, width, height, sector.start);
+  const pEnd = rayRectIntersection(cx, cy, width, height, sector.end);
+  const corners = rectCornersClockwise(width, height).filter((corner) => isBetweenCCW(angleFromCenter(corner, cx, cy), sector.start, sector.end));
+  const points = [pStart, ...corners, pEnd, { x: cx, y: cy }];
+  const clipPath = `polygon(${points.map((point) => `${toPercent(point.x, width)} ${toPercent(point.y, height)}`).join(",")})`;
+
+  const minX = Math.min(...points.map((p) => p.x));
+  const maxX = Math.max(...points.map((p) => p.x));
+  const minY = Math.min(...points.map((p) => p.y));
+  const maxY = Math.max(...points.map((p) => p.y));
+
+  return {
+    ...sector,
+    clipPath,
+    points,
+    labelPos: {
+      left: `${((minX + maxX) / 2 / width) * 100}%`,
+      top: `${((minY + maxY) / 2 / height) * 100}%`
+    }
+  };
 };
 
 export function HomeSectorsDesktop() {
   const router = useRouter();
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<Size>({ width: 1280, height: 720 });
+  const [active, setActive] = useState<number | "center" | null>(null);
   const [hovered, setHovered] = useState<number | "center" | null>(null);
 
-  const shaped = useMemo(
-    () =>
-      sectors.map((sector) => {
-        const mid = normalize((sector.start + sector.end) / 2);
-        const labelPos = pointOnRay(mid, Math.min(W, H) * 0.44);
-        return { ...sector, path: buildSectorPath(sector.start, sector.end), labelPos };
-      }),
-    []
-  );
+  useEffect(() => {
+    const element = hostRef.current;
+    if (!element) return;
+    const update = () => setSize({ width: Math.max(element.clientWidth, 1), height: Math.max(element.clientHeight, 1) });
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const baseHoleRadius = Math.min(size.width, size.height) * 0.27;
+  const centerDiameter = baseHoleRadius * 2 * 1.05;
+  const holeRadius = Math.max(baseHoleRadius, centerDiameter / 2 + 6);
+  const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 4}px)`;
+  const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
+
+  const trigger = (target: number | "center", href: string) => {
+    if (active !== null) return;
+    setActive(target);
+    window.setTimeout(() => router.push(href), 1000);
+  };
 
   return (
-    <section className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full lg:block">
-      <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full">
-        {shaped.map((sector) => {
-          const isHovered = hovered === sector.id;
-          const dim = hovered !== null && hovered !== sector.id;
+    <section ref={hostRef} className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full lg:block" aria-label="Главные разделы">
+      {shaped.map((sector) => {
+        const isDim = active !== null && active !== sector.id;
+        const isHovered = hovered === sector.id;
+        const offset = LABEL_OFFSET[sector.id] ?? { dx: 0, dy: 0 };
+        const maskId = `sector-border-hole-mask-${sector.id}`;
 
-          return (
-            <g
-              key={sector.id}
-              className="cursor-pointer"
-              onMouseEnter={() => setHovered(sector.id)}
-              onMouseLeave={() => setHovered(null)}
-              onClick={() => router.push(sector.href)}
-              style={{ opacity: dim ? 0.28 : 1, transform: isHovered ? "translateY(-6px)" : "none", transition: "all .2s ease" }}
+        return (
+          <button
+            key={sector.id}
+            type="button"
+            onMouseEnter={() => setHovered(sector.id)}
+            onMouseLeave={() => setHovered(null)}
+            onClick={() => trigger(sector.id, sector.href)}
+            aria-label={sector.ariaLabel}
+            className="absolute inset-0 border-0 bg-transparent p-0 outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
+            style={{
+              zIndex: isHovered ? 6 : 2,
+              clipPath: sector.clipPath,
+              WebkitClipPath: sector.clipPath,
+              maskImage: sectorMask,
+              WebkitMaskImage: sectorMask,
+              overflow: "hidden",
+              opacity: isDim ? 0.3 : 1,
+              transform: isHovered ? "translateY(-10px) scale(1.01)" : "translateY(0) scale(1)",
+              filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
+            }}
+          >
+            <span className="absolute inset-0 opacity-0 transition-opacity duration-300" style={{ opacity: isHovered ? 1 : 0 }}>
+              <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
+            </span>
+            <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
+
+            <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden>
+              <defs>
+                <mask id={maskId} x="0" y="0" width={size.width} height={size.height} maskUnits="userSpaceOnUse">
+                  <rect x="0" y="0" width={size.width} height={size.height} fill="white" />
+                  <circle cx={size.width / 2} cy={size.height / 2} r={holeRadius} fill="black" />
+                </mask>
+              </defs>
+              <g mask={`url(#${maskId})`}>
+                <path
+                  d={pointsToPath(sector.points)}
+                  fill="none"
+                  stroke={isHovered ? "#9c0f06" : "#42545f"}
+                  strokeWidth={isHovered ? 6 : 3}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+            </svg>
+
+            <span
+              className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
+              style={{
+                left: sector.labelPos.left,
+                top: sector.labelPos.top,
+                transform: `translate(-50%, -50%) translate(${offset.dx}px, ${offset.dy}px)`,
+                maxWidth: "80%",
+                textWrap: "balance",
+                textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
+                WebkitTextStroke: "3px rgba(0,0,0,0.65)",
+                paintOrder: "stroke",
+                zIndex: 3
+              }}
             >
-              <path d={sector.path} fill={isHovered ? "rgba(255,255,255,0.13)" : "rgba(255,255,255,0.05)"} stroke={isHovered ? "#fff" : "rgba(255,255,255,0.78)"} strokeWidth={isHovered ? 4 : 2} />
-              <text x={sector.labelPos.x} y={sector.labelPos.y} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="42" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
-                {sector.label}
-              </text>
-            </g>
-          );
-        })}
-        <g className="cursor-pointer" onMouseEnter={() => setHovered("center")} onMouseLeave={() => setHovered(null)} onClick={() => router.push("/about")}>
-          <circle cx={CX} cy={CY} r={CENTER_RADIUS} fill="rgba(20,20,20,0.42)" stroke={hovered === "center" ? "#fff" : "rgba(255,255,255,0.72)"} strokeWidth={hovered === "center" ? 4 : 2} />
-          {hovered === "center" ? (
-            <text x={CX} y={CY + CENTER_RADIUS * 0.52} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="40" style={{ textShadow: "0 1px 2px rgba(0,0,0,.8)" }}>
-              О художнице
-            </text>
-          ) : null}
-        </g>
-      </svg>
+              {sector.lines[0]}
+              {sector.lines[1] ? <><br />{sector.lines[1]}</> : null}
+            </span>
+          </button>
+        );
+      })}
 
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ width: CENTER_RADIUS * 2 - ICON_PADDING * 2, height: CENTER_RADIUS * 2 - ICON_PADDING * 2 }}
+      <button
+        type="button"
+        onMouseEnter={() => setHovered("center")}
+        onMouseLeave={() => setHovered(null)}
+        onClick={() => trigger("center", "/about")}
+        aria-label="О художнице"
+        className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 border-0 bg-transparent p-0 outline-none transition-[transform,opacity,filter] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-white"
+        style={{
+          width: centerDiameter,
+          height: centerDiameter,
+          overflow: "visible",
+          opacity: active !== null && active !== "center" ? 0.35 : 1,
+          transform: hovered === "center" ? "translate(-50%,-50%) translateY(-10px) scale(1.01)" : "translate(-50%,-50%)",
+          filter: hovered === "center" ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
+        }}
       >
-        <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
-      </div>
+        <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
+        <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5, transform: "scale(1.15)", overflow: "visible" }}>
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
+        </div>
+        <span
+          className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
+          style={{
+            bottom: "15%",
+            opacity: hovered === "center" ? 1 : 0,
+            textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
+            WebkitTextStroke: "2px rgba(0,0,0,0.65)",
+            paintOrder: "stroke"
+          }}
+        >
+          О художнице
+        </span>
+      </button>
     </section>
   );
 }
