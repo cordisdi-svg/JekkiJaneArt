@@ -143,7 +143,7 @@ export function HomeSectorsDesktop() {
   const baseHoleRadius = Math.min(size.width, size.height) * 0.27;
   const centerDiameter = baseHoleRadius * 2 * 1.05;
   const holeRadius = Math.max(baseHoleRadius, centerDiameter / 2 + 2);
-  const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius}px)`;
+  const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 4}px)`;
   const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
 
   const trigger = (target: number | "center", href: string) => {
@@ -175,6 +175,7 @@ export function HomeSectorsDesktop() {
               WebkitClipPath: sector.clipPath,
               maskImage: sectorMask,
               WebkitMaskImage: sectorMask,
+              overflow: "hidden",
               opacity: isDim ? 0.3 : 1,
               transform: isHovered ? "translateY(-10px) scale(1.01)" : "translateY(0) scale(1)",
               filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
@@ -245,7 +246,7 @@ export function HomeSectorsDesktop() {
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: "#0b0b0b", zIndex: 1 }} />
         <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
         <div className="absolute inset-0" style={{ zIndex: 3 }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain scale-105" />
+          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain scale-[1.15]" />
         </div>
         <span
           className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
