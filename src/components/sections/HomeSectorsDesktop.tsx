@@ -33,12 +33,12 @@ const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
 };
 
 const DESKTOP_SECTORS: Sector[] = [
-  { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/(tech).JPEG", start: -148, end: -32 },
-  { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/1.png", start: -32, end: 0 },
-  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/3-(tech).png", start: 0, end: 32 },
+  { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", start: -148, end: -32 },
+  { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/tech.png", start: -32, end: 0 },
+  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", start: 0, end: 32 },
   { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
-  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/1-(tech).png", start: 148, end: 180 },
-  { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/custom-paintings", imageSrc: "/picstoorder/pic2.JPG", start: -180, end: -148 }
+  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", start: 148, end: 180 },
+  { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/custom-paintings", imageSrc: "/picstoorder/pic1(tech).JPG", start: -180, end: -148 }
 ];
 
 const rectCornersClockwise = (w: number, h: number): Point[] => [
@@ -141,8 +141,7 @@ export function HomeSectorsDesktop() {
   }, []);
 
   const baseHoleRadius = Math.min(size.width, size.height) * 0.27;
-  const centerScale = 1.15;
-  const centerDiameter = baseHoleRadius * 2 * 1.05 * centerScale;
+  const centerDiameter = baseHoleRadius * 2 * 1.05;
   const holeRadius = Math.max(baseHoleRadius, centerDiameter / 2 + 6);
   const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 4}px)`;
   const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
@@ -246,7 +245,7 @@ export function HomeSectorsDesktop() {
       >
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
         <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
-        <div className="absolute inset-0" style={{ zIndex: 3 }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5, transform: "scale(1.15)", overflow: "visible" }}>
           <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
         <span
