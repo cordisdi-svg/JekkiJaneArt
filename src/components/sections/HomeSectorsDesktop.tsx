@@ -21,11 +21,12 @@ type SectorShape = Sector & {
   clipPath: string;
   labelPos: { left: string; top: string };
   points: Point[];
+  boxPos: { left: string; top: string; width: string; height: string };
 };
 
 const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
   1: { dx: 0, dy: -100 },
-  2: { dx: 100, dy: 80 },
+  2: { dx: 100, dy: 40 }, // was 80, raised by 40px
   3: { dx: 100, dy: -60 },
   4: { dx: 0, dy: 90 },
   5: { dx: -135, dy: -60 },
@@ -112,13 +113,24 @@ const buildSectorShape = (sector: Sector, size: Size): SectorShape => {
   const minY = Math.min(...points.map((p) => p.y));
   const maxY = Math.max(...points.map((p) => p.y));
 
+  const boxWidth = maxX - minX;
+  const boxHeight = maxY - minY;
+  const boxCX = minX + boxWidth / 2;
+  const boxCY = minY + boxHeight / 2;
+
   return {
     ...sector,
     clipPath,
     points,
     labelPos: {
-      left: `${((minX + maxX) / 2 / width) * 100}%`,
-      top: `${((minY + maxY) / 2 / height) * 100}%`
+      left: `${(boxCX / width) * 100}%`,
+      top: `${(boxCY / height) * 100}%`
+    },
+    boxPos: {
+      left: `${(boxCX / width) * 100}%`,
+      top: `${(boxCY / height) * 100}%`,
+      width: `${(boxWidth / width) * 100}%`,
+      height: `${(boxHeight / height) * 100}%`
     }
   };
 };
@@ -142,8 +154,9 @@ export function HomeSectorsDesktop() {
 
   const baseHoleRadius = Math.min(size.width, size.height) * 0.27;
   const centerDiameter = baseHoleRadius * 2 * 1.05;
-  const holeRadius = Math.max(baseHoleRadius, centerDiameter / 2 + 6);
-  const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 4}px)`;
+  // Make the mask perfectly tight to the center circle
+  const holeRadius = centerDiameter / 2;
+  const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 1}px)`;
   const shaped = useMemo(() => DESKTOP_SECTORS.map((sector) => buildSectorShape(sector, size)), [size]);
 
   const trigger = (target: number | "center", href: string) => {
@@ -181,8 +194,19 @@ export function HomeSectorsDesktop() {
               filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
             }}
           >
-            <span className="absolute inset-0 opacity-0 transition-opacity duration-300" style={{ opacity: isHovered ? 1 : 0 }}>
-              <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
+            <span className="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none" style={{ opacity: isHovered ? 1 : 0 }}>
+              <div
+                className="absolute pointer-events-none"
+                style={{
+                  left: sector.boxPos.left,
+                  top: sector.boxPos.top,
+                  width: sector.boxPos.width,
+                  height: sector.boxPos.height,
+                  transform: "translate(-50%, -50%)"
+                }}
+              >
+                <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
+              </div>
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
 
@@ -245,13 +269,14 @@ export function HomeSectorsDesktop() {
       >
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
         <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5, transform: "scale(1.15)", overflow: "visible" }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5, transform: "scale(1.595)", overflow: "visible" }}>
           <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
         <span
-          className="pointer-events-none absolute left-1/2 z-[4] -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
           style={{
-            bottom: "15%",
+            bottom: "10%",
+            zIndex: 6,
             opacity: hovered === "center" ? 1 : 0,
             textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
             WebkitTextStroke: "2px rgba(0,0,0,0.65)",
