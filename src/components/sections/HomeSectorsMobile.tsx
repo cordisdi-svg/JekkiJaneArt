@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type MobileSlot = { label: string; href: string };
 
-const ROWS = "12.5fr 21fr 21fr 12.5fr 12.5fr 12.5fr";
+const ROW_WEIGHTS = [12.5, 21, 21, 12.5, 12.5, 12.5] as const;
+const TOTAL = ROW_WEIGHTS.reduce((a, b) => a + b, 0);
 
 const slots: MobileSlot[] = [
   { label: "Доступные картины", href: "/available" },
@@ -23,6 +24,16 @@ export function HomeSectorsMobile() {
   const router = useRouter();
   const [active, setActive] = useState<number | "center" | null>(null);
 
+  const rows = useMemo(() => {
+    let acc = 0;
+    return ROW_WEIGHTS.map((weight) => {
+      const top = (acc / TOTAL) * 100;
+      const height = (weight / TOTAL) * 100;
+      acc += weight;
+      return { top, height };
+    });
+  }, []);
+
   const trigger = (target: number | "center", href: string) => {
     if (active !== null) return;
     setActive(target);
@@ -31,7 +42,7 @@ export function HomeSectorsMobile() {
 
   return (
     <section className="relative h-full w-full overflow-hidden lg:hidden" aria-label="Мобильные разделы">
-      <div className="absolute inset-0 grid" style={{ gridTemplateRows: ROWS }}>
+      <div className="absolute inset-0">
         {slots.map((slot, index) => {
           const isDim = active !== null && active !== index;
           const isActive = active === index;
@@ -41,8 +52,10 @@ export function HomeSectorsMobile() {
               type="button"
               onClick={() => trigger(index, slot.href)}
               aria-label={slot.label}
-              className="relative w-full border-0 text-white transition-opacity duration-200"
+              className="absolute left-0 w-full border-0 text-white transition-opacity duration-200"
               style={{
+                top: `${rows[index].top}%`,
+                height: `${rows[index].height}%`,
                 opacity: isDim ? 0.32 : 1,
                 backgroundColor: isActive ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.07)",
                 textAlign: centered.has(index) ? "center" : "left",
@@ -62,13 +75,10 @@ export function HomeSectorsMobile() {
             <circle cx="25" cy="50" r="25" fill="black" />
           </mask>
         </defs>
-        <g mask="url(#mobile-slot-border-cutout)" fill="none" stroke="#42545f" strokeWidth="3" vectorEffect="non-scaling-stroke">
-          <rect x="0" y="0" width="100" height="13.5135135" />
-          <rect x="0" y="13.5135135" width="100" height="22.7027027" />
-          <rect x="0" y="36.2162162" width="100" height="22.7027027" />
-          <rect x="0" y="58.9189189" width="100" height="13.5135135" />
-          <rect x="0" y="72.4324324" width="100" height="13.5135135" />
-          <rect x="0" y="85.9459459" width="100" height="14.0540541" />
+        <g mask="url(#mobile-slot-border-cutout)" fill="none" stroke="#42545f" strokeWidth="1.5" vectorEffect="non-scaling-stroke">
+          {rows.map((row, idx) => (
+            <rect key={`mobile-border-${idx}`} x="0" y={row.top} width="100" height={row.height} />
+          ))}
         </g>
       </svg>
 
