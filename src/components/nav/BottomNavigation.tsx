@@ -32,7 +32,7 @@ export function BottomNavigation() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 z-[100] w-full bg-[#455158]" aria-label="Bottom navigation">
+    <nav className="fixed bottom-0 left-0 z-[100] w-full" style={{ background: "rgba(30,22,40,0.72)", backdropFilter: "blur(14px) saturate(1.4)", WebkitBackdropFilter: "blur(14px) saturate(1.4)", borderTop: "1px solid rgba(255,255,255,0.12)" }} aria-label="Bottom navigation">
       <div className="hidden h-[var(--nav-height-desktop)] w-full lg:flex">
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
           <Triangle direction="left" />

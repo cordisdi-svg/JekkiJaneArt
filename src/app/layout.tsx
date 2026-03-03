@@ -11,10 +11,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <ModalProvider>
           <div className="min-h-screen">
-            <main className="pb-[calc(var(--nav-height-mobile)+env(safe-area-inset-bottom))] lg:pb-[var(--nav-height-desktop)]">
+            <main className="w-full">
               {children}
             </main>
             <BottomNavigation />
