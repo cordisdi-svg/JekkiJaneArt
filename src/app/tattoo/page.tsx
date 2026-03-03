@@ -8,7 +8,7 @@ export default function TattooPage() {
       <div className="relative h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)] lg:pb-[var(--nav-height-desktop)]">
 
         {/* Desktop only — left image + right carousel */}
-        <div className="hidden md:flex flex-row gap-4 px-4 pb-2 w-full h-full overflow-hidden">
+        <div className="hidden md:flex flex-row gap-4 px-4 w-full h-full">
 
           {/* Left image: 1.png — gap-4 from all touching edges */}
           <div className="relative aspect-[3/4] flex-shrink-0 overflow-hidden rounded-2xl shadow-xl my-4">
