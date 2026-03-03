@@ -50,7 +50,7 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingItem; onClose: () =>
 
     return (
         <div
-            className="fixed inset-0 flex flex-col md:flex-row items-center justify-center gap-[4vh] md:gap-[6svh] w-full h-full mx-auto max-w-[1600px] pt-[5vh] px-[2.5vh] pb-[max(5vh,env(safe-area-inset-bottom)+20px)] md:py-[3svh] md:px-[18svh]"
+            className="fixed inset-0 flex flex-col md:flex-row items-center justify-center p-[5vh] md:p-[6svh] pb-[max(5vh,env(safe-area-inset-bottom)+20px)] gap-[4vh] md:gap-[6svh] w-full h-full mx-auto max-w-[1600px]"
             style={{ zIndex: 9999 }}
             onClick={onClose}
         >

@@ -4,24 +4,28 @@ import { WallsMarquee } from "@/components/carousel/WallsMarquee";
 export default function WallsPage() {
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
-      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+      {/* Constraints exactly to the viewport boundary to stop scrolling on mobile */}
+      <div className="relative flex h-[100svh] w-full flex-col items-center justify-center overflow-hidden pb-[var(--nav-height-mobile)] lg:pb-[var(--nav-height-desktop)]">
 
-        {/* Background Marquee */}
-        <div className="absolute inset-0 z-0 flex items-center pb-[env(safe-area-inset-bottom)] pt-[80px]">
+        {/* Background Marquee centered exactly in active physical zone */}
+        <div className="absolute top-0 left-0 right-0 bottom-[var(--nav-height-mobile)] lg:bottom-[var(--nav-height-desktop)] z-0 flex items-center justify-center pointer-events-none">
           <WallsMarquee />
         </div>
 
         {/* Foreground Overlay Layer matching the required text box */}
-        <div className="relative z-10 w-[92%] sm:w-[500px] md:w-[680px] h-auto min-h-[520px] rounded-3xl bg-black/60 backdrop-blur-xl border border-white/15 p-6 md:p-10 shadow-2xl flex flex-col">
-          <h1 className="text-[20px] md:text-2xl font-bold text-center tracking-wide uppercase mb-6 md:mb-8 text-white/95">
-            Художественная роспись интерьера
-          </h1>
+        <div className="relative z-10 w-[78%] sm:w-[500px] md:w-[610px] h-auto flex flex-col justify-center bg-transparent border-none shadow-none md:my-auto shrink-0 z-20">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6 md:mb-8 text-[13px] md:text-[15px] leading-relaxed">
+          <div className="bg-black/15 backdrop-blur-md rounded-xl p-3 md:p-4 mb-4 border border-white/10 w-full shrink-0 shadow-xl">
+            <h1 className="text-[17px] sm:text-[20px] md:text-2xl font-bold text-center tracking-wide uppercase text-white/95 m-0">
+              Художественная роспись интерьера
+            </h1>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 md:gap-8 mb-4 text-[12px] md:text-[15px] leading-tight shrink-0">
             {/* Left column */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2 bg-black/15 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full shadow-xl">
               <p className="font-semibold text-white/95 border-b border-white/20 pb-2 w-max">Роспись стен для:</p>
-              <ul className="list-none flex flex-col gap-[6px] text-white/85">
+              <ul className="list-none flex flex-col gap-[4px] text-white/85">
                 <li>- квартир</li>
                 <li>- студий</li>
                 <li>- салонов</li>
@@ -31,10 +35,10 @@ export default function WallsPage() {
             </div>
 
             {/* Right column */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2 bg-black/15 backdrop-blur-md rounded-xl p-4 border border-white/10 h-full shadow-xl">
               <p className="font-semibold text-white/95 border-b border-white/20 pb-2 w-max">Этапы:</p>
-              <ul className="list-none flex flex-col gap-[6px] text-white/85">
-                <li>- Выезд / обсуждение по фото</li>
+              <ul className="list-none flex flex-col gap-[4px] text-white/85">
+                <li>- Выезд / обсуждение</li>
                 <li>- Подготовка эскиза</li>
                 <li>- Утверждение</li>
                 <li>- Реализация</li>
@@ -43,22 +47,20 @@ export default function WallsPage() {
           </div>
 
           {/* Bottom section */}
-          <div className="mt-auto flex flex-col gap-5 text-[13px] md:text-[15px] border-t border-white/20 pt-6">
-            <p className="text-white/95 leading-relaxed">
-              Кастомизация мебели или других объектов в вашем пространстве.<br className="hidden md:block" />
+          <div className="bg-black/15 backdrop-blur-md rounded-xl p-4 flex flex-col gap-4 text-[12px] md:text-[15px] border border-white/10 shrink-0 mb-auto md:mb-0 shadow-xl">
+            <p className="text-white/95 leading-tight">
+              Кастомизация мебели или других объектов в вашем пространстве.
+            </p>
+            <p className="text-white/95 leading-tight">
               Работа выполняется под стиль интерьера и задачи помещения.
             </p>
 
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold text-white/95">Стоимость:</p>
-              <p className="text-white/85">от 10 000 ₽ — зависит от сложности и объема</p>
-            </div>
-
-            <div className="flex flex-col gap-1 text-white/70 text-xs md:text-sm mt-2">
-              <p>Больше примеров работ по запросу</p>
-              <p className="italic">Если есть вопросы перед работой — задай</p>
+            <div className="flex justify-between items-center p-0 rounded-lg">
+              <p className="font-semibold text-white/95 shrink-0 pr-2">Стоимость:</p>
+              <p className="text-white/85 text-right">от 10 000 ₽ — зависит от сложности и объема</p>
             </div>
           </div>
+
         </div>
 
       </div>
