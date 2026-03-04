@@ -22,16 +22,23 @@ export default function TattooPage() {
             />
           </div>
 
-          {/* Right zone: 3D carousel fills all remaining space */}
-          <div className="flex-1 h-full">
+          {/* Right zone: translateY(-8px) lifts the entire carousel object intact, creating gap-2 above nav */}
+          <div className="flex-1 h-full" style={{ transform: 'translateY(-8px)' }}>
             <TattooCarousel />
           </div>
 
         </div>
 
-        {/* Mobile stub — TODO */}
-        <div className="md:hidden flex items-center justify-center h-full text-white text-sm opacity-50">
-          Раздел в разработке
+        {/* Mobile — 1-mobile.png as background + 3D carousel */}
+        <div
+          className="md:hidden relative h-full w-full overflow-hidden"
+          style={{
+            backgroundImage: "url('/tattoo/1-mobile.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <TattooCarousel mobile />
         </div>
 
       </div>

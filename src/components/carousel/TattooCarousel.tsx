@@ -6,13 +6,21 @@ import { useEffect, useRef, useCallback } from "react";
 const N = 9;
 const SPEED = (2 * Math.PI) / (20 * 60); // 20 sec/rev at 60fps
 
-// Ellipse fractions of container
+// ── Desktop ellipse fractions ──────────────────────────────────────────────
 const CX_F = 0.50;
-const CY_F = 0.58;
+const CY_F = 0.54;
 const AX_F = 0.42;
 const AY_F = 0.28;
 const MAX_SCALE = 1.0;
 const MIN_SCALE = 0.28;
+
+// ── Mobile ellipse fractions (horizontal orbit intentionally extends off-screen) ─
+const M_CX_F = 0.50;
+const M_CY_F = 0.52;
+const M_AX_F = 0.38;
+const M_AY_F = 0.18;
+const M_MAX_SCALE = 1.0;
+const M_MIN_SCALE = 0.20;
 
 const IMGS = [
     '/tattoo/tattoo1.jpg', '/tattoo/tattoo2.jpg', '/tattoo/tattoo3.jpg',
@@ -22,10 +30,10 @@ const IMGS = [
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 
-function TextContent() {
+function TextContent({ mobile = false }: { mobile?: boolean }) {
     return (
         <div className="flex flex-col gap-2 text-white text-[13px] lg:text-[15px] leading-relaxed h-full">
-            <p className="font-bold text-[14px] lg:text-[16px] text-white/95">
+            <p className={`font-bold text-[13px] lg:text-[14px] text-white/95${mobile ? '' : ' whitespace-nowrap'}`}>
                 Индивидуальный эскиз татуировки по вашему запросу.
             </p>
             <div className="flex flex-col gap-1">
@@ -45,7 +53,7 @@ function TextContent() {
     );
 }
 
-export function TattooCarousel() {
+export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const imgRefs = useRef<(HTMLDivElement | null)[]>(Array(N).fill(null));
     const angleRef = useRef(0);
@@ -61,9 +69,18 @@ export function TattooCarousel() {
         const container = containerRef.current;
         if (!container) return;
 
+        // Select constants based on device type
+        const cx_f = mobile ? M_CX_F : CX_F;
+        const cy_f = mobile ? M_CY_F : CY_F;
+        const ax_f = mobile ? M_AX_F : AX_F;
+        const ay_f = mobile ? M_AY_F : AY_F;
+        const max_s = mobile ? M_MAX_SCALE : MAX_SCALE;
+        const min_s = mobile ? M_MIN_SCALE : MIN_SCALE;
+        const img_w_f = mobile ? 0.30 : 0.22;
+
         // Set base image dimensions once from container width
         const initW = container.offsetWidth;
-        const baseW = Math.round(initW * 0.22);
+        const baseW = Math.round(initW * img_w_f);
         const baseH = Math.round(baseW * 4 / 3);
         halfWRef.current = baseW / 2;
         halfHRef.current = baseH / 2;
@@ -78,10 +95,10 @@ export function TattooCarousel() {
 
             const W = container.offsetWidth;
             const H = container.offsetHeight;
-            const cx = CX_F * W;
-            const cy = CY_F * H;
-            const ax = AX_F * W;
-            const ay = AY_F * H;
+            const cx = cx_f * W;
+            const cy = cy_f * H;
+            const ax = ax_f * W;
+            const ay = ay_f * H;
             const hW = halfWRef.current;
             const hH = halfHRef.current;
 
@@ -94,11 +111,10 @@ export function TattooCarousel() {
                 const y = cy + ay * cosθ;
                 const t = (1 + cosθ) / 2; // 0 = back/top, 1 = front/bottom
 
-                const scale = lerp(MIN_SCALE, MAX_SCALE, t);
+                const scale = lerp(min_s, max_s, t);
                 const opacity = lerp(0.4, 1.0, t);
                 const zIndex = Math.round(t * 100);
 
-                // translate to position center at (x,y), then scale from that center
                 el.style.transform = `translate(${x - hW}px, ${y - hH}px) scale(${scale})`;
                 el.style.opacity = `${opacity}`;
                 el.style.zIndex = `${zIndex}`;
@@ -109,19 +125,25 @@ export function TattooCarousel() {
 
         rafRef.current = requestAnimationFrame(step);
         return () => cancelAnimationFrame(rafRef.current);
-    }, []);
+    }, [mobile]);
+
+    /*
+     * Ellipse math:
+     *   x(θ) = cx + ax·sin(θ)    [center at cx, right at θ=π/2]
+     *   y(θ) = cy + ay·cos(θ)    [spotlight bottom at θ=0, back/top at θ=π]
+     *   t = (1+cos(θ))/2         [0=back, 1=front]
+     *
+     * Text zone z-index = 50.
+     * Images at t<0.5 (top arc) → zIndex<50 → appear BEHIND text zone.
+     * Images at t>0.5 (bottom arc) → zIndex>50 → appear IN FRONT.
+     */
+
+    // Textbox positioning — desktop keeps original centre-ish position, expanded ±30px
+    const textboxStyle = mobile
+        ? { top: '3%', left: '5%', width: '90%', zIndex: 50 }
+        : { top: '5%', left: 'calc(27.5% - 25px)', width: 'calc(45% + 50px)', height: 'calc(37.4% + 50px)', zIndex: 50 };
 
     return (
-        /*
-         * Ellipse math:
-         *   x(θ) = cx + ax·sin(θ)    [center at cx, right at θ=π/2]
-         *   y(θ) = cy + ay·cos(θ)    [spotlight bottom at θ=0, back/top at θ=π]
-         *   t = (1+cos(θ))/2         [0=back, 1=front]
-         *
-         * Text zone z-index = 50.
-         * Images at t<0.5 (top arc) → zIndex<50 → appear BEHIND text zone.
-         * Images at t>0.5 (bottom arc) → zIndex>50 → appear IN FRONT.
-         */
         <div
             ref={containerRef}
             className="relative w-full h-full overflow-hidden"
@@ -131,9 +153,9 @@ export function TattooCarousel() {
             {/* Text zone — z-index 50 acts as visual curtain */}
             <div
                 className="absolute bg-black/15 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl p-4 lg:p-5"
-                style={{ top: '5%', left: '27.5%', width: '45%', height: 'calc(37.4% + 50px)', zIndex: 50 }}
+                style={textboxStyle}
             >
-                <TextContent />
+                <TextContent mobile={mobile} />
             </div>
 
             {/* 9 carousel images — z-index 0-100 computed in RAF */}
@@ -149,7 +171,7 @@ export function TattooCarousel() {
                         alt={`Тату ${i + 1}`}
                         fill
                         className="object-cover"
-                        sizes="20vw"
+                        sizes="(max-width: 768px) 55vw, 20vw"
                     />
                 </div>
             ))}
