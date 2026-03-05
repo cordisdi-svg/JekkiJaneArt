@@ -61,13 +61,11 @@ const NAV_BLUR = "blur(14px) saturate(1.4)";
 
 // ─── desktop accordion panel ────────────────────────────────────────────────
 function DesktopPanel({
-    id,
     text,
     buttonRef,
     onCollapseDone,
     closing,
 }: {
-    id: string;
     text: string;
     buttonRef: React.RefObject<HTMLButtonElement | null>;
     onCollapseDone: () => void;
@@ -311,7 +309,6 @@ export default function PicsToOrderPage() {
                 {(desktopOpen || desktopClosing) && activeDesktopBtn?.text && (
                     <DesktopPanel
                         key={desktopOpen ?? desktopClosing}
-                        id={activeDesktopBtn.id}
                         text={activeDesktopBtn.text}
                         buttonRef={btnRefs.current[(desktopOpen ?? desktopClosing)!] as React.RefObject<HTMLButtonElement | null>}
                         closing={!!desktopClosing}
