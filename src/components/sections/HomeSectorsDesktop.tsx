@@ -43,10 +43,10 @@ const DESKTOP_SECTORS: Sector[] = [
 ];
 
 const rectCornersClockwise = (w: number, h: number): Point[] => [
-  { x: w, y: 0 },
-  { x: w, y: h },
-  { x: 0, y: h },
-  { x: 0, y: 0 }
+  { x: w + 20, y: -20 },
+  { x: w + 20, y: h + 20 },
+  { x: -20, y: h + 20 },
+  { x: -20, y: -20 }
 ];
 
 const normalize = (angle: number) => {
@@ -68,30 +68,35 @@ const isBetweenCCW = (angle: number, start: number, end: number) => {
   return rel > 0 && rel < span;
 };
 
-const rayRectIntersection = (cx: number, cy: number, width: number, height: number, angle: number): Point => {
+const rayRectIntersection = (cx: number, cy: number, w: number, h: number, angle: number): Point => {
   const rad = toMathRad(angle);
   const dx = Math.cos(rad);
   const dy = Math.sin(rad);
   const intersections: Array<{ t: number; point: Point }> = [];
 
-  if (Math.abs(dx) > 1e-9) {
-    const tLeft = (0 - cx) / dx;
-    const yLeft = cy + tLeft * dy;
-    if (tLeft > 0 && yLeft >= 0 && yLeft <= height) intersections.push({ t: tLeft, point: { x: 0, y: yLeft } });
+  const left = -20;
+  const right = w + 20;
+  const top = -20;
+  const bottom = h + 20;
 
-    const tRight = (width - cx) / dx;
+  if (Math.abs(dx) > 1e-9) {
+    const tLeft = (left - cx) / dx;
+    const yLeft = cy + tLeft * dy;
+    if (tLeft > 0 && yLeft >= top && yLeft <= bottom) intersections.push({ t: tLeft, point: { x: left, y: yLeft } });
+
+    const tRight = (right - cx) / dx;
     const yRight = cy + tRight * dy;
-    if (tRight > 0 && yRight >= 0 && yRight <= height) intersections.push({ t: tRight, point: { x: width, y: yRight } });
+    if (tRight > 0 && yRight >= top && yRight <= bottom) intersections.push({ t: tRight, point: { x: right, y: yRight } });
   }
 
   if (Math.abs(dy) > 1e-9) {
-    const tTop = (0 - cy) / dy;
+    const tTop = (top - cy) / dy;
     const xTop = cx + tTop * dx;
-    if (tTop > 0 && xTop >= 0 && xTop <= width) intersections.push({ t: tTop, point: { x: xTop, y: 0 } });
+    if (tTop > 0 && xTop >= left && xTop <= right) intersections.push({ t: tTop, point: { x: xTop, y: top } });
 
-    const tBottom = (height - cy) / dy;
+    const tBottom = (bottom - cy) / dy;
     const xBottom = cx + tBottom * dx;
-    if (tBottom > 0 && xBottom >= 0 && xBottom <= width) intersections.push({ t: tBottom, point: { x: xBottom, y: height } });
+    if (tBottom > 0 && xBottom >= left && xBottom <= right) intersections.push({ t: tBottom, point: { x: xBottom, y: bottom } });
   }
 
   intersections.sort((a, b) => a.t - b.t);
@@ -194,7 +199,15 @@ export function HomeSectorsDesktop() {
               filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
             }}
           >
-            <span className="absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none" style={{ opacity: isHovered ? 1 : 0 }}>
+            <span
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                opacity: isHovered ? 1 : 0,
+                transitionProperty: "opacity",
+                transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+                transitionDuration: isHovered ? "300ms" : "3000ms"
+              }}
+            >
               <div
                 className="absolute pointer-events-none"
                 style={{
