@@ -13,7 +13,8 @@ function Triangle({ direction }: { direction: "left" | "right" }) {
 }
 
 function navCellClass(isActive: boolean) {
-  return `h-full w-full border-l border-white/20 text-white transition-colors hover:bg-white/10 ${isActive ? "bg-white/15 font-semibold" : "font-normal"}`;
+  return `h-full w-full border-l border-white/20 text-white/95 transition-colors hover:bg-white/10 ${isActive ? "bg-white/15" : ""
+    }`;
 }
 
 export function BottomNavigation() {
@@ -32,16 +33,27 @@ export function BottomNavigation() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 z-[100] w-full" style={{ background: "rgba(30,22,40,0.72)", backdropFilter: "blur(14px) saturate(1.4)", WebkitBackdropFilter: "blur(14px) saturate(1.4)", borderTop: "1px solid rgba(255,255,255,0.12)" }} aria-label="Bottom navigation">
+    <nav
+      className="fixed bottom-0 left-0 z-[100] w-full"
+      style={{
+        background: "rgba(0, 0, 0, 0.15)", // Matching walls page bg-black/15
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderTop: "1px solid rgba(255,255,255,0.12)",
+        fontFamily: "'RavenholmBold', serif",
+        letterSpacing: "0.02em",
+      }}
+      aria-label="Bottom navigation"
+    >
       <div className="hidden h-[var(--nav-height-desktop)] w-full lg:flex">
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
           <Triangle direction="left" />
         </button>
-        <button type="button" className={`${navCellClass(pathname === "/")} w-[16.25%]`} onClick={() => router.push("/")}>На главную</button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%]`} onClick={() => openModal("siteCreator")}>Создатель сайта</button>
-        <button type="button" className={`${navCellClass(false)} w-[25%] text-base`} onClick={() => openModal("order")}>Заказать</button>
-        <button type="button" className={`${navCellClass(pathname === "/reviews")} w-[16.25%]`} onClick={() => router.push("/reviews")}>Отзывы</button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%] border-r border-white/20`} onClick={() => openModal("certificates")}>Сертификаты</button>
+        <button type="button" className={`${navCellClass(pathname === "/")} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Создатель сайта</button>
+        <button type="button" className={`${navCellClass(false)} w-[25%] text-[clamp(16px,2.2vw,32px)] leading-none px-1`} onClick={() => openModal("order")}>Заказать</button>
+        <button type="button" className={`${navCellClass(pathname === "/reviews")} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => router.push("/reviews")}>Отзывы</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] border-r border-white/20 text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
         <button type="button" className="flex h-full w-[5%] items-center justify-center" onClick={handleNext} aria-label="Следующая страница">
           <Triangle direction="right" />
         </button>
@@ -49,13 +61,13 @@ export function BottomNavigation() {
 
       <div className="flex h-[var(--nav-height-mobile)] w-full flex-col lg:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="grid h-1/2 grid-cols-2">
-          <button type="button" className={`${navCellClass(false)} border-t border-white/20`} onClick={() => openModal("order")}>Заказать</button>
-          <button type="button" className={`${navCellClass(pathname === "/")} border-t border-white/20`} onClick={() => router.push("/")}>НА ГЛАВНУЮ</button>
+          <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(20px,6vw,28px)] leading-none px-1`} onClick={() => openModal("order")}>Заказать</button>
+          <button type="button" className={`${navCellClass(pathname === "/")} border-t border-white/20 text-[clamp(20px,6vw,28px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
         </div>
         <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
-          <button type="button" className={navCellClass(false)} onClick={() => openModal("certificates")}>Сертификаты</button>
-          <button type="button" className={navCellClass(pathname === "/reviews")} onClick={() => router.push("/reviews")}>Отзывы</button>
-          <button type="button" className={navCellClass(false)} onClick={() => openModal("siteCreator")}>Создатель сайта</button>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
+          <button type="button" className={`${navCellClass(pathname === "/reviews")} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={() => router.push("/reviews")}>Отзывы</button>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.8vw,20px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Создатель сайта</button>
         </div>
       </div>
     </nav>

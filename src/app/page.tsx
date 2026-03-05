@@ -4,11 +4,11 @@ import { HomeSectorsMobile } from "@/components/sections/HomeSectorsMobile";
 
 export default function HomePage() {
   return (
-    <div className="h-[calc(100svh-var(--nav-height))] w-full overflow-hidden">
-      <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
+    <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
+      <div className="h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)] lg:pb-[var(--nav-height-desktop)]">
         <HomeSectorsDesktop />
         <HomeSectorsMobile />
-      </PageBackground>
-    </div>
+      </div>
+    </PageBackground>
   );
 }
