@@ -10,61 +10,71 @@ const BUTTONS = [
     {
         id: "order",
         label: "Что вы можете заказать?",
-        text: `- интерьерную картину
-- портрет
-- копию понравившейся работы
-- авторскую композицию с нуля
-- картину под стиль бренда / заведения
-- серию картин для пространства
-- или что-то другое — спросите!`,
+        text: `– интерьерную картину
+– портрет
+– копию понравившейся работы
+– авторскую композицию с нуля
+– картину под стиль бренда / заведения
+– серию картин для пространства
+– или что-то другое — спросите!`,
     },
     {
         id: "process",
         label: "Как проходит работа?",
-        text: `- Обсуждение запроса (идея, стиль, размеры, цветовая палитра)
-- Подбор референсов и визуальной концепции
-- Утверждение композиции
-- Процесс создания
-- Финальные правки (при необходимости)
-- Передача работы заказчику`,
+        text: `– Обсуждение запроса (идея, стиль, размеры, цветовая палитра)
+– Подбор референсов и визуальной концепции
+– Утверждение композиции
+– Процесс создания
+– Финальные правки (при необходимости)
+– Передача работы заказчику`,
     },
     {
         id: "price",
         label: "Стоимость и сроки",
-        text: `- 20×20 см — от 3 000 руб
-- 30×30 см — от 7 000 руб
-- 50×70 см — от 15 000 руб
-- 70×100 см — от 25 000 руб
-- 120×200 см — от 35 000 руб
-- Индивидуальный размер — по запросу
+        text: `– 20×20 см — от 3 000 руб
+– 30×30 см — от 7 000 руб
+– 50×70 см — от 15 000 руб
+– 70×100 см — от 25 000 руб
+– 120×200 см — от 35 000 руб
+– Индивидуальный размер — по запросу
 
 Стоимость зависит от:
-- сложности работы
-- количества деталей
-- сроков
-- используемых материалов
+— сложности работы
+— количества деталей
+— сроков
+— используемых материалов
 
 Срок выполнения: от 3 дней`,
     },
     {
         id: "sizes",
         label: "Шпаргалка по размерам",
-        text: null, // opens lightbox
+        text: null,
     },
 ] as const;
 
 type ButtonId = (typeof BUTTONS)[number]["id"];
 
+// Nav color (matches BottomNavigation)
+const NAV_BG = "rgba(30,22,40,0.82)";
+const NAV_BLUR = "blur(14px) saturate(1.4)";
+
 // ─── desktop accordion panel ────────────────────────────────────────────────
 function DesktopPanel({
+    id,
     text,
     buttonRef,
+    onCollapseDone,
+    closing,
 }: {
+    id: string;
     text: string;
     buttonRef: React.RefObject<HTMLButtonElement | null>;
+    onCollapseDone: () => void;
+    closing: boolean;
 }) {
-    const panelRef = useRef<HTMLDivElement>(null);
     const [style, setStyle] = useState<React.CSSProperties>({});
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         if (!buttonRef.current) return;
@@ -75,28 +85,44 @@ function DesktopPanel({
             top: rect.bottom + 8,
             width: rect.width,
         });
-    }, [buttonRef]);
-
-    // animate in via max-height
-    const [visible, setVisible] = useState(false);
-    useEffect(() => {
+        // animate in next frame
         const id = requestAnimationFrame(() => setVisible(true));
         return () => cancelAnimationFrame(id);
-    }, []);
+    }, [buttonRef]);
+
+    // when closing prop flips, collapse and notify parent when done
+    useEffect(() => {
+        if (!closing) return;
+        setVisible(false);
+    }, [closing]);
 
     return (
         <div
-            ref={panelRef}
             style={{
                 ...style,
-                maxHeight: visible ? "600px" : "0",
+                maxHeight: visible ? "640px" : "0",
                 overflow: "hidden",
-                transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1)",
+                // same easing for open and close, +30% slower = 0.52s
+                transition: "max-height 0.52s cubic-bezier(0.4,0,0.2,1)",
                 zIndex: 40,
+            }}
+            onTransitionEnd={() => {
+                if (closing) onCollapseDone();
             }}
             className="rounded-xl"
         >
-            <div className="bg-black/25 backdrop-blur-md border border-white/15 rounded-xl p-4 text-white/90 text-sm leading-relaxed whitespace-pre-line shadow-xl">
+            <div
+                className="rounded-xl p-5 shadow-xl border border-white/15 whitespace-pre-line"
+                style={{
+                    background: NAV_BG,
+                    backdropFilter: NAV_BLUR,
+                    WebkitBackdropFilter: NAV_BLUR,
+                    color: "rgba(255,255,255,0.92)",
+                    fontFamily: "Abibas, serif",
+                    fontSize: "17px",
+                    lineHeight: "1.25",
+                }}
+            >
                 {text}
             </div>
         </div>
@@ -129,11 +155,13 @@ function SizesLightbox({ onClose }: { onClose: () => void }) {
 
 // ─── page ───────────────────────────────────────────────────────────────────
 export default function PicsToOrderPage() {
+    // desktopOpen = currently shown panel id
+    // desktopClosing = panel that is mid-collapse animation
     const [desktopOpen, setDesktopOpen] = useState<ButtonId | null>(null);
+    const [desktopClosing, setDesktopClosing] = useState<ButtonId | null>(null);
     const [mobileOpen, setMobileOpen] = useState<ButtonId | null>(null);
     const [showSizes, setShowSizes] = useState(false);
 
-    // refs for each desktop button so we can position panels beneath them
     const btnRefs = useRef<Record<string, React.RefObject<HTMLButtonElement | null>>>({});
     BUTTONS.forEach((b) => {
         if (!btnRefs.current[b.id]) {
@@ -141,17 +169,40 @@ export default function PicsToOrderPage() {
         }
     });
 
-    // Desktop button click
+    // Desktop: close with animation then optionally open new one
+    const openDesktop = (id: ButtonId | null) => {
+        if (desktopOpen) {
+            setDesktopClosing(desktopOpen);
+            // store what to open after collapse (use a ref trick via a closure)
+            _pendingOpen.current = id;
+        } else {
+            setDesktopOpen(id);
+        }
+    };
+    const _pendingOpen = useRef<ButtonId | null>(null);
+
+    const handleCollapseComplete = () => {
+        setDesktopOpen(null);
+        setDesktopClosing(null);
+        if (_pendingOpen.current) {
+            setDesktopOpen(_pendingOpen.current);
+            _pendingOpen.current = null;
+        }
+    };
+
     const handleDesktopClick = (id: ButtonId) => {
         if (id === "sizes") {
-            setDesktopOpen(null);
+            openDesktop(null);
             setShowSizes(true);
             return;
         }
-        setDesktopOpen((prev) => (prev === id ? null : id));
+        if (desktopOpen === id) {
+            openDesktop(null); // close current
+        } else {
+            openDesktop(id);
+        }
     };
 
-    // Mobile button tap
     const handleMobileClick = (id: ButtonId) => {
         if (id === "sizes") {
             setMobileOpen(null);
@@ -161,20 +212,52 @@ export default function PicsToOrderPage() {
         setMobileOpen((prev) => (prev === id ? null : id));
     };
 
-    const activeDesktopBtn = BUTTONS.find((b) => b.id === desktopOpen);
+    const activeDesktopBtn = BUTTONS.find((b) => b.id === (desktopOpen ?? desktopClosing));
     const activeMobileBtn = BUTTONS.find((b) => b.id === mobileOpen);
+
+    // button bar height in percent of active zone (excluding nav)
+    const BTN_BAR_PCT = 12;
 
     return (
         <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
             {showSizes && <SizesLightbox onClose={() => setShowSizes(false)} />}
 
+            {/* Google Font already loaded in layout.tsx via Playfair Display */}
+            <style>{`
+        @keyframes pto-pulse {
+          0%   { transform: scale(0.93); }
+          50%  { transform: scale(1.00); }
+          100% { transform: scale(0.93); }
+        }
+      `}</style>
+
             <div className="relative flex h-[100svh] w-full flex-col overflow-hidden">
-                {/* ── Carousel background ── */}
+
+                {/* ── Carousel: starts at button-bar bottom edge on desktop, top on mobile ── */}
                 <div
-                    className="absolute top-0 left-0 right-0 pointer-events-none"
+                    className="absolute left-0 right-0 pointer-events-none"
                     style={{
+                        /* desktop: top pushed down below button bar */
+                        top: `calc(${BTN_BAR_PCT}% + 0px)`,
                         bottom: "var(--nav-height)",
                     }}
+                >
+                    {/* on mobile we want the carousel from the very top, so override */}
+                    <div
+                        className="w-full h-full"
+                        style={{
+                            /* mobile: push top back to 0 via negative margin trick isn't possible with absolute.
+                               Instead we wrap the marquee in a full-height container and on mobile
+                               we add overflow so it bleeds up visually. */
+                        }}
+                    >
+                        <PicsToOrderMarquee />
+                    </div>
+                </div>
+                {/* Mobile: carousel covers whole active zone (buttons overlay on top) */}
+                <div
+                    className="absolute left-0 right-0 pointer-events-none lg:hidden"
+                    style={{ top: 0, bottom: "var(--nav-height-mobile)" }}
                 >
                     <PicsToOrderMarquee />
                 </div>
@@ -183,41 +266,56 @@ export default function PicsToOrderPage() {
             DESKTOP LAYOUT  (lg and up)
         ════════════════════════════════════════════════ */}
 
-                {/* Button bar — top 12% of active zone */}
+                {/* Button bar — top BTN_BAR_PCT% of active zone */}
                 <div
                     className="absolute left-0 right-0 top-0 z-20 hidden lg:flex gap-4 px-4"
-                    style={{ height: "calc(12% - var(--nav-height-desktop) * 0)", paddingTop: "12px", paddingBottom: "12px" }}
+                    style={{ height: `${BTN_BAR_PCT}%`, paddingTop: "10px", paddingBottom: "10px" }}
                 >
-                    {BUTTONS.map((btn) => (
-                        <button
-                            key={btn.id}
-                            ref={btnRefs.current[btn.id] as React.RefObject<HTMLButtonElement>}
-                            onClick={() => handleDesktopClick(btn.id)}
-                            className="flex-1 flex items-center justify-between gap-2 px-4
-                         bg-white/12 hover:bg-white/20 active:bg-white/25
-                         backdrop-blur-md border border-white/20
-                         rounded-xl text-white/90 text-sm font-medium
-                         transition-colors duration-200 select-none"
-                        >
-                            <span className="text-left leading-tight">{btn.label}</span>
-                            <span
-                                className="flex-shrink-0 w-[15%] flex items-center justify-center opacity-70 transition-transform duration-300"
+                    {BUTTONS.map((btn) => {
+                        const isActive = desktopOpen === btn.id || desktopClosing === btn.id;
+                        return (
+                            <button
+                                key={btn.id}
+                                ref={btnRefs.current[btn.id] as React.RefObject<HTMLButtonElement>}
+                                onClick={() => handleDesktopClick(btn.id)}
+                                className="flex-1 flex items-center justify-between gap-3 px-4
+                           border border-white/20 rounded-xl
+                           text-white/90 select-none
+                           transition-colors duration-200 hover:brightness-110"
                                 style={{
-                                    transform: desktopOpen === btn.id ? "rotate(180deg)" : "rotate(0deg)",
+                                    background: NAV_BG,
+                                    backdropFilter: NAV_BLUR,
+                                    WebkitBackdropFilter: NAV_BLUR,
                                 }}
                             >
-                                ▼
-                            </span>
-                        </button>
-                    ))}
+                                {/* Label: takes up remaining space, centered within itself */}
+                                <span
+                                    className="flex-1 text-center leading-snug"
+                                    style={{ fontFamily: "Abibas, serif", fontSize: "22px" }}
+                                >
+                                    {btn.label}
+                                </span>
+                                {/* Arrow: fixed right zone */}
+                                <span
+                                    className="flex-shrink-0 w-[15%] flex items-center justify-center opacity-70 transition-transform duration-500"
+                                    style={{ transform: isActive ? "rotate(180deg)" : "rotate(0deg)" }}
+                                >
+                                    ▼
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Desktop accordion panel */}
-                {desktopOpen && activeDesktopBtn?.text && (
+                {(desktopOpen || desktopClosing) && activeDesktopBtn?.text && (
                     <DesktopPanel
-                        key={desktopOpen}
+                        key={desktopOpen ?? desktopClosing}
+                        id={activeDesktopBtn.id}
                         text={activeDesktopBtn.text}
-                        buttonRef={btnRefs.current[desktopOpen] as React.RefObject<HTMLButtonElement | null>}
+                        buttonRef={btnRefs.current[(desktopOpen ?? desktopClosing)!] as React.RefObject<HTMLButtonElement | null>}
+                        closing={!!desktopClosing}
+                        onCollapseDone={handleCollapseComplete}
                     />
                 )}
 
@@ -231,7 +329,7 @@ export default function PicsToOrderPage() {
                     style={{
                         width: "30%",
                         bottom: "var(--nav-height-mobile)",
-                        padding: "12px 8px",
+                        padding: "10px 8px",
                         gap: 0,
                         justifyContent: "space-around",
                     }}
@@ -242,20 +340,24 @@ export default function PicsToOrderPage() {
                             <button
                                 key={btn.id}
                                 onClick={() => handleMobileClick(btn.id)}
-                                className="relative rounded-full border border-white/25 text-white/90 text-[10px] font-medium text-center leading-tight px-2 select-none"
+                                className="relative rounded-full border text-white/90 text-[11px] text-center px-2 select-none"
                                 style={{
                                     animationName: isActive ? "none" : "pto-pulse",
                                     animationDuration: "3s",
                                     animationTimingFunction: "ease-in-out",
                                     animationIterationCount: "infinite",
-                                    transform: isActive ? "scale(1.05)" : undefined,
-                                    transition: "transform 0.3s ease",
+                                    transform: isActive ? "scale(1.0)" : undefined,
+                                    transition: "transform 0.3s ease, background 0.3s ease",
                                     aspectRatio: "1/1",
                                     background: isActive
-                                        ? "rgba(255,255,255,0.22)"
-                                        : "rgba(255,255,255,0.13)",
-                                    backdropFilter: "blur(10px)",
-                                    WebkitBackdropFilter: "blur(10px)",
+                                        ? "rgba(55,38,70,0.90)"    // slightly brighter than nav
+                                        : NAV_BG,
+                                    borderColor: isActive ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.20)",
+                                    backdropFilter: NAV_BLUR,
+                                    WebkitBackdropFilter: NAV_BLUR,
+                                    fontFamily: "Abibas, serif",
+                                    fontSize: "15px",
+                                    lineHeight: "1.35",
                                 }}
                             >
                                 <span className="block">{btn.label}</span>
@@ -264,32 +366,35 @@ export default function PicsToOrderPage() {
                     })}
                 </div>
 
-                {/* Mobile text panel */}
+                {/* Mobile text panel — height = fit-content (auto, not full-height) */}
                 {mobileOpen && (
                     <div
-                        className="absolute top-0 z-30 lg:hidden"
+                        className="absolute z-30 lg:hidden"
                         style={{
-                            left: "16px",          // gap-4 from left edge
-                            // gap-2 (8px) from the button zone border (30% - 8px right gap)
-                            right: "calc(30% + 8px + 8px)", // 8px from button zone + gap-4 right padding
-                            bottom: "var(--nav-height-mobile)",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "flex-start",
-                            paddingTop: "16px",
-                            paddingBottom: "16px",
+                            left: "16px",
+                            right: "calc(30% + 8px + 8px)",
+                            top: "16px",
+                            // no bottom constraint — grows to fit text
                         }}
                     >
                         <div
-                            className="w-full h-full rounded-xl border border-white/15 shadow-xl overflow-y-auto"
+                            className="w-full rounded-xl border border-white/15 shadow-xl"
                             style={{
-                                background: "rgba(0,0,0,0.25)",
-                                backdropFilter: "blur(12px)",
-                                WebkitBackdropFilter: "blur(12px)",
+                                background: "rgba(20,14,30,0.82)",
+                                backdropFilter: NAV_BLUR,
+                                WebkitBackdropFilter: NAV_BLUR,
                             }}
                             onClick={() => setMobileOpen(null)}
                         >
-                            <div className="p-4 text-white/90 text-xs leading-relaxed">
+                            <div
+                                style={{
+                                    padding: "16px",
+                                    color: "rgba(255,255,255,0.92)",
+                                    fontFamily: "Abibas, serif",
+                                    fontSize: "15px",
+                                    lineHeight: "1.25",
+                                }}
+                            >
                                 {activeMobileBtn?.id === "sizes" ? (
                                     <Image
                                         src="/picstoorder/sizes.png"
@@ -299,22 +404,13 @@ export default function PicsToOrderPage() {
                                         className="w-full h-auto rounded-lg"
                                     />
                                 ) : (
-                                    <p className="whitespace-pre-line">{activeMobileBtn?.text}</p>
+                                    <p className="whitespace-pre-line m-0">{activeMobileBtn?.text}</p>
                                 )}
                             </div>
                         </div>
                     </div>
                 )}
-
-                {/* Keyframes for mobile pulse — injected via style tag */}
-                <style>{`
-          @keyframes pto-pulse {
-            0%   { transform: scale(0.95); }
-            50%  { transform: scale(1.03); }
-            100% { transform: scale(0.95); }
-          }
-        `}</style>
             </div>
-        </PageBackground>
+        </PageBackground >
     );
 }

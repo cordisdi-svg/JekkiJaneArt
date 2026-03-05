@@ -31,14 +31,14 @@ export function PicsToOrderMarquee() {
         .run-marquee-pto {
           display: flex;
           flex-direction: column;
-          animation: marquee-y-pto 60s linear infinite;
+          animation: marquee-y-pto 72s linear infinite;
         }
         @media (min-width: 768px) {
           .run-marquee-pto {
             flex-direction: row;
             width: max-content;
             height: 100%;
-            animation: marquee-x-pto 60s linear infinite;
+            animation: marquee-x-pto 72s linear infinite;
           }
         }
       `}</style>
