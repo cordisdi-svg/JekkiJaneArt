@@ -52,9 +52,8 @@ export function HomeSectorsMobile() {
               {/* Overlay for darkening the background */}
               <div className="absolute inset-0 bg-black/40 transition-colors group-active:bg-black/60" />
 
-              {/* Text Container */}
               <div className={`relative z-10 px-4 ${sector.align === 'center' ? 'w-full text-center' : 'w-1/2 ml-auto text-center'}`}>
-                <span className="text-[clamp(1rem,4.5vw,1.3rem)] font-semibold uppercase tracking-wider text-white" style={{
+                <span className="font-abibas text-[clamp(1rem,4.5vw,1.3rem)] font-semibold uppercase tracking-wider text-white" style={{
                   textShadow: "0 2px 4px rgba(0,0,0,0.8)",
                   WebkitTextStroke: "1px rgba(0,0,0,0.4)",
                   paintOrder: "stroke"

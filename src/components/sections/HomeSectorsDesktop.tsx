@@ -244,7 +244,7 @@ export function HomeSectorsDesktop() {
             </svg>
 
             <span
-              className="pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
+              className="font-abibas pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
               style={{
                 left: sector.labelPos.left,
                 top: sector.labelPos.top,
@@ -286,7 +286,7 @@ export function HomeSectorsDesktop() {
           <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
         <span
-          className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
+          className="font-abibas pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
           style={{
             bottom: "10%",
             zIndex: 6,
