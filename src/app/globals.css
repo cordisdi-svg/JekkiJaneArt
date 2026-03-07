@@ -11,9 +11,65 @@
 }
 
 @font-face {
+  font-family: 'Fontatica4F';
+  src: url('/fonts/Fontatica4F.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'NegritaPro';
   src: url('/fonts/NegritaPro.ttf') format('truetype');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Abibas';
+  src: url('/fonts/Abibas.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FROH';
+  src: url('/fonts/FROH.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fontatica4F-Italic';
+  src: url('/fonts/Fontatica4F-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NegritaProDingbat';
+  src: url('/fonts/NegritaProDingbat.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NegritaProOblique';
+  src: url('/fonts/NegritaProOblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'RavenholmBold';
+  src: url('/fonts/Ravenholm Bold.ttf') format('truetype');
+  font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
