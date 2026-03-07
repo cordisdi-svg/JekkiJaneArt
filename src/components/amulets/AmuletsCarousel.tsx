@@ -278,19 +278,19 @@ export function AmuletsCarousel() {
                         <a href="https://t.me/Jekki_Jane" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
-                           ${isOrderMenuOpen ? 'mt-[calc(-42.5px-170px)] ml-[-42.5px] opacity-100 scale-100 hover:scale-110' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`}>
+                           ${isOrderMenuOpen ? 'mt-[calc(-42.5px-170px)] ml-[-42.5px] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`}>
                             <Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-cover" />
                         </a>
                         <a href="https://instagram.com/jekki_jane" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
-                           ${isOrderMenuOpen ? 'mt-[calc(-42.5px-120px)] ml-[calc(-42.5px+120px)] opacity-100 scale-100 hover:scale-110' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
+                           ${isOrderMenuOpen ? 'mt-[calc(-42.5px-120px)] ml-[calc(-42.5px+120px)] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
                             <Image src="/Instagram_icon.png" alt="IG" fill className="object-cover" />
                         </a>
                         <a href="https://vk.com/jekkijane" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
-                           ${isOrderMenuOpen ? 'mt-[-42.5px] ml-[calc(-42.5px+170px)] opacity-100 scale-100 hover:scale-110' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
+                           ${isOrderMenuOpen ? 'mt-[-42.5px] ml-[calc(-42.5px+170px)] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
                             <Image src="/vk-logo.png" alt="VK" fill className="object-cover" />
                         </a>
                         <button onClick={(e) => { e.stopPropagation(); setShowEighthSprite(prev => !prev); }}
@@ -318,8 +318,8 @@ export function AmuletsCarousel() {
                         >
                             <Image src="/amulets/1-button.png" alt="Заказать" fill sizes="170px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
                             <div className={`absolute inset-0 transition-colors duration-300 z-10 ${isOrderMenuOpen ? 'bg-black/10' : 'bg-black/40 group-hover:bg-black/20'}`} />
-                            <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[25px] xl:text-[31px] tracking-wide text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                                ЗАКАЗАТЬ
+                            <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[25px] xl:text-[31px] tracking-wide text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-nowrap">
+                                {isOrderMenuOpen ? 'НАПИШИ МНЕ' : 'ЗАКАЗАТЬ'}
                             </span>
                         </button>
                     </div>
@@ -358,6 +358,18 @@ export function AmuletsCarousel() {
             --btn-scale-min: 1; /* Stops shrinking when active */
         }
         
+        @keyframes miniBreathe {
+          0% { transform: scale(1); }
+          100% { transform: scale(0.95); }
+        }
+        .mini-btn-wrapper {
+            animation: miniBreathe 2.5s infinite alternate ease-in-out;
+            will-change: transform;
+        }
+        .mini-btn-wrapper:hover {
+            animation-play-state: paused;
+        }
+
         @keyframes goldenAura {
             0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.95) rotate(0deg); }
             50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.05) rotate(5deg); }
@@ -425,7 +437,7 @@ export function AmuletsCarousel() {
                         {renderCenterContent()}
 
                         {/* Sparkle running is completely re-mounted whenever sequence state changes */}
-                        {(!activeSeq || !activeSeq.flipped) && !showEighthSprite && idx !== 6 && (
+                        {(!activeSeq || !activeSeq.flipped) && !showEighthSprite && (idx !== 6 || activeSeq !== null) && (
                             <SparkleBorder
                                 key={`sparkle-${activeSeq?.seqIdx}-${activeSeq?.flipped}-${animKey}-${Math.random()}`} // Force hard remount to reset animation
                                 isPaused={isPaused || delayedSparkle}
