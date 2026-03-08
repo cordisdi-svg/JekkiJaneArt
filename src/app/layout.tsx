@@ -20,6 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="preload" href="/fonts/IndiKazka4F.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Abibas.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Comfortaa/Comfortaa-Regular.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Comfortaa/Comfortaa-Bold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Nunito/Nunito-Regular.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Nunito/Nunito-Bold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
         <style dangerouslySetInnerHTML={{
           __html: `
           @font-face {
@@ -33,6 +37,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             font-family: 'Abibas';
             src: url('/fonts/Abibas.ttf') format('truetype');
             font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Comfortaa';
+            src: url('/fonts/Comfortaa/Comfortaa-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Comfortaa';
+            src: url('/fonts/Comfortaa/Comfortaa-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Nunito';
+            src: url('/fonts/Nunito/Nunito-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Nunito';
+            src: url('/fonts/Nunito/Nunito-Bold.ttf') format('truetype');
+            font-weight: 700;
             font-style: normal;
             font-display: swap;
           }

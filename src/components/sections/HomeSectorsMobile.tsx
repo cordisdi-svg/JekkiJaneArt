@@ -8,7 +8,7 @@ const MOBILE_SECTORS = [
   { id: 1, label: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", heightPercent: 14, align: "center" as const },
   { id: 2, label: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", heightPercent: 14, align: "center" as const },
   { id: 3, label: "Картины-амулеты", href: "/amulets", imageSrc: "/amulets/1-(tech).png", heightPercent: 22, align: "right-half" as const },
-  { id: 4, label: "Стены и мебель", href: "/walls", imageSrc: "/walls/tech.png", heightPercent: 22, align: "right-half" as const },
+  { id: 4, label: "Стены\nи мебель", href: "/walls", imageSrc: "/walls/tech.png", heightPercent: 22, align: "right-half" as const },
   { id: 5, label: "Одежда и обувь", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", heightPercent: 14, align: "center" as const },
   { id: 6, label: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", heightPercent: 14, align: "center" as const }
 ];
@@ -46,14 +46,14 @@ export function HomeSectorsMobile() {
             >
               {/* Background Image */}
               <div className="absolute inset-0">
-                <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
+                <Image src={sector.imageSrc} alt="" fill className="object-cover blur-[1px] animate-bg-scale" sizes="100vw" />
               </div>
 
               {/* Overlay for darkening the background */}
               <div className="absolute inset-0 bg-black/40 transition-colors group-active:bg-black/60" />
 
               <div className={`relative z-10 px-4 ${sector.align === 'center' ? 'w-full text-center' : 'w-1/2 ml-auto text-center'}`}>
-                <span className="font-abibas text-[clamp(1rem,4.5vw,1.3rem)] font-semibold uppercase tracking-wider text-white" style={{
+                <span className="font-abibas text-[clamp(1rem,4.5vw,1.3rem)] font-semibold uppercase tracking-wider text-white whitespace-pre-line" style={{
                   textShadow: "0 2px 4px rgba(0,0,0,0.8)",
                   WebkitTextStroke: "1px rgba(0,0,0,0.4)",
                   paintOrder: "stroke"
@@ -69,7 +69,7 @@ export function HomeSectorsMobile() {
       {/* Central absolute mobile icon, strictly rectangular with no circle cropping */}
       <div
         className="absolute left-0 top-1/2 z-20 flex items-center justify-start pointer-events-none -translate-y-1/2"
-        style={{ width: '50%', height: '50%' }}
+        style={{ width: '55%', height: '55%' }}
       >
         <button
           onClick={() => {
@@ -82,8 +82,8 @@ export function HomeSectorsMobile() {
           }}
           aria-label="О художнице"
         >
-          {/* Main Icon scaled naturally to fit the 50x50 area */}
-          <Image src="/mainpage/mainpage-icon-mobile.png" alt="О художнице" fill className="object-contain" sizes="50vw" />
+          {/* Main Icon scaled naturally to fit the 55x55 area */}
+          <Image src="/mainpage/mainpage-icon-mobile.png" alt="О художнице" fill className="object-contain" sizes="55vw" />
         </button>
       </div>
     </section>

@@ -30,7 +30,7 @@ const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
   3: { dx: 100, dy: -60 },
   4: { dx: 0, dy: 90 },
   5: { dx: -135, dy: -60 },
-  6: { dx: -135, dy: 80 }
+  6: { dx: -135, dy: 40 }
 };
 
 const DESKTOP_SECTORS: Sector[] = [
@@ -39,7 +39,7 @@ const DESKTOP_SECTORS: Sector[] = [
   { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", start: 0, end: 32 },
   { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
   { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", start: 148, end: 180 },
-  { id: 6, lines: ["Картины на заказ"], ariaLabel: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", start: -180, end: -148 }
+  { id: 6, lines: ["Картины", "на заказ"], ariaLabel: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", start: -180, end: -148 }
 ];
 
 const rectCornersClockwise = (w: number, h: number): Point[] => [
@@ -158,7 +158,8 @@ export function HomeSectorsDesktop() {
   }, []);
 
   const baseHoleRadius = Math.min(size.width, size.height) * 0.27;
-  const centerDiameter = baseHoleRadius * 2 * 1.05;
+  // Increase central diameter by 10%
+  const centerDiameter = baseHoleRadius * 2 * 1.05 * 1.1;
   // Make the mask perfectly tight to the center circle
   const holeRadius = centerDiameter / 2;
   const sectorMask = `radial-gradient(circle at 50% 50%, transparent 0 ${holeRadius}px, #000 ${holeRadius + 1}px)`;
@@ -218,7 +219,7 @@ export function HomeSectorsDesktop() {
                   transform: "translate(-50%, -50%)"
                 }}
               >
-                <Image src={sector.imageSrc} alt="" fill className="object-cover" sizes="100vw" />
+                <Image src={sector.imageSrc} alt="" fill className="object-cover animate-bg-scale" sizes="100vw" />
               </div>
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />

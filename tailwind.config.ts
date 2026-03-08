@@ -15,6 +15,17 @@ const config: Config = {
         negrita: ['NegritaPro', 'sans-serif'],
         froh: ['FROH', 'sans-serif'],
         ravenholm: ['RavenholmBold', 'sans-serif'],
+        comfortaa: ['Comfortaa', 'sans-serif'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      keyframes: {
+        'bg-scale': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+        }
+      },
+      animation: {
+        'bg-scale': 'bg-scale 10s ease-in-out infinite',
       }
     }
   },
