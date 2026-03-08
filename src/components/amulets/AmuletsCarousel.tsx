@@ -86,11 +86,11 @@ function SequenceSpotlight({ flipped, images, rounded = true }: { flipped: boole
                 }}
             >
                 <div className="relative h-full w-auto backface-hidden" style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}>
-                    <Image src={images[0]} alt="Sequence Part 1" width={500} height={800} sizes="32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority />
+                    <Image src={images[0]} alt="Sequence Part 1" width={1024} height={1489} quality={90} sizes="(max-width: 1024px) 100vw, 32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority />
                 </div>
                 {hasBack && (
                     <div className="absolute inset-0 backface-hidden flex items-center justify-center" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-                        <Image src={images[1]} alt="Sequence Part 2" width={500} height={800} sizes="32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority />
+                        <Image src={images[1]} alt="Sequence Part 2" width={1024} height={1489} quality={90} sizes="(max-width: 1024px) 100vw, 32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority />
                     </div>
                 )}
             </div>
@@ -456,6 +456,7 @@ function AmuletsMobileCarousel() {
     const [showEighthSprite, setShowEighthSprite] = useState(false);
     type ActiveSeqState = { seqIdx: number; flipped: boolean };
     const [activeSeq, setActiveSeq] = useState<ActiveSeqState | null>(null);
+    const [isSeqAnimating, setIsSeqAnimating] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const touchY = useRef(0);
@@ -475,29 +476,37 @@ function AmuletsMobileCarousel() {
             setActiveSeq(null);
             setIsOrderMenuOpen(false);
             setShowEighthSprite(false);
+            setIsSeqAnimating(false);
         } else {
-            setActiveSeq({ seqIdx, flipped: seqIdx === 2 }); // "Для пар" (index 2) starts flipped
+            const startsFlipped = seqIdx === 2;
+            setActiveSeq({ seqIdx, flipped: startsFlipped }); // "Для пар" (index 2) starts flipped
             setIsOrderMenuOpen(false);
             setShowEighthSprite(false);
+            if (startsFlipped) {
+                setIsSeqAnimating(true);
+                setTimeout(() => setIsSeqAnimating(false), 2500);
+            }
         }
         setIsPaused(false);
     };
 
     // Auto-play timer (ported and adapted)
     useEffect(() => {
-        // Stop auto-scroll if reached 7.png (idx 6) and no sequence active
-        if (isPaused || isAnimating || (idx === 6 && activeSeq === null)) return;
+        // Stop auto-scroll if paused or animating
+        if (isPaused || isAnimating) return;
         const timer = setInterval(() => {
             if (activeSeq === null) {
                 next();
             } else {
                 if (!activeSeq.flipped) {
+                    setIsSeqAnimating(true);
                     setActiveSeq(prev => prev ? { ...prev, flipped: true } : null);
+                    setTimeout(() => setIsSeqAnimating(false), 2500);
                 }
             }
         }, 7000); // 7s interval
         return () => clearInterval(timer);
-    }, [isPaused, isAnimating, next, activeSeq, idx]);
+    }, [isPaused, isAnimating, next, activeSeq]);
 
     const handleTouchStart = (e: React.TouchEvent) => {
         touchY.current = e.touches[0].clientY;
@@ -510,7 +519,9 @@ function AmuletsMobileCarousel() {
                 if (activeSeq === null) {
                     next();
                 } else if (!activeSeq.flipped) {
+                    setIsSeqAnimating(true);
                     setActiveSeq(prev => prev ? { ...prev, flipped: true } : null);
+                    setTimeout(() => setIsSeqAnimating(false), 2500);
                 }
             } else { // Swipe down
                 if (activeSeq !== null && activeSeq.flipped) {
@@ -526,7 +537,7 @@ function AmuletsMobileCarousel() {
         if (showEighthSprite) {
             return (
                 <div className="relative flex h-full items-center justify-center">
-                    <Image src="/amulets/8.png" alt="Amulet 8" width={500} height={800} sizes="80vw" className="h-full w-auto object-contain" priority />
+                    <Image src="/amulets/8.png" alt="Amulet 8" width={1024} height={1489} sizes="100vw" quality={90} className="h-full w-auto object-contain" priority />
                 </div>
             );
         }
@@ -535,17 +546,17 @@ function AmuletsMobileCarousel() {
         }
         return (
             <div className="relative flex h-full items-center justify-center">
-                <Image src={items[idx].src} alt={items[idx].alt} width={500} height={800} sizes="80vw" className="h-full w-auto object-contain" priority />
+                <Image src={items[idx].src} alt={items[idx].alt} width={1024} height={1489} sizes="100vw" quality={90} className="h-full w-auto object-contain" priority />
             </div>
         );
     };
 
-    const showOrderBtn = (activeSeq !== null && activeSeq.flipped) || (idx === 6 && activeSeq === null);
+    const showOrderBtn = !isAnimating && !isSeqAnimating && ((activeSeq !== null && activeSeq.flipped) || (idx === 6 && activeSeq === null));
 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+            className="relative w-full h-full flex flex-col items-center justify-start overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             onClick={() => {
@@ -600,9 +611,9 @@ function AmuletsMobileCarousel() {
             `}</style>
 
             {/* Main Carousel Area (Full Height, Overlaying Buttons) */}
-            <div className="absolute inset-0 flex items-center justify-center p-2 z-10">
+            <div className="absolute inset-0 flex items-center justify-center z-10">
                 {/* Next Card (Underneath) */}
-                {activeSeq === null && !showEighthSprite && idx < 6 && (
+                {activeSeq === null && !showEighthSprite && (
                     <div
                         className={`absolute inset-0 flex items-center justify-center transition-all duration-[2000ms] ${isAnimating ? "card-enter" : ""}`}
                         style={{
@@ -612,7 +623,7 @@ function AmuletsMobileCarousel() {
                         }}
                     >
                         <div className="relative w-full h-full aspect-[11/16]">
-                            <Image src={items[mod(idx + 1, n)].src} alt="Next" fill className="object-contain drop-shadow-2xl" />
+                            <Image src={items[mod(idx + 1, n)].src} alt="Next" fill quality={90} className="object-contain drop-shadow-2xl" />
                         </div>
                     </div>
                 )}
@@ -642,12 +653,12 @@ function AmuletsMobileCarousel() {
                         </a>
                         <a href="https://instagram.com/jekki_jane" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
-                            ${isOrderMenuOpen ? 'top-[29px] right-[113px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
+                            ${isOrderMenuOpen ? 'top-[27px] right-[114px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
                             <Image src="/Instagram_icon.png" alt="IG" fill className="object-cover" />
                         </a>
                         <a href="https://t.me/Jekki_Jane" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
-                            ${isOrderMenuOpen ? 'top-[60px] right-[97px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
+                            ${isOrderMenuOpen ? 'top-[62px] right-[102px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
                             <Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-cover" />
                         </a>
 
