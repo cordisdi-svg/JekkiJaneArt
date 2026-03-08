@@ -9,6 +9,9 @@ const SLIDE_H = "calc(100svh - var(--nav-height-mobile))";
 const slides = [
     { src: "/wear-and-shoes/1.png", alt: "Роспись одежды" },
     { src: "/wear-and-shoes/2.JPEG", alt: "Роспись обуви" },
+    { src: "/wear-and-shoes/3.jpeg", alt: "Роспись одежды 3" },
+    { src: "/wear-and-shoes/4.png", alt: "Роспись одежды 4" },
+    { src: "/wear-and-shoes/5.png", alt: "Роспись одежды 5" },
 ];
 
 export function WearMarquee() {
