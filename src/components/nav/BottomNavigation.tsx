@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { orderedRoutes } from "@/data/routes";
 import { useModal } from "@/components/modals/ModalProvider";
