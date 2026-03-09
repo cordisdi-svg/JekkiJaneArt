@@ -694,7 +694,7 @@ function AmuletsMobileCarousel() {
 
             {/* Control Area (Overlay Bottom 15%) - Constrained to Image Width */}
             <div className="absolute bottom-0 left-0 right-0 h-[15%] flex items-center justify-center z-30 pointer-events-none px-4 pb-2">
-                <div className="h-full aspect-[11/16] max-h-full flex items-center justify-evenly pointer-events-auto" style={{ width: 'calc((100vh - var(--nav-height-mobile) - 1rem) * 0.85 * 11 / 16)' }}>
+                <div className="h-full aspect-[11/16] max-h-full flex items-center justify-evenly pointer-events-auto" style={{ width: 'calc((100svh - var(--nav-height-mobile) - 1rem) * 0.85 * 11 / 16)' }}>
                     {SEQUENCES.map((seq, i) => {
                         const isActive = activeSeq !== null && activeSeq.seqIdx === i;
                         return (

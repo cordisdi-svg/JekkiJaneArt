@@ -80,8 +80,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ModalProvider>
-          <div className="min-h-screen">
-            <main className="w-full">
+          <div className="h-svh lg:h-auto lg:min-h-screen overflow-hidden lg:overflow-visible">
+            <main className="w-full h-full">
               {children}
             </main>
             <BottomNavigation />
