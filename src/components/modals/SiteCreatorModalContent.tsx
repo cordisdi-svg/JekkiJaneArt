@@ -20,7 +20,7 @@ export function SiteCreatorModalContent() {
             target="_blank"
             rel="noreferrer"
             aria-label={link.label}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border)] bg-white"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/20 backdrop-blur-sm transition-colors hover:bg-black/30"
           >
             <Image src={link.icon} alt="" width={28} height={28} />
           </a>

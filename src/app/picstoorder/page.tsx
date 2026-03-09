@@ -116,13 +116,60 @@ function DesktopPanel({
                     backdropFilter: NAV_BLUR,
                     WebkitBackdropFilter: NAV_BLUR,
                     color: "rgba(255,255,255,0.92)",
-                    fontFamily: "Abibas, serif",
+                    fontFamily: "Comfortaa, sans-serif",
                     fontSize: "17px",
-                    lineHeight: "1.25",
+                    lineHeight: "1.4",
                 }}
             >
                 {text}
+                {text.includes("Срок выполнения") && (
+                    <div className="mt-6 pt-4 border-t border-white/10">
+                        <OrderButton isMobile={false} />
+                    </div>
+                )}
             </div>
+        </div>
+    );
+}
+
+function OrderButton({ isMobile }: { isMobile: boolean }) {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    return (
+        <div className="relative w-full">
+            {/* Social Buttons Layer */}
+            <div className={`absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 flex gap-3 transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"}`}>
+                <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                >
+                    <Image src="/Telegram_logo.svg.png" alt="TG" width={22} height={22} className="object-contain" />
+                </a>
+                <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                >
+                    <Image src="/Instagram_icon.png" alt="IG" width={20} height={20} className="object-contain" />
+                </a>
+                <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                >
+                    <Image src="/vk-logo.png" alt="VK" width={22} height={22} className="object-contain" />
+                </a>
+            </div>
+
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(!isMenuOpen);
+                }}
+                className={`w-full py-2.5 rounded-xl bg-gradient-to-r from-[#A01648]/90 to-[#CD2664]/90 border border-white/30 text-white font-bold tracking-wider transition-all hover:brightness-110 active:scale-[0.98] shadow-lg ${isMobile ? 'text-sm' : 'text-base'}`}
+                style={{ fontFamily: "Comfortaa, sans-serif" }}
+            >
+                {isMenuOpen ? 'НАПИШИ МНЕ' : 'ЗАКАЗАТЬ'}
+            </button>
         </div>
     );
 }
@@ -229,7 +276,7 @@ export default function PicsToOrderPage() {
         }
       `}</style>
 
-            <div className="relative flex h-[100svh] w-full flex-col overflow-hidden">
+            <div className="relative flex h-svh w-full flex-col overflow-hidden">
 
                 {/* ── Carousel: starts at button-bar bottom edge on desktop, top on mobile ── */}
                 <div
@@ -369,9 +416,10 @@ export default function PicsToOrderPage() {
                         className="absolute z-30 lg:hidden"
                         style={{
                             left: "16px",
-                            right: "calc(30% + 8px + 8px)",
+                            right: "calc(30% + 16px)",
                             top: "16px",
-                            // no bottom constraint — grows to fit text
+                            maxHeight: "calc(100svh - var(--nav-height-mobile) - 32px)",
+                            overflowY: "auto",
                         }}
                     >
                         <div
@@ -387,9 +435,9 @@ export default function PicsToOrderPage() {
                                 style={{
                                     padding: "16px",
                                     color: "rgba(255,255,255,0.92)",
-                                    fontFamily: "Abibas, serif",
+                                    fontFamily: "Comfortaa, sans-serif",
                                     fontSize: "15px",
-                                    lineHeight: "1.25",
+                                    lineHeight: "1.4",
                                 }}
                             >
                                 {activeMobileBtn?.id === "sizes" ? (
@@ -401,7 +449,14 @@ export default function PicsToOrderPage() {
                                         className="w-full h-auto rounded-lg"
                                     />
                                 ) : (
-                                    <p className="whitespace-pre-line m-0">{activeMobileBtn?.text}</p>
+                                    <>
+                                        <p className="whitespace-pre-line m-0 mb-4">{activeMobileBtn?.text}</p>
+                                        {activeMobileBtn?.id === "price" && (
+                                            <div className="mt-4 pt-4 border-t border-white/10">
+                                                <OrderButton isMobile={true} />
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>

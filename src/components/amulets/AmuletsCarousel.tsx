@@ -275,19 +275,19 @@ function AmuletsDesktopCarousel() {
                     <div className="absolute top-1/2 -translate-y-1/2 left-[calc(100%+90px)] w-[170px] h-[170px] z-50">
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[221px] h-[221px] rounded-full pointer-events-none z-0 animate-golden-aura mix-blend-screen"></div>
 
-                        <a href="https://t.me/Jekki_Jane" target="_blank" rel="noreferrer"
+                        <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
                            ${isOrderMenuOpen ? 'mt-[calc(-42.5px-170px)] ml-[-42.5px] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`}>
                             <Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-cover" />
                         </a>
-                        <a href="https://instagram.com/jekki_jane" target="_blank" rel="noreferrer"
+                        <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
                            ${isOrderMenuOpen ? 'mt-[calc(-42.5px-120px)] ml-[calc(-42.5px+120px)] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
                             <Image src="/Instagram_icon.png" alt="IG" fill className="object-cover" />
                         </a>
-                        <a href="https://vk.com/jekkijane" target="_blank" rel="noreferrer"
+                        <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
                            ${isOrderMenuOpen ? 'mt-[-42.5px] ml-[calc(-42.5px+170px)] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
@@ -646,17 +646,17 @@ function AmuletsMobileCarousel() {
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110px] h-[110px] rounded-full pointer-events-none z-0 animate-golden-aura mix-blend-screen"></div>
 
                         {/* Child Buttons: Socials Bottom-Left column-diagonal */}
-                        <a href="https://vk.com/jekkijane" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
+                        <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
                             ${isOrderMenuOpen ? 'top-[-5px] right-[105px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`}>
                             <Image src="/vk-logo.png" alt="VK" fill className="object-cover" />
                         </a>
-                        <a href="https://instagram.com/jekki_jane" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
+                        <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
                             ${isOrderMenuOpen ? 'top-[27px] right-[114px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
                             <Image src="/Instagram_icon.png" alt="IG" fill className="object-cover" />
                         </a>
-                        <a href="https://t.me/Jekki_Jane" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
+                        <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
                             ${isOrderMenuOpen ? 'top-[62px] right-[102px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
                             <Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-cover" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { orderedRoutes } from "@/data/routes";
 import { useModal } from "@/components/modals/ModalProvider";
@@ -22,14 +23,25 @@ export function BottomNavigation() {
   const pathname = usePathname();
   const { openModal } = useModal();
 
-  const currentIndex = orderedRoutes.findIndex((route) => route.path === pathname);
+  const [reviewsStatus, setReviewsStatus] = useState<"default" | "underDev">("default");
+
+  const navRoutes = orderedRoutes.filter(r => r.path !== "/reviews");
+
+  const handleReviewsClick = () => {
+    setReviewsStatus("underDev");
+    setTimeout(() => {
+      setReviewsStatus("default");
+    }, 3000);
+  };
+
+  const currentIndex = navRoutes.findIndex((route) => route.path === pathname);
   const handlePrev = () => {
     const safeIndex = currentIndex >= 0 ? currentIndex : 0;
-    router.push(orderedRoutes[(safeIndex - 1 + orderedRoutes.length) % orderedRoutes.length].path);
+    router.push(navRoutes[(safeIndex - 1 + navRoutes.length) % navRoutes.length].path);
   };
   const handleNext = () => {
     const safeIndex = currentIndex >= 0 ? currentIndex : 0;
-    router.push(orderedRoutes[(safeIndex + 1) % orderedRoutes.length].path);
+    router.push(navRoutes[(safeIndex + 1) % navRoutes.length].path);
   };
 
   return (
@@ -50,9 +62,11 @@ export function BottomNavigation() {
           <Triangle direction="left" />
         </button>
         <button type="button" className={`${navCellClass(pathname === "/")} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Создатель сайта</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
         <button type="button" className={`${navCellClass(false)} w-[25%] text-[clamp(16px,2.2vw,32px)] leading-none px-1`} onClick={() => openModal("order")}>Заказать</button>
-        <button type="button" className={`${navCellClass(pathname === "/reviews")} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => router.push("/reviews")}>Отзывы</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={handleReviewsClick}>
+          {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
+        </button>
         <button type="button" className={`${navCellClass(false)} w-[16.25%] border-r border-white/20 text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
         <button type="button" className="flex h-full w-[5%] items-center justify-center" onClick={handleNext} aria-label="Следующая страница">
           <Triangle direction="right" />
@@ -66,8 +80,10 @@ export function BottomNavigation() {
         </div>
         <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
           <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
-          <button type="button" className={`${navCellClass(pathname === "/reviews")} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={() => router.push("/reviews")}>Отзывы</button>
-          <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.8vw,20px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Создатель сайта</button>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={handleReviewsClick}>
+            {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
+          </button>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.8vw,20px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
         </div>
       </div>
     </nav>

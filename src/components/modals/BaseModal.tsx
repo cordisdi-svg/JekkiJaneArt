@@ -42,7 +42,8 @@ export function BaseModal({ isOpen, onClose, children }: BaseModalProps) {
       <div className="absolute inset-0 bg-[var(--modal-bg)]" />
       <div className="relative flex h-full items-end justify-center p-0 lg:items-center lg:p-4">
         <div
-          className="max-h-[80vh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 lg:max-h-none lg:max-w-lg lg:rounded-xl"
+          className="max-h-[80vh] w-full overflow-y-auto rounded-t-2xl bg-black/25 backdrop-blur-md border border-white/10 p-6 lg:max-h-none lg:max-w-lg lg:rounded-xl text-white/95"
+          style={{ fontFamily: "'Comfortaa', sans-serif" }}
           role="dialog"
           aria-modal="true"
           onClick={(event) => event.stopPropagation()}

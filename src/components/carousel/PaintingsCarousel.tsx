@@ -100,17 +100,17 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
                 <div className="absolute bottom-4 left-4 right-4 h-10 md:h-16 flex items-end">
                     {/* Social Order Popup Layer */}
                     <div className={`absolute bottom-[calc(100%+16px)] left-0 w-full pointer-events-none transition-all duration-500 ease-out origin-bottom ${isOrderMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50" : "opacity-0 scale-[0.6] translate-y-10 z-[-1]"}`} style={{ height: "calc(100% * 1.5)" }}>
-                        <a href="https://t.me/Jekki_Jane" target="_blank" rel="noreferrer"
+                        <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                             className="absolute left-[25%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                         >
                             <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-contain" /></div>
                         </a>
-                        <a href="https://instagram.com/jekki_jane" target="_blank" rel="noreferrer"
+                        <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                             className="absolute left-[50%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                         >
                             <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.png" alt="IG" fill className="object-contain" /></div>
                         </a>
-                        <a href="https://vk.com/jekkijane" target="_blank" rel="noreferrer"
+                        <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                             className="absolute left-[75%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                         >
                             <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.png" alt="VK" fill className="object-contain" /></div>
@@ -302,7 +302,7 @@ export function PaintingsCarousel() {
                         <div className={`pointer-events-none absolute flex flex-col-reverse items-center transition-all duration-500 ease-out origin-bottom-left ${isOrderMenuOpen ? 'opacity-100 scale-100 translate-y-0 z-50' : 'opacity-0 scale-50 translate-y-8 z-[-1]'}`}
                             style={{ bottom: "calc(7.25% + max(8px, 2.5%))", left: "2.5%", gap: "max(8px, 2.5%)" }}
                         >
-                            <a href="https://t.me/Jekki_Jane" target="_blank" rel="noreferrer"
+                            <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                                 className="pointer-events-auto aspect-square rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
                                 style={{ height: "9cqh" }}
                                 onClick={(e) => e.stopPropagation()}
@@ -310,7 +310,7 @@ export function PaintingsCarousel() {
                                 <div className="absolute inset-0 bg-transparent mix-blend-screen pointer-events-none"></div>
                                 <div className="relative w-[90%] h-[90%]"><Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-contain" /></div>
                             </a>
-                            <a href="https://instagram.com/jekki_jane" target="_blank" rel="noreferrer"
+                            <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                                 className="pointer-events-auto aspect-square rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
                                 style={{ height: "9cqh" }}
                                 onClick={(e) => e.stopPropagation()}
@@ -318,7 +318,7 @@ export function PaintingsCarousel() {
                                 <div className="absolute inset-0 bg-transparent mix-blend-screen pointer-events-none"></div>
                                 <div className="relative w-[80%] h-[80%]"><Image src="/Instagram_icon.png" alt="IG" fill className="object-contain" /></div>
                             </a>
-                            <a href="https://vk.com/jekkijane" target="_blank" rel="noreferrer"
+                            <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                                 className="pointer-events-auto aspect-square rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
                                 style={{ height: "9cqh" }}
                                 onClick={(e) => e.stopPropagation()}
