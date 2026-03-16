@@ -280,7 +280,7 @@ export default function PicsToOrderPage() {
 
                 {/* ── Carousel: starts at button-bar bottom edge on desktop, top on mobile ── */}
                 <div
-                    className="absolute left-0 right-0 pointer-events-none"
+                    className="absolute left-0 right-0 z-10 hidden md:block pointer-events-none"
                     style={{
                         /* desktop: top pushed down below button bar */
                         top: `calc(${BTN_BAR_PCT}% + 0px)`,
@@ -301,7 +301,7 @@ export default function PicsToOrderPage() {
                 </div>
                 {/* Mobile: carousel covers whole active zone (buttons overlay on top) */}
                 <div
-                    className="absolute left-0 right-0 pointer-events-none lg:hidden"
+                    className="absolute left-0 right-0 pointer-events-none md:hidden"
                     style={{ top: 0, bottom: "var(--nav-height-mobile)" }}
                 >
                     <PicsToOrderMarquee />
