@@ -467,7 +467,6 @@ function AmuletsDesktopCarousel() {
                         {(!activeSeq || !activeSeq.flipped) && !showEighthSprite && (idx !== 6 || activeSeq !== null) && (
                             <SparkleBorder
                                 progress={progress}
-                                isPaused={isPaused || delayedSparkle}
                             />
                         )}
                     </div>
@@ -808,7 +807,7 @@ function AmuletsMobileCarousel() {
     );
 }
 
-function SparkleBorder({ progress, isPaused }: { progress: number; isPaused: boolean }) {
+function SparkleBorder({ progress }: { progress: number }) {
     return (
         <div className="pointer-events-none absolute inset-0 z-20">
             <svg className="absolute inset-0 h-full w-full drop-shadow-[0_0_8px_rgba(255,36,0,0.8)] xl:drop-shadow-[0_0_12px_rgba(255,36,0,0.9)]">

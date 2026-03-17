@@ -148,7 +148,6 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
     const handlePointerMove = (e: React.PointerEvent) => {
         if (!isInteracting.current || !containerRef.current || !marqueeRef.current) return;
         
-        const dx = e.clientX - startPos.current.x;
         const dy = e.clientY - startPos.current.y;
         const marquee = marqueeRef.current;
         const container = containerRef.current;
@@ -197,7 +196,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         }
     };
 
-    const handlePointerUp = (e: React.PointerEvent) => {
+    const handlePointerUp = (_e: React.PointerEvent) => {
         isInteracting.current = false;
         lastTimeAnim.current = 0; // Reset animation timer to avoid jumps
 

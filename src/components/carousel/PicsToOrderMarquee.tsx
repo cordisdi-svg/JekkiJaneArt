@@ -82,7 +82,7 @@ export function PicsToOrderMarquee() {
         };
     }, []); // Run once, uses refs
 
-    const animate = (timestamp: number) => {
+    const animate = useCallback((timestamp: number) => {
         if (!lastTimestamp.current) lastTimestamp.current = timestamp;
         const deltaTime = timestamp - lastTimestamp.current;
         lastTimestamp.current = timestamp;
@@ -112,7 +112,7 @@ export function PicsToOrderMarquee() {
         }
 
         rafRef.current = requestAnimationFrame(animate);
-    };
+    }, []);
 
     useEffect(() => {
         rafRef.current = requestAnimationFrame(animate);
@@ -121,7 +121,7 @@ export function PicsToOrderMarquee() {
             lastTimestamp.current = 0;
             stopInertia();
         };
-    }, [stopInertia]); // Only one loop for the entire lifecycle
+    }, [stopInertia, animate]); // Only one loop for the entire lifecycle
 
     // Handlers
     const handleDragStart = (pos: number) => {
