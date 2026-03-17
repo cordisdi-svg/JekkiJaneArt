@@ -133,7 +133,7 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
         }, 350);
     };
 
-    const handleItemPointerUp = (_e: React.PointerEvent) => {
+    const handleItemPointerUp = () => {
         longPressArmedRef.current = false;
         if (longPressTimeoutRef.current) {
             clearTimeout(longPressTimeoutRef.current);

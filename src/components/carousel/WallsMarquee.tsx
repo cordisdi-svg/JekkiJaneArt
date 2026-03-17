@@ -196,7 +196,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         }
     };
 
-    const handlePointerUp = (_e: React.PointerEvent) => {
+    const handlePointerUp = () => {
         isInteracting.current = false;
         lastTimeAnim.current = 0; // Reset animation timer to avoid jumps
 
