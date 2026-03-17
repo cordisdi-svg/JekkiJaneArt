@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { BottomNavigation } from "@/components/nav/BottomNavigation";
 import { ModalProvider } from "@/components/modals/ModalProvider";
+import { InteractionGuards } from "@/components/system/InteractionGuards";
 
 export const metadata: Metadata = {
   title: "Портфолио художницы",
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         ` }} />
       </head>
       <body>
+        <InteractionGuards />
         <ModalProvider>
           <div className="h-svh lg:h-auto lg:min-h-screen overflow-hidden lg:overflow-visible">
             <main className="w-full h-full">

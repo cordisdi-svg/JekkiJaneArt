@@ -236,3 +236,23 @@ body {
 body.overlay-open nav {
   visibility: hidden;
 }
+
+/* Global Interaction Guards */
+html,
+body,
+#root,
+main {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+img,
+picture {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none; /* Only for the pixel image itself */
+}

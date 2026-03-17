@@ -69,7 +69,7 @@ export function HomeSectorsMobile() {
       {/* Central absolute mobile icon, strictly rectangular with no circle cropping */}
       <div
         className="absolute left-0 top-1/2 z-20 flex items-center justify-start pointer-events-none -translate-y-1/2"
-        style={{ width: '55%', height: '55%' }}
+        style={{ width: '63%', height: '63%' }}
       >
         <button
           onClick={() => {
@@ -82,8 +82,15 @@ export function HomeSectorsMobile() {
           }}
           aria-label="О художнице"
         >
-          {/* Main Icon scaled naturally to fit the 55x55 area */}
-          <Image src="/mainpage/mainpage-icon-mobile.png" alt="О художнице" fill className="object-contain" sizes="55vw" />
+          {/* Main Icon scaled naturally to fit the new area, shifted to stay left-aligned, and brightened */}
+          <Image 
+            src="/mainpage/mainpage-icon-mobile.png" 
+            alt="О художнице" 
+            fill 
+            className="object-contain object-left" 
+            style={{ filter: 'brightness(1.15)' }} 
+            sizes="63vw" 
+          />
         </button>
       </div>
     </section>

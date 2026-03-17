@@ -5,6 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useCallback, useState } from "react
 
 const N = 9;
 const SPEED = (2 * Math.PI) / (20 * 60); // 20 sec/rev at 60fps
+const DRAG_SENSITIVITY = 0.008;
 
 // ── Desktop ellipse fractions ──────────────────────────────────────────────
 const CX_F = 0.50;
@@ -65,6 +66,8 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     const imgRefs = useRef<(HTMLDivElement | null)[]>(Array(N).fill(null));
     const angleRef = useRef(0);
     const pausedRef = useRef(false);
+    const isDraggingRef = useRef(false);
+    const lastPointerXRef = useRef(0);
     const rafRef = useRef<number>(0);
     const halfWRef = useRef(100);
     const halfHRef = useRef(133);
@@ -72,8 +75,30 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     // Live textbox bounds (in px, relative to carousel container) for mask
     const [maskBounds, setMaskBounds] = useState({ l: 0, t: 0, w: 0, h: 0 });
 
-    const pause = useCallback(() => { pausedRef.current = true; }, []);
-    const resume = useCallback(() => { pausedRef.current = false; }, []);
+    const handlePointerDown = useCallback((e: React.PointerEvent) => {
+        isDraggingRef.current = true;
+        pausedRef.current = true;
+        lastPointerXRef.current = e.clientX;
+        containerRef.current?.setPointerCapture(e.pointerId);
+    }, []);
+
+    const handlePointerMove = useCallback((e: React.PointerEvent) => {
+        if (!isDraggingRef.current) return;
+        const dx = e.clientX - lastPointerXRef.current;
+        // Adjust angle: if dx > 0 (drag right), we want items to move right.
+        // In the math: x = cx + ax * sin(θ). 
+        // Increasing θ moves items in the direction of animation (SPEED is positive).
+        // If dx > 0, we want to add to angle.
+        angleRef.current += dx * DRAG_SENSITIVITY;
+        lastPointerXRef.current = e.clientX;
+    }, []);
+
+    const stopDragging = useCallback((e: React.PointerEvent) => {
+        if (!isDraggingRef.current) return;
+        isDraggingRef.current = false;
+        pausedRef.current = false;
+        containerRef.current?.releasePointerCapture(e.pointerId);
+    }, []);
 
     // ── Compute mask bounds whenever sizes change ───────────────────────────
     useLayoutEffect(() => {
@@ -205,8 +230,12 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
         <div
             ref={containerRef}
             className="relative w-full h-full overflow-hidden"
-            onMouseDown={pause} onMouseUp={resume} onMouseLeave={resume}
-            onTouchStart={pause} onTouchEnd={resume} onTouchCancel={resume}
+            style={{ touchAction: "none" }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={stopDragging}
+            onPointerCancel={stopDragging}
+            onPointerLeave={stopDragging}
         >
             {/* Text zone — always above the mask-wrapper stacking context */}
             <div

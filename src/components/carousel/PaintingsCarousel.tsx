@@ -30,30 +30,61 @@ function ArrowBtn({ direction, onClick }: { direction: "left" | "right"; onClick
 // ─── Expanded overlay (covers full viewport including nav) ────────────────────
 function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () => void }) {
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const autoscrollPausedRef = useRef(false);
+    const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const rafRef = useRef<number | null>(null);
+
+    const pauseAutoscroll = useCallback(() => {
+        autoscrollPausedRef.current = true;
+        if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+    }, []);
+
+    const resumeAutoscroll = useCallback(() => {
+        if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+        resumeTimeoutRef.current = setTimeout(() => {
+            autoscrollPausedRef.current = false;
+        }, 4000);
+    }, []);
 
     useEffect(() => {
         const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
         window.addEventListener("keydown", h);
-        // Hide nav while overlay is open
         document.body.classList.add("overlay-open");
+
+        // Autoscroll logic
+        const scrollStep = () => {
+            const el = scrollRef.current;
+            if (el && !autoscrollPausedRef.current) {
+                // Guard: stop if bottom reached (with 1px tolerance)
+                if (el.scrollTop + el.clientHeight < el.scrollHeight - 1) {
+                    el.scrollTop += 0.5; // Slightly faster but still readable
+                }
+            }
+            rafRef.current = requestAnimationFrame(scrollStep);
+        };
+        rafRef.current = requestAnimationFrame(scrollStep);
+
         return () => {
             window.removeEventListener("keydown", h);
             document.body.classList.remove("overlay-open");
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
         };
-    }, [onClose]);
+    }, [onClose, item]); // Reset on item change
 
     // Use cropped copy image format (e.g. pic1copy.png)
     const copyUrl = item.src.replace(/\.(png|jpg|jpeg)$/i, (m) => "copy" + m);
 
     return (
         <div
-            className="fixed inset-0 flex flex-col md:flex-row items-center justify-center p-[4vh] md:p-[6svh] pb-[max(4vh,env(safe-area-inset-bottom)+10px)] gap-[3vh] md:gap-[4svh] w-full h-full mx-auto max-w-[1600px] bg-black/70"
+            className="fixed inset-0 flex flex-col md:flex-row items-center justify-center p-[2vh] md:p-[3svh] pb-[max(2vh,env(safe-area-inset-bottom)+5px)] gap-[3vh] md:gap-[4svh] w-full h-full mx-auto max-w-[1600px] bg-black/70"
             style={{ zIndex: 9999, backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}
             onClick={onClose}
         >
             {/* Square painting card (tap to close) */}
             <div
-                className="relative z-10 w-full aspect-[11/16] max-h-[50vh] md:aspect-square md:w-auto md:h-full md:max-h-none flex-shrink-0 shadow-2xl rounded-2xl overflow-hidden cursor-pointer"
+                className="relative z-10 w-full aspect-square max-h-[65vh] md:aspect-square md:w-auto md:h-full md:max-h-none flex-shrink-0 shadow-2xl rounded-2xl overflow-hidden cursor-pointer"
                 onClick={(e) => { e.stopPropagation(); onClose(); }}
                 title="Закрыть"
             >
@@ -61,24 +92,32 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
                     src={copyUrl}
                     alt={item.alt}
                     fill
-                    sizes="(max-width: 768px) 90vw, 85vh"
-                    className="object-cover"
+                    sizes="(max-width: 768px) 95vw, 85vh"
+                    className="object-contain"
                     priority
                 />
             </div>
 
             {/* Text and Action Window */}
             <div
-                className="relative z-10 w-full flex-1 md:flex-[1.2] lg:flex-1 h-full max-h-[45vh] md:max-h-none flex flex-col bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl overflow-hidden"
+                className="relative z-10 w-full flex-1 md:flex-[1.2] lg:flex-1 h-full max-h-[40vh] md:max-h-none flex flex-col bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Title and Scrollable Text Area */}
-                <div className="w-full relative flex-1 flex flex-col font-comfortaa text-white/90 overflow-y-auto custom-scrollbar md:overflow-hidden pb-[calc(16px+2.5rem+16px)] md:pb-[calc(16px+4rem+16px)]">
+                {/* Scrollable Content Container (Title, Body, Stats) */}
+                <div 
+                    ref={scrollRef}
+                    onPointerDown={pauseAutoscroll}
+                    onPointerUp={resumeAutoscroll}
+                    onPointerCancel={resumeAutoscroll}
+                    onWheel={pauseAutoscroll}
+                    onScroll={pauseAutoscroll}
+                    className="w-full relative flex-1 flex flex-col font-comfortaa text-white/90 overflow-y-auto custom-scrollbar"
+                >
                     <div className="shrink-0 p-5 pb-0 md:p-8 md:pb-0">
                         <h2 className="text-center text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-wide text-white drop-shadow-md">{item.title}</h2>
                     </div>
 
-                    <div className="md:flex-1 md:overflow-y-auto md:custom-scrollbar px-5 md:px-8 mt-2 flex flex-col gap-3">
+                    <div className="px-5 md:px-8 mt-2 flex flex-col gap-3">
                         {item.description.body.map((para, i) => (
                             <p key={i} className="font-light text-[15px] md:text-base lg:text-lg leading-relaxed text-balance">
                                 {para}
@@ -96,30 +135,35 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
                     </div>
                 </div>
 
-                {/* Bottom Action Area with Order Button */}
-                <div className="absolute bottom-4 left-4 right-4 h-10 md:h-16 flex items-end">
+                {/* Fixed Action Area (Bottom) - Separated physically from the scroll container */}
+                <div className="shrink-0 relative p-4 pt-2 pb-2">
+                    {/* Visual spacer above the button (8px is covered by pt-2) */}
+                    
                     {/* Social Order Popup Layer */}
-                    <div className={`absolute bottom-[calc(100%+16px)] left-0 w-full pointer-events-none transition-all duration-500 ease-out origin-bottom ${isOrderMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50" : "opacity-0 scale-[0.6] translate-y-10 z-[-1]"}`} style={{ height: "calc(100% * 1.5)" }}>
-                        <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
-                            className="absolute left-[25%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
-                        >
-                            <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-contain" /></div>
-                        </a>
-                        <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
-                            className="absolute left-[50%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
-                        >
-                            <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.png" alt="IG" fill className="object-contain" /></div>
-                        </a>
-                        <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
-                            className="absolute left-[75%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
-                        >
-                            <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.png" alt="VK" fill className="object-contain" /></div>
-                        </a>
+                    <div className={`absolute bottom-[calc(100%+8px)] left-4 right-4 pointer-events-none transition-all duration-500 ease-out origin-bottom ${isOrderMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50" : "opacity-0 scale-[0.6] translate-y-10 z-[-1]"}`} style={{ height: "calc(max(20px, 5cqh) * 1.5)" }}>
+                         <div className="relative w-full h-full">
+                            <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
+                                className="absolute left-[25%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
+                            >
+                                <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-contain" /></div>
+                            </a>
+                            <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
+                                className="absolute left-[50%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
+                            >
+                                <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.png" alt="IG" fill className="object-contain" /></div>
+                            </a>
+                            <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
+                                className="absolute left-[75%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
+                            >
+                                <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.png" alt="VK" fill className="object-contain" /></div>
+                            </a>
+                        </div>
                     </div>
+                    
                     <button
                         type="button"
                         onClick={() => setIsOrderMenuOpen(!isOrderMenuOpen)}
-                        className={`w-full h-full rounded-xl bg-gradient-to-r from-[#A01648]/90 to-[#CD2664]/90 border border-white/30 text-white font-comfortaa font-bold text-sm md:text-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-xl tracking-wider`}
+                        className={`w-full h-10 md:h-16 rounded-xl bg-gradient-to-r from-[#A01648]/90 to-[#CD2664]/90 border border-white/30 text-white font-comfortaa font-bold text-sm md:text-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-xl tracking-wider`}
                     >
                         {isOrderMenuOpen ? 'НАПИШИ МНЕ' : 'ЗАБРОНИРОВАТЬ'}
                     </button>
