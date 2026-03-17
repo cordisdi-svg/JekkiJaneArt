@@ -132,6 +132,11 @@ function AmuletsDesktopCarousel() {
     type ActiveSeqState = { seqIdx: number; flipped: boolean };
     const [activeSeq, setActiveSeq] = useState<ActiveSeqState | null>(null);
 
+    // --- Autoplay Timer (requestAnimationFrame) ---
+    const [progress, setProgress] = useState(0);
+    const accumulatedTimeRef = useRef(0);
+    const lastTimeRef = useRef<number>(0);
+
     const containerRef = useRef<HTMLDivElement>(null);
     const throttled = useRef(false);
 
@@ -155,6 +160,41 @@ function AmuletsDesktopCarousel() {
         setIsOrderMenuOpen(false);
         setShowEighthSprite(false);
     }, [activeSeq, next]);
+
+    useEffect(() => {
+        let rafId: number;
+        const step = (time: number) => {
+            if (!lastTimeRef.current) {
+                lastTimeRef.current = time;
+                rafId = requestAnimationFrame(step);
+                return;
+            }
+            const delta = time - lastTimeRef.current;
+            lastTimeRef.current = time;
+
+            if (!isPaused && !isOrderMenuOpen && !showEighthSprite && !delayedSparkle) {
+                accumulatedTimeRef.current += delta;
+                const limit = 3000; // Desktop step = 3000ms
+                if (accumulatedTimeRef.current >= limit) {
+                    accumulatedTimeRef.current = 0;
+                    handleLoop();
+                }
+                setProgress((accumulatedTimeRef.current / limit) * 100);
+            }
+            rafId = requestAnimationFrame(step);
+        };
+        rafId = requestAnimationFrame(step);
+        return () => {
+            cancelAnimationFrame(rafId);
+            lastTimeRef.current = 0;
+        };
+    }, [isPaused, isOrderMenuOpen, showEighthSprite, delayedSparkle, handleLoop]);
+
+    // Reset timer on slide change or sequence state toggle
+    useEffect(() => {
+        accumulatedTimeRef.current = 0;
+        setProgress(0);
+    }, [idx, activeSeq?.flipped, activeSeq?.seqIdx]);
 
     const handleStartSequence = (seqIdx: number) => {
         if (activeSeq?.seqIdx === seqIdx) {
@@ -426,10 +466,8 @@ function AmuletsDesktopCarousel() {
                         {renderCenterContent()}
                         {(!activeSeq || !activeSeq.flipped) && !showEighthSprite && (idx !== 6 || activeSeq !== null) && (
                             <SparkleBorder
-                                key={`sparkle-${activeSeq?.seqIdx}-${activeSeq?.flipped}-${animKey}-${Math.random()}`}
+                                progress={progress}
                                 isPaused={isPaused || delayedSparkle}
-                                onLoop={handleLoop}
-                                duration={activeSeq !== null ? "5s" : "7s"}
                             />
                         )}
                     </div>
@@ -450,6 +488,7 @@ function AmuletsMobileCarousel() {
     const [idx, setIdx] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [animationDirection, setAnimationDirection] = useState<"next" | "prev">("next");
 
     // States ported from Desktop
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
@@ -458,16 +497,31 @@ function AmuletsMobileCarousel() {
     const [activeSeq, setActiveSeq] = useState<ActiveSeqState | null>(null);
     const [isSeqAnimating, setIsSeqAnimating] = useState(false);
 
+    // --- Autoplay Timer (requestAnimationFrame) ---
+    const accumulatedTimeRef = useRef(0);
+    const lastTimeRef = useRef<number>(0);
+
     const containerRef = useRef<HTMLDivElement>(null);
     const touchY = useRef(0);
 
     const next = useCallback(() => {
         if (isAnimating) return;
+        setAnimationDirection("next");
         setIsAnimating(true);
         setTimeout(() => {
             setIdx((i) => mod(i + 1, n));
             setIsAnimating(false);
         }, 2000); // 2s duration as requested
+    }, [isAnimating, n]);
+
+    const prev = useCallback(() => {
+        if (isAnimating) return;
+        setAnimationDirection("prev");
+        setIsAnimating(true);
+        setTimeout(() => {
+            setIdx((i) => mod(i - 1, n));
+            setIsAnimating(false);
+        }, 2000); // 2s duration
     }, [isAnimating, n]);
 
     // Handle sequence logic (ported from desktop)
@@ -490,23 +544,46 @@ function AmuletsMobileCarousel() {
         setIsPaused(false);
     };
 
-    // Auto-play timer (ported and adapted)
+    // Auto-play timer using requestAnimationFrame (elapsed time)
     useEffect(() => {
-        // Stop auto-scroll if paused or animating
-        if (isPaused || isAnimating) return;
-        const timer = setInterval(() => {
-            if (activeSeq === null) {
-                next();
-            } else {
-                if (!activeSeq.flipped) {
-                    setIsSeqAnimating(true);
-                    setActiveSeq(prev => prev ? { ...prev, flipped: true } : null);
-                    setTimeout(() => setIsSeqAnimating(false), 2500);
+        let rafId: number;
+        const step = (time: number) => {
+            if (!lastTimeRef.current) {
+                lastTimeRef.current = time;
+                rafId = requestAnimationFrame(step);
+                return;
+            }
+            const delta = time - lastTimeRef.current;
+            lastTimeRef.current = time;
+
+            // Pause timer if user is interacting, menu is open, or it's currently animating
+            if (!isPaused && !isAnimating && !isSeqAnimating && !isOrderMenuOpen && !showEighthSprite) {
+                accumulatedTimeRef.current += delta;
+                const limit = 2000; // Mobile step = 2000ms
+                if (accumulatedTimeRef.current >= limit) {
+                    accumulatedTimeRef.current = 0;
+                    if (activeSeq === null) {
+                        next();
+                    } else if (!activeSeq.flipped) {
+                        setIsSeqAnimating(true);
+                        setActiveSeq(prev => prev ? { ...prev, flipped: true } : null);
+                        setTimeout(() => setIsSeqAnimating(false), 2500);
+                    }
                 }
             }
-        }, 7000); // 7s interval
-        return () => clearInterval(timer);
-    }, [isPaused, isAnimating, next, activeSeq]);
+            rafId = requestAnimationFrame(step);
+        };
+        rafId = requestAnimationFrame(step);
+        return () => {
+            cancelAnimationFrame(rafId);
+            lastTimeRef.current = 0;
+        };
+    }, [isPaused, isAnimating, isSeqAnimating, isOrderMenuOpen, showEighthSprite, next, activeSeq]);
+
+    // Reset timer on slide change or flip
+    useEffect(() => {
+        accumulatedTimeRef.current = 0;
+    }, [idx, activeSeq?.flipped, activeSeq?.seqIdx]);
 
     const handleTouchStart = (e: React.TouchEvent) => {
         touchY.current = e.touches[0].clientY;
@@ -527,6 +604,8 @@ function AmuletsMobileCarousel() {
                 if (activeSeq !== null && activeSeq.flipped) {
                     // Manual flip back
                     setActiveSeq(prev => prev ? { ...prev, flipped: false } : null);
+                } else if (activeSeq === null) {
+                    prev();
                 }
             }
         }
@@ -574,8 +653,19 @@ function AmuletsMobileCarousel() {
                     0% { transform: scale(0.95); filter: brightness(0.3); z-index: 10; }
                     100% { transform: scale(1); filter: brightness(1); z-index: 20; }
                 }
+                @keyframes deck-sweep-out-prev {
+                    0% { transform: scale(1) translateY(0); opacity: 1; z-index: 20; }
+                    30% { transform: scale(0.9) translateY(10%); opacity: 1; z-index: 20; }
+                    100% { transform: scale(0.8) translateY(130%); opacity: 0; z-index: 20; }
+                }
+                @keyframes deck-sweep-in-prev {
+                    0% { transform: scale(0.95); filter: brightness(0.3); z-index: 10; }
+                    100% { transform: scale(1); filter: brightness(1); z-index: 20; }
+                }
                 .card-exit { animation: deck-sweep-out 2s forwards ease-in-out; }
                 .card-enter { animation: deck-sweep-in 2s forwards ease-in-out; }
+                .card-exit-prev { animation: deck-sweep-out-prev 2s forwards ease-in-out; }
+                .card-enter-prev { animation: deck-sweep-in-prev 2s forwards ease-in-out; }
 
                 /* Animations ported from desktop */
                 @keyframes btnBreathe {
@@ -612,10 +702,10 @@ function AmuletsMobileCarousel() {
 
             {/* Main Carousel Area (Full Height, Overlaying Buttons) */}
             <div className="absolute inset-0 flex items-center justify-center z-10">
-                {/* Next Card (Underneath) */}
+                {/* Background Card (Underneath) */}
                 {activeSeq === null && !showEighthSprite && (
                     <div
-                        className={`absolute inset-0 flex items-center justify-center transition-all duration-[2000ms] ${isAnimating ? "card-enter" : ""}`}
+                        className={`absolute inset-0 flex items-center justify-center transition-all duration-[2000ms] ${isAnimating ? (animationDirection === "next" ? "card-enter" : "card-enter-prev") : ""}`}
                         style={{
                             transform: isAnimating ? "" : "scale(0.95)",
                             filter: isAnimating ? "" : "brightness(0.3)",
@@ -623,7 +713,7 @@ function AmuletsMobileCarousel() {
                         }}
                     >
                         <div className="relative w-full h-full aspect-[11/16]">
-                            <Image src={items[mod(idx + 1, n)].src} alt="Next" fill quality={90} className="object-contain drop-shadow-2xl" />
+                            <Image src={items[mod(idx + (animationDirection === "next" ? 1 : -1), n)].src} alt="Next/Prev" fill quality={90} className="object-contain drop-shadow-2xl" />
                         </div>
                     </div>
                 )}
@@ -631,7 +721,7 @@ function AmuletsMobileCarousel() {
                 {/* Current Content (On top) */}
                 <div
                     key={activeSeq !== null ? `seq-${activeSeq.seqIdx}` : showEighthSprite ? 'eighth' : idx}
-                    className={`absolute inset-0 flex items-center justify-center ${isAnimating ? "card-exit" : "slot-in"}`}
+                    className={`absolute inset-0 flex items-center justify-center ${isAnimating ? (animationDirection === "next" ? "card-exit" : "card-exit-prev") : "slot-in"}`}
                     style={{ zIndex: 20 }}
                 >
                     <div className="relative w-full h-full aspect-[11/16]">
@@ -714,18 +804,11 @@ function AmuletsMobileCarousel() {
                     })}
                 </div>
             </div>
-
-            {/* Pause indicator */}
-            {isPaused && (
-                <div className="absolute top-4 left-4 bg-black/40 text-white px-3 py-1.5 rounded-full text-[13px] backdrop-blur-md z-[60] font-comfortaa-light border border-white/20 animate-pulse">
-                    ПАУЗА
-                </div>
-            )}
         </div>
     );
 }
 
-function SparkleBorder({ isPaused, onLoop, duration }: { isPaused: boolean; onLoop: () => void; duration: string }) {
+function SparkleBorder({ progress, isPaused }: { progress: number; isPaused: boolean }) {
     return (
         <div className="pointer-events-none absolute inset-0 z-20">
             <svg className="absolute inset-0 h-full w-full drop-shadow-[0_0_8px_rgba(255,36,0,0.8)] xl:drop-shadow-[0_0_12px_rgba(255,36,0,0.9)]">
@@ -738,11 +821,10 @@ function SparkleBorder({ isPaused, onLoop, duration }: { isPaused: boolean; onLo
                     strokeWidth="3"
                     strokeLinecap="round"
                     pathLength="100"
-                    onAnimationIteration={onLoop}
                     style={{
                         strokeDasharray: "100",
-                        animation: `sparkle-run ${duration} linear infinite`,
-                        animationPlayState: isPaused ? "paused" : "running",
+                        strokeDashoffset: 100 - progress,
+                        transition: "none"
                     }}
                 />
             </svg>

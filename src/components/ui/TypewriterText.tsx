@@ -19,7 +19,9 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
             if (typeof node === "string" || typeof node === "number") {
                 text += String(node);
             } else if (React.isValidElement(node)) {
-                if (node.props && node.props.children) {
+                if (node.type === "br") {
+                    text += "\n";
+                } else if (node.props && node.props.children) {
                     React.Children.forEach(node.props.children, traverse);
                 }
             } else if (Array.isArray(node)) {
@@ -38,11 +40,11 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
         let currentDelay = delay;
 
         // Sophisticated delays matching about/page.tsx
-        if (ch === "\n") currentDelay = 150;
-        else if (".!?…".includes(ch)) currentDelay = 200;
-        else if (",;:—-".includes(ch)) currentDelay = 90;
-        else if (ch === " ") currentDelay = 28;
-        else currentDelay = delay + (Math.random() * 14 - 7);
+        if (ch === "\n") currentDelay = 110;
+        else if (".!?…".includes(ch)) currentDelay = 150;
+        else if (",;:—-".includes(ch)) currentDelay = 65;
+        else if (ch === " ") currentDelay = 20;
+        else currentDelay = delay + (Math.random() * 10 - 5);
 
         const timer = setTimeout(() => {
             setCharIndex((prev) => prev + 1);
@@ -94,11 +96,18 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
             }
 
             if (React.isValidElement(node)) {
+                if (node.type === "br") {
+                    const nodeIndex = currentGlobalIndex;
+                    currentGlobalIndex += 1;
+                    if (charIndex > nodeIndex) return node;
+                    return null;
+                }
+
                 const children = React.Children.map(node.props.children, cloneAndClip);
                 // Filter out null children to check if the element should render at all
                 const validChildren = React.Children.toArray(children).filter(child => child !== null);
 
-                if (validChildren.length === 0) return null;
+                if (validChildren.length === 0 && node.props.children) return null;
 
                 return React.cloneElement(node, { ...node.props, children });
             }

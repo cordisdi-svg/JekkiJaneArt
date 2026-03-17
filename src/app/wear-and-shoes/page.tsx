@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { WearMarquee } from "@/components/carousel/WearMarquee";
 import { FlippingWearCard } from "@/components/carousel/FlippingWearCard";
@@ -9,9 +8,6 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 
 
 export default function WearAndShoesPage() {
-  const scrollRefDesktop = useRef<HTMLDivElement>(null);
-  const scrollRefMobile = useRef<HTMLDivElement>(null);
-
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
       {/* Активная зона */}
@@ -41,9 +37,12 @@ export default function WearAndShoesPage() {
                     border-radius: 10px;
                   }
                 `}</style>
-              <div ref={scrollRefMobile} className="overflow-y-auto custom-transparent-scrollbar pr-1">
+              <div 
+                className="overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-1"
+                style={{ touchAction: "pan-y" }}
+              >
                 <div className="text-white text-[15px] leading-[1.4] font-comfortaa-light">
-                  <TypewriterText scrollRef={scrollRefMobile}>
+                  <TypewriterText delay={26}>
                     {DesktopContent({ showTitle: true })}
                   </TypewriterText>
                 </div>
@@ -59,7 +58,6 @@ export default function WearAndShoesPage() {
           <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
             <FlippingWearCard
               images={["/wear-and-shoes/1.png", "/wear-and-shoes/2.jpeg", "/wear-and-shoes/3.jpeg", "/wear-and-shoes/4.png", "/wear-and-shoes/5.png"]}
-              startIntervalIdx={0}
             />
           </div>
 
@@ -93,10 +91,10 @@ export default function WearAndShoesPage() {
 
                 {/* Scrollable Unified Area */}
                 <div
-                  ref={scrollRefDesktop}
-                  className="flex-1 overflow-y-auto custom-transparent-scrollbar pr-3 pb-4"
+                  className="flex-1 overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-3 pb-4"
+                  style={{ touchAction: "pan-y" }}
                 >
-                  <TypewriterText scrollRef={scrollRefDesktop}>
+                  <TypewriterText delay={26}>
                     {DesktopContent()}
                   </TypewriterText>
                 </div>
@@ -108,7 +106,6 @@ export default function WearAndShoesPage() {
           <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
             <FlippingWearCard
               images={["/wear-and-shoes/3.jpeg", "/wear-and-shoes/4.png", "/wear-and-shoes/5.png", "/wear-and-shoes/1.png", "/wear-and-shoes/2.jpeg"]}
-              startIntervalIdx={1}
             />
           </div>
 
@@ -168,23 +165,23 @@ function DesktopContent({ showTitle = false }: { showTitle?: boolean } = {}) {
       </p>
       <div className="flex flex-col gap-3 mb-4">
         <div>
-          <strong>1. Обсуждение идеи</strong><br />
+          <strong>1. Обсуждение идеи</strong><br /><br />
           Вы рассказываете свою идею, пожелания, стиль или присылаете референсы.
         </div>
         <div>
-          <strong>2. Разработка эскиза</strong><br />
+          <strong>2. Разработка эскиза</strong><br /><br />
           Я создаю художественный эскиз будущей росписи.
         </div>
         <div>
-          <strong>3. Согласование</strong><br />
+          <strong>3. Согласование</strong><br /><br />
           Мы обсуждаем детали и при необходимости вносим правки.
         </div>
         <div>
-          <strong>4. Создание росписи</strong><br />
+          <strong>4. Создание росписи</strong><br /><br />
           После утверждения я приступаю к ручной росписи изделия.
         </div>
         <div>
-          <strong>5. Готовая работа</strong><br />
+          <strong>5. Готовая работа</strong><br /><br />
           Вы получаете уникальную вещь, созданную специально для вас.
         </div>
       </div>
