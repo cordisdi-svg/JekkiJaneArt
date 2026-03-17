@@ -35,6 +35,21 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
     const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const rafRef = useRef<number | null>(null);
 
+    const isDraggingRef = useRef(false);
+    const startYRef = useRef(0);
+    const initialScrollTopRef = useRef(0);
+    const velocityRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const lastPosRef = useRef(0);
+    const inertiaRafRef = useRef<number | null>(null);
+
+    const stopInertia = useCallback(() => {
+        if (inertiaRafRef.current) {
+            cancelAnimationFrame(inertiaRafRef.current);
+            inertiaRafRef.current = null;
+        }
+    }, []);
+
     const pauseAutoscroll = useCallback(() => {
         autoscrollPausedRef.current = true;
         if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
@@ -55,7 +70,7 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
         // Autoscroll logic
         const scrollStep = () => {
             const el = scrollRef.current;
-            if (el && !autoscrollPausedRef.current) {
+            if (el && !autoscrollPausedRef.current && !isDraggingRef.current && !inertiaRafRef.current) {
                 // Guard: stop if bottom reached (with 1px tolerance)
                 if (el.scrollTop + el.clientHeight < el.scrollHeight - 1) {
                     el.scrollTop += 0.5; // Slightly faster but still readable
@@ -70,8 +85,76 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
             document.body.classList.remove("overlay-open");
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
+            stopInertia();
         };
-    }, [onClose, item]); // Reset on item change
+    }, [onClose, item, stopInertia]); // Reset on item change
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        const el = scrollRef.current;
+        if (!el) return;
+        isDraggingRef.current = true;
+        pauseAutoscroll();
+        stopInertia();
+        
+        startYRef.current = e.clientY;
+        initialScrollTopRef.current = el.scrollTop;
+        el.setPointerCapture(e.pointerId);
+
+        lastTimeRef.current = performance.now();
+        lastPosRef.current = e.clientY;
+        velocityRef.current = 0;
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+        if (!isDraggingRef.current || !scrollRef.current) return;
+        const el = scrollRef.current;
+
+        const now = performance.now();
+        const dt = Math.max(now - lastTimeRef.current, 1);
+        const dy = e.clientY - startYRef.current;
+        const deltaPos = e.clientY - lastPosRef.current;
+
+        velocityRef.current = deltaPos / dt;
+        lastTimeRef.current = now;
+        lastPosRef.current = e.clientY;
+
+        el.scrollTop = initialScrollTopRef.current - dy;
+    };
+
+    const handlePointerUp = () => {
+        if (!isDraggingRef.current) return;
+        isDraggingRef.current = false;
+
+        // Start Inertia
+        if (Math.abs(velocityRef.current) > 0.1) {
+            const friction = 0.95;
+            let v = velocityRef.current;
+            const maxV = 5;
+            if (v > maxV) v = maxV;
+            if (v < -maxV) v = -maxV;
+
+            const step = () => {
+                const el = scrollRef.current;
+                if (!el) {
+                    inertiaRafRef.current = null;
+                    resumeAutoscroll();
+                    return;
+                }
+                v *= friction;
+                if (Math.abs(v) < 0.05) {
+                    inertiaRafRef.current = null;
+                    resumeAutoscroll();
+                    return;
+                }
+
+                el.scrollTop -= v * 16;
+                inertiaRafRef.current = requestAnimationFrame(step);
+            };
+            inertiaRafRef.current = requestAnimationFrame(step);
+        } else {
+            resumeAutoscroll();
+        }
+    };
 
     // Use cropped copy image format (e.g. pic1copy.png)
     const copyUrl = item.src.replace(/\.(png|jpg|jpeg)$/i, (m) => "copy" + m);
@@ -106,12 +189,14 @@ function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () =>
                 {/* Scrollable Content Container (Title, Body, Stats) */}
                 <div 
                     ref={scrollRef}
-                    onPointerDown={pauseAutoscroll}
-                    onPointerUp={resumeAutoscroll}
-                    onPointerCancel={resumeAutoscroll}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
                     onWheel={pauseAutoscroll}
                     onScroll={pauseAutoscroll}
                     className="w-full relative flex-1 flex flex-col font-comfortaa text-white/90 overflow-y-auto custom-scrollbar"
+                    style={{ touchAction: "none" }}
                 >
                     <div className="shrink-0 p-5 pb-0 md:p-8 md:pb-0">
                         <h2 className="text-center text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-wide text-white drop-shadow-md">{item.title}</h2>

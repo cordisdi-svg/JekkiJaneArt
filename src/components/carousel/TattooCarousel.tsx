@@ -5,7 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useCallback, useState } from "react
 
 const N = 9;
 const SPEED = (2 * Math.PI) / (20 * 60); // 20 sec/rev at 60fps
-const DRAG_SENSITIVITY = 0.008;
+const DRAG_SENSITIVITY = 0.0048; // Reduced from 0.008 (scaled ~0.6)
 
 // ── Desktop ellipse fractions ──────────────────────────────────────────────
 const CX_F = 0.50;
@@ -72,19 +72,101 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     const halfWRef = useRef(100);
     const halfHRef = useRef(133);
 
+    // Momentum refs
+    const velocityRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const inertiaRafRef = useRef<number | null>(null);
+
+    // Hold-Preview refs
+    const activePreviewIndexRef = useRef<number | null>(null);
+    const isHoldingRef = useRef(false);
+    const previewProgressRef = useRef(0);
+    const maskWrapperRef = useRef<HTMLDivElement>(null);
+    const previewImgRef = useRef<HTMLDivElement>(null);
+    const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+
+    // Long-press refs
+    const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const pointerDownPosRef = useRef({ x: 0, y: 0 });
+    const longPressArmedRef = useRef(false);
+    const didMoveRef = useRef(false);
+
+    const stopInertia = useCallback(() => {
+        if (inertiaRafRef.current) {
+            cancelAnimationFrame(inertiaRafRef.current);
+            inertiaRafRef.current = null;
+        }
+    }, []);
+
     // Live textbox bounds (in px, relative to carousel container) for mask
     const [maskBounds, setMaskBounds] = useState({ l: 0, t: 0, w: 0, h: 0 });
 
     const handlePointerDown = useCallback((e: React.PointerEvent) => {
+        if (activePreviewIndexRef.current !== null) return; // Ignore if already previewing
         isDraggingRef.current = true;
         pausedRef.current = true;
+        stopInertia();
         lastPointerXRef.current = e.clientX;
         containerRef.current?.setPointerCapture(e.pointerId);
-    }, []);
+
+        lastTimeRef.current = performance.now();
+        velocityRef.current = 0;
+    }, [stopInertia]);
+
+    const handleItemPointerDown = (e: React.PointerEvent, index: number) => {
+        // We DON'T stop propagation here so the container can still handle drag
+        pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
+        didMoveRef.current = false;
+        longPressArmedRef.current = true;
+        
+        if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
+        
+        longPressTimeoutRef.current = setTimeout(() => {
+            if (!didMoveRef.current && longPressArmedRef.current) {
+                activePreviewIndexRef.current = index;
+                setPreviewSrc(IMGS[index]);
+                isHoldingRef.current = true;
+                pausedRef.current = true;
+                stopInertia();
+                longPressArmedRef.current = false; // Disarm once fired
+            }
+        }, 350);
+    };
+
+    const handleItemPointerUp = (e: React.PointerEvent) => {
+        longPressArmedRef.current = false;
+        if (longPressTimeoutRef.current) {
+            clearTimeout(longPressTimeoutRef.current);
+            longPressTimeoutRef.current = null;
+        }
+        isHoldingRef.current = false;
+    };
 
     const handlePointerMove = useCallback((e: React.PointerEvent) => {
+        // If movement exceeds threshold, cancel long-press
+        if (longPressArmedRef.current && !didMoveRef.current) {
+            const dx_long = Math.abs(e.clientX - pointerDownPosRef.current.x);
+            const dy_long = Math.abs(e.clientY - pointerDownPosRef.current.y);
+            if (dx_long > 10 || dy_long > 10) {
+                didMoveRef.current = true;
+                longPressArmedRef.current = false;
+                if (longPressTimeoutRef.current) {
+                    clearTimeout(longPressTimeoutRef.current);
+                    longPressTimeoutRef.current = null;
+                }
+            }
+        }
+
         if (!isDraggingRef.current) return;
+        
+        const now = performance.now();
+        const dt = Math.max(now - lastTimeRef.current, 1);
         const dx = e.clientX - lastPointerXRef.current;
+        
+        // Scale velocity by DRAG_SENSITIVITY as requested
+        velocityRef.current = (dx * DRAG_SENSITIVITY) / dt;
+        lastTimeRef.current = now;
+
         // Adjust angle: if dx > 0 (drag right), we want items to move right.
         // In the math: x = cx + ax * sin(θ). 
         // Increasing θ moves items in the direction of animation (SPEED is positive).
@@ -94,10 +176,46 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     }, []);
 
     const stopDragging = useCallback((e: React.PointerEvent) => {
+        // Always clean up long-press and holding state on release
+        longPressArmedRef.current = false;
+        isHoldingRef.current = false;
+        if (longPressTimeoutRef.current) {
+            clearTimeout(longPressTimeoutRef.current);
+            longPressTimeoutRef.current = null;
+        }
+
         if (!isDraggingRef.current) return;
         isDraggingRef.current = false;
-        pausedRef.current = false;
         containerRef.current?.releasePointerCapture(e.pointerId);
+
+        // Don't restart orbit if we are in the middle of a preview
+        if (activePreviewIndexRef.current !== null) return;
+
+        // Start Inertia
+        const threshold = 0.1 * DRAG_SENSITIVITY;
+        if (Math.abs(velocityRef.current) > threshold) {
+            const friction = 0.96; // Increased from 0.95
+            let v = velocityRef.current;
+            const maxV = 2.0 * DRAG_SENSITIVITY; // Reduced raw max from 3.0 to 2.0
+            if (v > maxV) v = maxV;
+            if (v < -maxV) v = -maxV;
+
+            const step = () => {
+                v *= friction;
+                if (Math.abs(v) < threshold * 0.1) {
+                    inertiaRafRef.current = null;
+                    pausedRef.current = false;
+                    return;
+                }
+
+                // Add v directly since it already includes sensitivity scaling
+                angleRef.current += v * 16;
+                inertiaRafRef.current = requestAnimationFrame(step);
+            };
+            inertiaRafRef.current = requestAnimationFrame(step);
+        } else {
+            pausedRef.current = false;
+        }
     }, []);
 
     // ── Compute mask bounds whenever sizes change ───────────────────────────
@@ -138,7 +256,24 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
         const img_w_f = mobile ? 0.30 : 0.22;
 
         const step = () => {
-            if (!pausedRef.current) angleRef.current += SPEED;
+            // Update preview progress
+            if (isHoldingRef.current) {
+                previewProgressRef.current = Math.min(1, previewProgressRef.current + 0.12);
+            } else {
+                previewProgressRef.current = Math.max(0, previewProgressRef.current - 0.12);
+                if (previewProgressRef.current === 0 && activePreviewIndexRef.current !== null) {
+                    activePreviewIndexRef.current = null;
+                    setPreviewSrc(null); // Cleanup overlay
+                    pausedRef.current = false;
+                }
+            }
+
+            const p = previewProgressRef.current;
+            const activeIdx = activePreviewIndexRef.current;
+
+            if (!pausedRef.current && activeIdx === null) {
+                angleRef.current += SPEED;
+            }
 
             const W = container.offsetWidth;
             const H = container.offsetHeight;
@@ -149,6 +284,17 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
             const hW = halfWRef.current;
             const hH = halfHRef.current;
 
+            // Blur background layers (textbox and mask wrapper)
+            const blurVal = p * 4;
+            const opVal = 1 - p * 0.4;
+            if (textboxRef.current) {
+                textboxRef.current.style.filter = blurVal > 0 ? `blur(${blurVal}px)` : 'none';
+                textboxRef.current.style.opacity = opVal.toString();
+            }
+            if (maskWrapperRef.current) {
+                maskWrapperRef.current.style.filter = blurVal > 0 ? `blur(${blurVal}px)` : 'none';
+            }
+
             imgRefs.current.forEach((el, i) => {
                 if (!el) return;
                 const θ = angleRef.current + (i / N) * 2 * Math.PI;
@@ -158,13 +304,38 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                 const y = cy + ay * cosθ;
                 const t = (1 + cosθ) / 2;
 
-                const scale = lerp(min_s, max_s, t);
-                const opacity = lerp(0.4, 1.0, t);
+                const baseScale = lerp(min_s, max_s, t);
+                const baseOpacity = lerp(0.4, 1.0, t);
                 const zIndex = Math.round(t * 100);
 
-                el.style.transform = `translate(${x - hW}px, ${y - hH}px) scale(${scale})`;
-                el.style.opacity = `${opacity}`;
-                el.style.zIndex = `${zIndex}`;
+                // If it's the active index, we animate it via the PREVIEW overlay
+                // and hide the original one in the orbit.
+                let finalOpacity = baseOpacity;
+                
+                if (activeIdx !== null && i === activeIdx) {
+                    finalOpacity = baseOpacity * (1 - p);
+                    
+                    if (previewImgRef.current) {
+                        const targetScale = baseScale * 2;
+                        const targetX = cx - hW;
+                        const targetY = cy - hH;
+                        
+                        const curX = x - hW;
+                        const curY = y - hH;
+                        
+                        const finalX = lerp(curX, targetX, p);
+                        const finalY = lerp(curY, targetY, p);
+                        const finalScale = lerp(baseScale, targetScale, p);
+                        
+                        previewImgRef.current.style.transform = `translate(${finalX}px, ${finalY}px) scale(${finalScale})`;
+                        previewImgRef.current.style.opacity = p.toString();
+                    }
+                }
+
+                el.style.transform = `translate(${x - hW}px, ${y - hH}px) scale(${baseScale})`;
+                el.style.opacity = finalOpacity.toString();
+                el.style.zIndex = zIndex.toString();
+                el.style.filter = 'none'; // Background blur handled on container level
             });
 
             rafRef.current = requestAnimationFrame(step);
@@ -185,8 +356,11 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
             rafRef.current = requestAnimationFrame(step);
         });
 
-        return () => cancelAnimationFrame(rafRef.current);
-    }, [mobile]);
+        return () => {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            stopInertia();
+        };
+    }, [mobile, stopInertia]);
 
     /*
      * Ellipse math:
@@ -247,12 +421,15 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
             </div>
 
             {/* Image wrapper — mask punches hole at textbox bounds */}
-            <div style={maskWrapperStyle}>
+            <div ref={maskWrapperRef} style={maskWrapperStyle}>
                 {IMGS.map((src, i) => (
                     <div
                         key={i}
                         ref={el => { imgRefs.current[i] = el; }}
-                        className="absolute top-0 left-0 overflow-hidden rounded-xl shadow-2xl will-change-transform"
+                        onPointerDown={(e) => handleItemPointerDown(e, i)}
+                        onPointerUp={handleItemPointerUp}
+                        onPointerCancel={handleItemPointerUp}
+                        className="absolute top-0 left-0 overflow-hidden rounded-xl shadow-2xl will-change-transform cursor-pointer"
                         style={{ transformOrigin: '50% 50%' }}
                     >
                         <Image
@@ -265,6 +442,17 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                     </div>
                 ))}
             </div>
+
+            {/* Preview Layer — Above everything else, z-index 70 */}
+            {previewSrc && (
+                <div
+                    ref={previewImgRef}
+                    className="absolute top-0 left-0 pointer-events-none overflow-hidden rounded-xl shadow-2xl"
+                    style={{ zIndex: 70, transformOrigin: '50% 50%', width: halfWRef.current * 2, height: halfHRef.current * 2 }}
+                >
+                    <Image src={previewSrc} alt="Preview" fill className="object-cover" />
+                </div>
+            )}
         </div>
     );
 }

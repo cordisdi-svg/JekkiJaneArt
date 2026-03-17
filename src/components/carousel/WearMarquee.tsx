@@ -24,8 +24,21 @@ export function WearMarquee() {
     const isInteracting = useRef(false);
     const startY = useRef(0);
     const initialScrollTop = useRef(0);
-    const lastTime = useRef<number>(0);
+    const lastTimeAnim = useRef<number>(0);
     const animationFrameId = useRef<number>(0);
+
+    // Momentum refs
+    const velocityRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const lastPosRef = useRef(0);
+    const inertiaRafRef = useRef<number | null>(null);
+
+    const stopInertia = useCallback(() => {
+        if (inertiaRafRef.current) {
+            cancelAnimationFrame(inertiaRafRef.current);
+            inertiaRafRef.current = null;
+        }
+    }, []);
 
     // 1. Desktop Detection
     useEffect(() => {
@@ -45,15 +58,15 @@ export function WearMarquee() {
         if (isDesktop) return;
 
         const animate = (time: number) => {
-            if (lastTime.current === 0) {
-                lastTime.current = time;
+            if (lastTimeAnim.current === 0) {
+                lastTimeAnim.current = time;
                 animationFrameId.current = requestAnimationFrame(animate);
                 return;
             }
-            const deltaTime = time - lastTime.current;
-            lastTime.current = time;
+            const deltaTime = time - lastTimeAnim.current;
+            lastTimeAnim.current = time;
 
-            if (containerRef.current && trackRef.current && !isInteracting.current) {
+            if (containerRef.current && trackRef.current && !isInteracting.current && !inertiaRafRef.current) {
                 const container = containerRef.current;
                 const track = trackRef.current;
                 const setHeight = track.scrollHeight / 2;
@@ -74,14 +87,16 @@ export function WearMarquee() {
         animationFrameId.current = requestAnimationFrame(animate);
         return () => {
             if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-            lastTime.current = 0;
+            lastTimeAnim.current = 0;
+            stopInertia();
         };
-    }, [isDesktop]);
+    }, [isDesktop, stopInertia]);
 
     // 4. Mobile Pointer Handlers
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isDesktop || !containerRef.current || !trackRef.current) return;
         isInteracting.current = true;
+        stopInertia();
 
         const container = containerRef.current;
         const track = trackRef.current;
@@ -94,6 +109,10 @@ export function WearMarquee() {
         container.setPointerCapture(e.pointerId);
         startY.current = e.clientY;
         initialScrollTop.current = container.scrollTop;
+
+        lastTimeRef.current = performance.now();
+        lastPosRef.current = e.clientY;
+        velocityRef.current = 0;
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
@@ -103,6 +122,15 @@ export function WearMarquee() {
         const container = containerRef.current;
         const track = trackRef.current;
         const setHeight = track.scrollHeight / 2;
+
+        const now = performance.now();
+        const dt = Math.max(now - lastTimeRef.current, 1);
+        const currentPos = e.clientY;
+        const deltaPos = currentPos - lastPosRef.current;
+
+        velocityRef.current = deltaPos / dt;
+        lastTimeRef.current = now;
+        lastPosRef.current = currentPos;
 
         let newScrollTop = initialScrollTop.current - dy;
 
@@ -115,7 +143,40 @@ export function WearMarquee() {
 
     const handlePointerUp = () => {
         isInteracting.current = false;
-        lastTime.current = 0;
+        lastTimeAnim.current = 0;
+
+        // Start Inertia
+        if (Math.abs(velocityRef.current) > 0.1) {
+            const friction = 0.95;
+            let v = velocityRef.current;
+            const maxV = 3;
+            if (v > maxV) v = maxV;
+            if (v < -maxV) v = -maxV;
+
+            const step = () => {
+                if (!containerRef.current || !trackRef.current) {
+                    inertiaRafRef.current = null;
+                    return;
+                }
+                v *= friction;
+                if (Math.abs(v) < 0.01) {
+                    inertiaRafRef.current = null;
+                    return;
+                }
+
+                const container = containerRef.current;
+                const track = trackRef.current;
+                const setHeight = track.scrollHeight / 2;
+
+                container.scrollTop -= v * 16;
+                
+                while (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
+                while (container.scrollTop < 0) container.scrollTop += setHeight;
+
+                inertiaRafRef.current = requestAnimationFrame(step);
+            };
+            inertiaRafRef.current = requestAnimationFrame(step);
+        }
     };
 
     // ─── DESKTOP VIEW ───

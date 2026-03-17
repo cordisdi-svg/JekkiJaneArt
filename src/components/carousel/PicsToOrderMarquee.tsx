@@ -35,6 +35,19 @@ export function PicsToOrderMarquee() {
     const dragStartPos = useRef(0);
     const dragStartOffset = useRef(0);
 
+    // Momentum refs
+    const velocityRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const lastPosRef = useRef(0);
+    const inertiaRafRef = useRef<number | null>(null);
+
+    const stopInertia = useCallback(() => {
+        if (inertiaRafRef.current) {
+            cancelAnimationFrame(inertiaRafRef.current);
+            inertiaRafRef.current = null;
+        }
+    }, []);
+
     // Sync refs with state
     useEffect(() => { isDesktopRef.current = isDesktop; }, [isDesktop]);
     useEffect(() => { isDraggingRef.current = isDragging; }, [isDragging]);
@@ -79,7 +92,8 @@ export function PicsToOrderMarquee() {
         const desktop = isDesktopRef.current;
 
         if (size > 0 && contentRef.current) {
-            if (!dragging) {
+            // Autoplay only if not dragging AND no inertia is active
+            if (!dragging && !inertiaRafRef.current) {
                 const velocity = size / 72000;
                 scrollOffset.current += velocity * deltaTime;
             }
@@ -105,23 +119,73 @@ export function PicsToOrderMarquee() {
         return () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             lastTimestamp.current = 0;
+            stopInertia();
         };
-    }, []); // Only one loop for the entire lifecycle
+    }, [stopInertia]); // Only one loop for the entire lifecycle
 
     // Handlers
     const handleDragStart = (pos: number) => {
         setIsDragging(true);
+        stopInertia();
         dragStartPos.current = pos;
         dragStartOffset.current = scrollOffset.current;
+        
+        lastTimeRef.current = performance.now();
+        lastPosRef.current = pos;
+        velocityRef.current = 0;
     };
 
     const handleDragMove = (pos: number) => {
         if (!isDragging || contentSize <= 0) return;
+        
+        const now = performance.now();
+        const dt = Math.max(now - lastTimeRef.current, 1);
+        const deltaPos = pos - lastPosRef.current;
+        
+        // Velocity (px / ms)
+        velocityRef.current = deltaPos / dt;
+        lastTimeRef.current = now;
+        lastPosRef.current = pos;
+
         const delta = pos - dragStartPos.current;
         scrollOffset.current = dragStartOffset.current - delta;
     };
 
-    const handleDragEnd = () => setIsDragging(false);
+    const handleDragEnd = () => {
+        setIsDragging(false);
+        lastTimestamp.current = 0; // Reset animation timer
+
+        // Start Inertia
+        if (Math.abs(velocityRef.current) > 0.1) {
+            const friction = 0.95;
+            let v = velocityRef.current;
+            const maxV = 3;
+            if (v > maxV) v = maxV;
+            if (v < -maxV) v = -maxV;
+
+            const step = () => {
+                const size = contentSizeRef.current;
+                if (size <= 0) {
+                    inertiaRafRef.current = null;
+                    return;
+                }
+                v *= friction;
+                if (Math.abs(v) < 0.01) {
+                    inertiaRafRef.current = null;
+                    return;
+                }
+
+                // Apply velocity (flipped)
+                scrollOffset.current -= v * 16;
+                
+                // Wrap is handled by animate() loop but we can do it here too for safety
+                scrollOffset.current = ((scrollOffset.current % size) + size) % size;
+
+                inertiaRafRef.current = requestAnimationFrame(step);
+            };
+            inertiaRafRef.current = requestAnimationFrame(step);
+        }
+    };
 
     // Mouse events
     const handleMouseDown = (e: React.MouseEvent) => handleDragStart(isDesktop ? e.clientX : e.clientY);

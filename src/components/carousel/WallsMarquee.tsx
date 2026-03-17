@@ -25,8 +25,21 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
     const lastPointerX = useRef(0);
     const initialScroll = useRef({ left: 0, top: 0 });
     
+    // Momentum refs
+    const velocityRef = useRef(0);
+    const lastTimeRef = useRef(0);
+    const lastPosRef = useRef(0);
+    const inertiaRafRef = useRef<number | null>(null);
+
     const animationFrameId = useRef<number | null>(null);
-    const lastTime = useRef<number>(0);
+    const lastTimeAnim = useRef<number>(0);
+
+    const stopInertia = useCallback(() => {
+        if (inertiaRafRef.current) {
+            cancelAnimationFrame(inertiaRafRef.current);
+            inertiaRafRef.current = null;
+        }
+    }, []);
 
     const getSpeed = useCallback(() => {
         if (!marqueeRef.current) return 0.05;
@@ -44,15 +57,15 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
     useEffect(() => {
         const animate = (time: number) => {
-            if (lastTime.current === 0) {
-                lastTime.current = time;
+            if (lastTimeAnim.current === 0) {
+                lastTimeAnim.current = time;
                 animationFrameId.current = requestAnimationFrame(animate);
                 return;
             }
-            const deltaTime = time - lastTime.current;
-            lastTime.current = time;
+            const deltaTime = time - lastTimeAnim.current;
+            lastTimeAnim.current = time;
 
-            if (containerRef.current && marqueeRef.current && !isInteracting.current) {
+            if (containerRef.current && marqueeRef.current && !isInteracting.current && !inertiaRafRef.current) {
                 const container = containerRef.current;
                 const marquee = marqueeRef.current;
                 const speed = getSpeed();
@@ -81,12 +94,14 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
     useEffect(() => {
         return () => {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+            stopInertia();
         };
-    }, []);
+    }, [stopInertia]);
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if (!containerRef.current || !marqueeRef.current) return;
         isInteracting.current = true;
+        stopInertia();
 
         if (!isDesktop) {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
@@ -116,6 +131,11 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
         container.setPointerCapture(e.pointerId);
         startPos.current = { x: e.clientX, y: e.clientY };
+        
+        lastTimeRef.current = performance.now();
+        lastPosRef.current = isDesktop ? e.clientX : e.clientY;
+        velocityRef.current = 0;
+
         if (isDesktop) {
             lastPointerX.current = e.clientX;
         }
@@ -132,6 +152,16 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         const dy = e.clientY - startPos.current.y;
         const marquee = marqueeRef.current;
         const container = containerRef.current;
+
+        const now = performance.now();
+        const dt = Math.max(now - lastTimeRef.current, 1);
+        const currentPos = isDesktop ? e.clientX : e.clientY;
+        const deltaPos = currentPos - lastPosRef.current;
+        
+        // Velocity (px / ms)
+        velocityRef.current = deltaPos / dt;
+        lastTimeRef.current = now;
+        lastPosRef.current = currentPos;
 
         if (isDesktop) {
             const setWidth = marquee.scrollWidth / 2;
@@ -169,13 +199,56 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
     const handlePointerUp = (e: React.PointerEvent) => {
         isInteracting.current = false;
-        lastTime.current = 0; // Reset animation timer to avoid jumps
+        lastTimeAnim.current = 0; // Reset animation timer to avoid jumps
 
         if (!isDesktop) {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
             hideTextboxTimeoutRef.current = setTimeout(() => {
                 setIsMobileTextboxVisible(true);
             }, 500);
+        }
+
+        // Start Inertia
+        if (Math.abs(velocityRef.current) > 0.1) {
+            const friction = 0.95;
+            let v = velocityRef.current;
+            // Clamp max velocity for sanity
+            const maxV = 3;
+            if (v > maxV) v = maxV;
+            if (v < -maxV) v = -maxV;
+
+            const step = () => {
+                if (!containerRef.current || !marqueeRef.current) {
+                    inertiaRafRef.current = null;
+                    return;
+                }
+                v *= friction;
+                if (Math.abs(v) < 0.01) {
+                    inertiaRafRef.current = null;
+                    return;
+                }
+
+                const container = containerRef.current;
+                const marquee = marqueeRef.current;
+
+                if (isDesktop) {
+                    const setWidth = marquee.scrollWidth / 2;
+                    // Apply velocity (flipped because scroll direction and pointer delta are opposite in logic)
+                    container.scrollLeft -= v * 16;
+                    
+                    while (container.scrollLeft >= setWidth) container.scrollLeft -= setWidth;
+                    while (container.scrollLeft < 0) container.scrollLeft += setWidth;
+                } else {
+                    const setHeight = marquee.scrollHeight / 2;
+                    container.scrollTop -= v * 16;
+
+                    while (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
+                    while (container.scrollTop < 0) container.scrollTop += setHeight;
+                }
+
+                inertiaRafRef.current = requestAnimationFrame(step);
+            };
+            inertiaRafRef.current = requestAnimationFrame(step);
         }
     };
 
