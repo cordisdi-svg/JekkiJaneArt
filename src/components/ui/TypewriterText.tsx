@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, ReactNode } from "react";
+import React, { useState, useEffect, useMemo, useRef, ReactNode } from "react";
 
 interface TypewriterTextProps {
     children: ReactNode;
@@ -11,6 +11,9 @@ interface TypewriterTextProps {
 
 export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: TypewriterTextProps) {
     const [charIndex, setCharIndex] = useState(0);
+    const cursorRef = useRef<HTMLElement>(null);
+    const isAutoScrollingRef = useRef(false);
+    const freezeAutoScrollUntilRef = useRef(0);
 
     // Extract all text content to calculate delays per character
     const { totalChars, textContent } = useMemo(() => {
@@ -39,7 +42,6 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
         const ch = textContent[charIndex];
         let currentDelay = delay;
 
-        // Sophisticated delays matching about/page.tsx
         if (ch === "\n") currentDelay = 110;
         else if (".!?…".includes(ch)) currentDelay = 150;
         else if (",;:—-".includes(ch)) currentDelay = 65;
@@ -53,11 +55,61 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
         return () => clearTimeout(timer);
     }, [charIndex, totalChars, delay, textContent]);
 
-    // Auto-scroll when typing
+    // Container interaction listeners
     useEffect(() => {
-        if (scrollRef?.current && charIndex > 0) {
-            const el = scrollRef.current;
-            el.scrollTop = el.scrollHeight;
+        const container = scrollRef?.current;
+        if (!container) return;
+
+        const handleManualInteraction = () => {
+            freezeAutoScrollUntilRef.current = Date.now() + 1000;
+        };
+
+        const handleScroll = () => {
+            // If scroll event happens and we didn't trigger it, it's manual
+            if (!isAutoScrollingRef.current) {
+                handleManualInteraction();
+            }
+        };
+
+        container.addEventListener("pointerdown", handleManualInteraction, { passive: true });
+        container.addEventListener("wheel", handleManualInteraction, { passive: true });
+        container.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            container.removeEventListener("pointerdown", handleManualInteraction);
+            container.removeEventListener("wheel", handleManualInteraction);
+            container.removeEventListener("scroll", handleScroll);
+        };
+    }, [scrollRef]);
+
+    // Smart auto-scroll when typing
+    useEffect(() => {
+        // Bail out if we are in the freeze window
+        if (Date.now() < freezeAutoScrollUntilRef.current) return;
+
+        if (scrollRef?.current && cursorRef.current && charIndex > 0) {
+            const container = scrollRef.current;
+            const cursor = cursorRef.current;
+            
+            const containerRect = container.getBoundingClientRect();
+            const cursorRect = cursor.getBoundingClientRect();
+            
+            // 150px margin to handle paragraph jumps/newlines
+            const isVisible = (
+                cursorRect.top >= containerRect.top &&
+                cursorRect.bottom <= containerRect.bottom + 150
+            );
+            
+            if (isVisible) {
+                isAutoScrollingRef.current = true;
+                cursor.scrollIntoView({ block: "nearest", behavior: "auto" });
+                
+                // Clear the flag after the scroll is processed
+                // requestAnimationFrame ensures it's cleared after the browser has a chance to handle the scroll
+                requestAnimationFrame(() => {
+                    isAutoScrollingRef.current = false;
+                });
+            }
         }
     }, [charIndex, scrollRef]);
 
@@ -80,7 +132,7 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
                         return (
                             <React.Fragment key="done">
                                 {text}
-                                <Cursor char={cursorChar} />
+                                <Cursor ref={cursorRef} char={cursorChar} />
                             </React.Fragment>
                         );
                     }
@@ -90,7 +142,7 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
                 return (
                     <React.Fragment key="typing">
                         {text.slice(0, charIndex - nodeStart)}
-                        <Cursor char={cursorChar} />
+                        <Cursor ref={cursorRef} char={cursorChar} />
                     </React.Fragment>
                 );
             }
@@ -99,12 +151,20 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
                 if (node.type === "br") {
                     const nodeIndex = currentGlobalIndex;
                     currentGlobalIndex += 1;
+                    
                     if (charIndex > nodeIndex) return node;
+                    if (charIndex === nodeIndex) {
+                        return (
+                            <React.Fragment key="br-typing">
+                                {node}
+                                <Cursor ref={cursorRef} char={cursorChar} />
+                            </React.Fragment>
+                        );
+                    }
                     return null;
                 }
 
                 const children = React.Children.map(node.props.children, cloneAndClip);
-                // Filter out null children to check if the element should render at all
                 const validChildren = React.Children.toArray(children).filter(child => child !== null);
 
                 if (validChildren.length === 0 && node.props.children) return null;
@@ -129,10 +189,10 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
     );
 }
 
-function Cursor({ char }: { char?: string }) {
+const Cursor = React.forwardRef<HTMLSpanElement, { char?: string }>(({ char }, ref) => {
     if (char) {
         return (
-            <span className="typewriter-cursor">
+            <span ref={ref} className="typewriter-cursor">
                 <style>{`
           @keyframes vertical-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
           .typewriter-cursor {
@@ -149,6 +209,7 @@ function Cursor({ char }: { char?: string }) {
 
     return (
         <span
+            ref={ref}
             style={{
                 display: "inline-block",
                 width: "2px",
@@ -164,4 +225,6 @@ function Cursor({ char }: { char?: string }) {
       `}</style>
         </span>
     );
-}
+});
+
+Cursor.displayName = "Cursor";

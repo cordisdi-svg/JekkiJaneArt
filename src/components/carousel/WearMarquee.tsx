@@ -57,7 +57,7 @@ export function WearMarquee() {
                 const container = containerRef.current;
                 const track = trackRef.current;
                 const setHeight = track.scrollHeight / 2;
-                
+
                 if (setHeight > 0) {
                     // Speed calculation: loop in 41s
                     const speed = setHeight / 41000;
@@ -82,7 +82,7 @@ export function WearMarquee() {
     const handlePointerDown = (e: React.PointerEvent) => {
         if (isDesktop || !containerRef.current || !trackRef.current) return;
         isInteracting.current = true;
-        
+
         const container = containerRef.current;
         const track = trackRef.current;
         const setHeight = track.scrollHeight / 2;
@@ -98,18 +98,18 @@ export function WearMarquee() {
 
     const handlePointerMove = (e: React.PointerEvent) => {
         if (!isInteracting.current || !containerRef.current || !trackRef.current) return;
-        
+
         const dy = e.clientY - startY.current;
         const container = containerRef.current;
         const track = trackRef.current;
         const setHeight = track.scrollHeight / 2;
 
         let newScrollTop = initialScrollTop.current - dy;
-        
+
         // Normalize result
         while (newScrollTop >= setHeight) newScrollTop -= setHeight;
         while (newScrollTop < 0) newScrollTop += setHeight;
-        
+
         container.scrollTop = newScrollTop;
     };
 

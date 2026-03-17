@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { WearMarquee } from "@/components/carousel/WearMarquee";
 import { FlippingWearCard } from "@/components/carousel/FlippingWearCard";
@@ -8,6 +9,9 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 
 
 export default function WearAndShoesPage() {
+  const scrollRefDesktop = useRef<HTMLDivElement>(null);
+  const scrollRefMobile = useRef<HTMLDivElement>(null);
+
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
       {/* Активная зона */}
@@ -38,11 +42,12 @@ export default function WearAndShoesPage() {
                   }
                 `}</style>
               <div 
+                ref={scrollRefMobile}
                 className="overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-1"
                 style={{ touchAction: "pan-y" }}
               >
                 <div className="text-white text-[15px] leading-[1.4] font-comfortaa-light">
-                  <TypewriterText delay={26}>
+                  <TypewriterText scrollRef={scrollRefMobile} delay={26}>
                     {DesktopContent({ showTitle: true })}
                   </TypewriterText>
                 </div>
@@ -91,10 +96,11 @@ export default function WearAndShoesPage() {
 
                 {/* Scrollable Unified Area */}
                 <div
+                  ref={scrollRefDesktop}
                   className="flex-1 overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-3 pb-4"
                   style={{ touchAction: "pan-y" }}
                 >
-                  <TypewriterText delay={26}>
+                  <TypewriterText scrollRef={scrollRefDesktop} delay={26}>
                     {DesktopContent()}
                   </TypewriterText>
                 </div>

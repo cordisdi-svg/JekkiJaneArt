@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { PageBackground } from "@/components/layout/PageBackground";
+import { TypewriterText } from "@/components/ui/TypewriterText";
 
 // ─── Typewriter text ──────────────────────────────────────────────────────────
 const TYPEWRITER_TEXT =
@@ -30,14 +31,6 @@ const TYPEWRITER_TEXT =
 его истории и пространству,
 в котором они будут находиться.`;
 
-// ─── Per-character delay (slightly faster than before) ───────────────────────
-function charDelay(ch: string): number {
-  if (ch === "\n") return 150;
-  if (".!?…".includes(ch)) return 200;
-  if (",;:—-".includes(ch)) return 90;
-  if (ch === " ") return 28;
-  return 42 + (Math.random() * 14 - 7);
-}
 
 // ─── Typewriter component ─────────────────────────────────────────────────────
 function TypewriterBox({
@@ -47,25 +40,7 @@ function TypewriterBox({
   text: string;
   fontSize?: string;
 }) {
-  const [count, setCount] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (count >= text.length) return;
-    timerRef.current = setTimeout(
-      () => setCount((n) => n + 1),
-      charDelay(text[count])
-    );
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [count, text]);
-
-  useEffect(() => {
-    if (scrollRef.current)
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [count]);
 
   return (
     <div
@@ -78,7 +53,7 @@ function TypewriterBox({
         scrollbarColor: "rgba(255,255,255,0.18) transparent",
       }}
     >
-      <p
+      <div
         style={{
           fontFamily: "'IndiKazka', cursive",
           fontSize,
@@ -88,21 +63,10 @@ function TypewriterBox({
           margin: 0,
         }}
       >
-        {text.slice(0, count)}
-        {count < text.length && (
-          <span
-            style={{
-              display: "inline-block",
-              width: "2px",
-              height: "1em",
-              background: "rgba(255,255,255,0.8)",
-              verticalAlign: "text-bottom",
-              marginLeft: "1px",
-              animation: "blink 1s step-end infinite",
-            }}
-          />
-        )}
-      </p>
+        <TypewriterText scrollRef={scrollRef} delay={25}>
+          {text}
+        </TypewriterText>
+      </div>
     </div>
   );
 }
@@ -387,16 +351,16 @@ export default function AboutPage() {
 
         {/* Bottom row: typewriter left half | person1 right half, both flush to nav */}
         <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-          {/* Typewriter — left 50% */}
+          {/* Typewriter — left 44% */}
           <div
             style={{
-              width: "50%",
+              width: "calc(44% - 6px)",
               background: "rgba(40, 10, 15, 0.65)", // Dark Red
               backdropFilter: "blur(12px)",
               borderRadius: "10px",
               border: "1px solid rgba(220, 60, 60, 0.35)",
               padding: "12px",
-              margin: "0 6px 6px 6px", // Small outer gap
+              margin: "0 0 6px 6px", // No right margin to remove gap
               overflow: "hidden",
               display: "flex",
               flexDirection: "column",
@@ -408,10 +372,10 @@ export default function AboutPage() {
             />
           </div>
 
-          {/* person1 — right 50%, flush to nav */}
+          {/* person1 — right 56%, flush to nav */}
           <div
             style={{
-              width: "50%",
+              width: "56%",
               position: "relative",
               overflow: "hidden",
             }}
