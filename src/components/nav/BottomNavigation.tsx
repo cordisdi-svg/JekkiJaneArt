@@ -5,9 +5,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { orderedRoutes } from "@/data/routes";
 import { useModal } from "@/components/modals/ModalProvider";
 
-function Triangle({ direction }: { direction: "left" | "right" }) {
+function Triangle({ direction, className = "" }: { direction: "left" | "right"; className?: string }) {
   return (
-    <svg viewBox="0 0 20 20" className="h-5 w-5 fill-white" aria-hidden>
+    <svg viewBox="0 0 20 20" className={`h-6 w-6 fill-white ${className}`} aria-hidden>
       {direction === "left" ? <path d="M13 3 5 10l8 7V3Z" /> : <path d="M7 3v14l8-7-8-7Z" />}
     </svg>
   );
@@ -95,13 +95,27 @@ export function BottomNavigation() {
           animation: slow-shine 7s linear infinite;
           pointer-events: none;
         }
+        @keyframes arrow-move-left {
+          0%, 100% { transform: translateX(-6px); }
+          50% { transform: translateX(6px); }
+        }
+        @keyframes arrow-move-right {
+          0%, 100% { transform: translateX(6px); }
+          50% { transform: translateX(-6px); }
+        }
+        .arrow-anim-left {
+          animation: arrow-move-left 4s ease-in-out infinite;
+        }
+        .arrow-anim-right {
+          animation: arrow-move-right 4s ease-in-out infinite;
+        }
       `}</style>
 
       <div className="hidden h-[var(--nav-height-desktop)] w-full lg:flex">
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
-          <Triangle direction="left" />
+          <Triangle direction="left" className="arrow-anim-left" />
         </button>
-        <button type="button" className={`${navCellClass(pathname === "/")} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
         <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
         <button type="button" className={`relative overflow-hidden ${navCellClass(false)} w-[25%] text-[clamp(18.5px,2.5vw,36px)] leading-none px-1`} onClick={() => openModal("order")}>
           <div className="btn-shine-layer" />
@@ -112,7 +126,7 @@ export function BottomNavigation() {
         </button>
         <button type="button" className={`${navCellClass(false)} w-[16.25%] border-r border-white/20 text-[clamp(15px,1.9vw,26px)] leading-none px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
         <button type="button" className="flex h-full w-[5%] items-center justify-center" onClick={handleNext} aria-label="Следующая страница">
-          <Triangle direction="right" />
+          <Triangle direction="right" className="arrow-anim-right" />
         </button>
       </div>
 
@@ -123,12 +137,12 @@ export function BottomNavigation() {
         onTouchEnd={onTouchEnd}
       >
         {/* Swipe Indicators Overlay */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-1 opacity-70">
+        <div className="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-0 opacity-70">
           <div className="scale-75">
-            <Triangle direction="left" />
+            <Triangle direction="left" className="arrow-anim-left" />
           </div>
           <div className="scale-75">
-            <Triangle direction="right" />
+            <Triangle direction="right" className="arrow-anim-right" />
           </div>
         </div>
 
@@ -137,7 +151,7 @@ export function BottomNavigation() {
             <div className="btn-shine-layer" />
             <span className="relative z-10">Заказать</span>
           </button>
-          <button type="button" className={`${navCellClass(pathname === "/")} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+          <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
         </div>
         <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
           <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.7vw,20px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>

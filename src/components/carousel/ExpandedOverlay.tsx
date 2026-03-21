@@ -8,14 +8,14 @@ import { PaintingData } from "@/data/availablePics";
 export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () => void }) {
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
     const [showPinchHint, setShowPinchHint] = useState(false);
-    
+
     // Hint animation refs
     const hintTimerRef = useRef<NodeJS.Timeout | null>(null);
     const hintAnimTimerRef = useRef<NodeJS.Timeout | null>(null);
     const hasPinchedRef = useRef(false);
 
     const scrollRef = useRef<HTMLDivElement>(null);
-    const autoscrollPausedRef = useRef(false);
+    const autoscrollPausedRef = useRef(true);
     const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const rafRef = useRef<number | null>(null);
 
@@ -31,7 +31,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
     const imageContainerRef = useRef<HTMLDivElement>(null);
     const magnifierRef = useRef<HTMLDivElement>(null);
     const zoomedImageRef = useRef<HTMLImageElement>(null);
-    
+
     const visibleRectRef = useRef<{ left: number, top: number, width: number, height: number, intrinsicWidth: number, intrinsicHeight: number } | null>(null);
     const magnifierActiveRef = useRef(false);
     const activePointerIdRef = useRef<number | null>(null);
@@ -64,10 +64,13 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
     }, []);
 
     const resumeAutoscroll = useCallback(() => {
+        // Only autoscroll on mobile (as requested)
+        if (typeof window !== 'undefined' && window.innerWidth >= 768) return;
+
         if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
         resumeTimeoutRef.current = setTimeout(() => {
             autoscrollPausedRef.current = false;
-        }, 4000);
+        }, 7000);
     }, []);
 
     useEffect(() => {
@@ -76,11 +79,13 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         document.body.classList.add("overlay-open");
 
         // Autoscroll logic
+        resumeAutoscroll();
+
         const scrollStep = () => {
             const el = scrollRef.current;
             if (el && !autoscrollPausedRef.current && !isDraggingRef.current && !inertiaRafRef.current) {
                 if (el.scrollTop + el.clientHeight < el.scrollHeight - 1) {
-                    el.scrollTop += 0.5;
+                    el.scrollTop += 0.15;
                 }
             }
             rafRef.current = requestAnimationFrame(scrollStep);
@@ -94,14 +99,14 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
             stopInertia();
         };
-    }, [onClose, stopInertia]); 
+    }, [onClose, stopInertia]);
 
     // ─── Magnifier Logic ───
     const calcGeometry = useCallback(() => {
         if (!imageContainerRef.current || !visibleRectRef.current?.intrinsicWidth) return;
         const containerRect = imageContainerRef.current.getBoundingClientRect();
         const { intrinsicWidth, intrinsicHeight } = visibleRectRef.current;
-        
+
         const containerAspect = containerRect.width / containerRect.height;
         const imageAspect = intrinsicWidth / intrinsicHeight;
 
@@ -171,7 +176,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         const clampedY = Math.max(rect.top, Math.min(y, rect.top + rect.height));
 
         const isDesktop = window.innerWidth >= 768;
-        const magSize = isDesktop ? 300 : 184; 
+        const magSize = isDesktop ? 300 : 184;
 
         // Base Offsets
         const baseOffsetX = 0;
@@ -249,10 +254,10 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             currentOffsetXRef.current = targetOffsetXRef.current;
             targetOffsetYRef.current = isDesktop ? 0 : -(184 / 2 + 10);
             currentOffsetYRef.current = targetOffsetYRef.current;
-            
+
             magnifierRef.current.style.opacity = '1';
             magnifierRef.current.style.visibility = 'visible';
-            
+
             // Pinch to zoom hint trigger logic
             hasPinchedRef.current = false;
             setShowPinchHint(false);
@@ -302,7 +307,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         if (hoverDelayTimerRef.current) clearTimeout(hoverDelayTimerRef.current);
         if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
         if (activePointerIdRef.current !== null && imageContainerRef.current) {
-            try { imageContainerRef.current.releasePointerCapture(activePointerIdRef.current); } catch(e){}
+            try { imageContainerRef.current.releasePointerCapture(activePointerIdRef.current); } catch (e) { }
             activePointerIdRef.current = null;
         }
     };
@@ -318,7 +323,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             if (magnifierActiveRef.current && !secondaryPointerRef.current && e.pointerId !== activePointerIdRef.current) {
                 secondaryPointerRef.current = { id: e.pointerId, startX: e.clientX, startY: e.clientY };
                 primaryPointerStartDistRef.current = Math.hypot(e.clientX - pointerCoordsRef.current.x, e.clientY - pointerCoordsRef.current.y);
-                try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err){}
+                try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { }
             }
             return;
         }
@@ -363,7 +368,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
                 if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
             }
-            
+
             const currentDist = Math.hypot(e.clientX - pointerCoordsRef.current.x, e.clientY - pointerCoordsRef.current.y);
             if (primaryPointerStartDistRef.current > 0) {
                 const ratio = currentDist / primaryPointerStartDistRef.current;
@@ -388,7 +393,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             return;
         }
         if (secondaryPointerRef.current && e.pointerId === secondaryPointerRef.current.id) {
-            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch(err){}
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (err) { }
             secondaryPointerRef.current = null;
             targetZoomRef.current = 2; // Ease back smoothly
             return;
@@ -410,7 +415,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 hoverDelayTimerRef.current = null;
             }
         } else if (secondaryPointerRef.current && e.pointerId === secondaryPointerRef.current.id) {
-            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch(err){}
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (err) { }
             secondaryPointerRef.current = null;
             targetZoomRef.current = 2;
             return;
@@ -426,7 +431,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         isDraggingRef.current = true;
         pauseAutoscroll();
         stopInertia();
-        
+
         startYRef.current = e.clientY;
         initialScrollTopRef.current = el.scrollTop;
         el.setPointerCapture(e.pointerId);
@@ -498,7 +503,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 right-4 z-[10000] flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl hover:bg-white/20 active:scale-90 transition-all cursor-pointer"
+                className="absolute top-4 right-2 md:right-4 z-[10000] flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl hover:bg-white/20 active:scale-90 transition-all cursor-pointer"
                 aria-label="Закрыть"
             >
                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -508,10 +513,10 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             </button>
 
             {/* Magnifier Portal */}
-            <div 
+            <div
                 ref={magnifierRef}
                 className="fixed top-0 left-0 z-[100000] pointer-events-none shadow-2xl opacity-0 invisible rounded-full"
-                style={{ 
+                style={{
                     willChange: 'transform',
                     imageRendering: 'auto',
                     backfaceVisibility: 'hidden',
@@ -520,13 +525,13 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             >
                 {/* Inner bounds container replacing the outer class limitations */}
                 <div className="absolute inset-0 rounded-full overflow-hidden border border-gray-400">
-                    <div 
-                       ref={zoomedImageRef}
-                       className="absolute top-0 left-0 pointer-events-none"
-                       style={{
-                           transformOrigin: 'top left',
-                           willChange: 'transform',
-                       }}
+                    <div
+                        ref={zoomedImageRef}
+                        className="absolute top-0 left-0 pointer-events-none"
+                        style={{
+                            transformOrigin: 'top left',
+                            willChange: 'transform',
+                        }}
                     >
                         <Image src={copyUrl} alt="" fill sizes="100vw" className="object-contain" unoptimized priority />
                     </div>
@@ -536,10 +541,10 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 {showPinchHint && (
                     <div className="absolute inset-0 pointer-events-none z-10 w-full h-full">
                         <div className="absolute left-[5%] top-1/2 text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] pinch-hint-left">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                         </div>
                         <div className="absolute right-[5%] top-1/2 text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] pinch-hint-right">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                         </div>
                     </div>
                 )}
@@ -576,14 +581,13 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Scrollable Content Container (Title, Body, Stats) */}
-                <div 
+                <div
                     ref={scrollRef}
                     onPointerDown={handlePointerDownScroll}
                     onPointerMove={handlePointerMoveScroll}
                     onPointerUp={handlePointerUpScroll}
                     onPointerCancel={handlePointerUpScroll}
-                    onWheel={pauseAutoscroll}
-                    onScroll={pauseAutoscroll}
+                    onWheel={() => { pauseAutoscroll(); resumeAutoscroll(); }}
                     className="w-full relative flex-1 flex flex-col font-comfortaa text-white/90 overflow-y-auto custom-scrollbar"
                     style={{ touchAction: "none", overscrollBehavior: "contain" }}
                 >
@@ -613,7 +617,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 <div className="shrink-0 relative p-4 pt-2 pb-2">
                     {/* Social Order Popup Layer */}
                     <div className={`absolute bottom-[calc(100%+8px)] left-4 right-4 pointer-events-none transition-all duration-500 ease-out origin-bottom ${isOrderMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50" : "opacity-0 scale-[0.6] translate-y-10 z-[-1]"}`} style={{ height: "calc(max(20px, 5cqh) * 1.5)" }}>
-                         <div className="relative w-full h-full">
+                        <div className="relative w-full h-full">
                             <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                                 className="absolute left-[25%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
@@ -631,7 +635,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                             </a>
                         </div>
                     </div>
-                    
+
                     <button
                         type="button"
                         onClick={() => setIsOrderMenuOpen(!isOrderMenuOpen)}
