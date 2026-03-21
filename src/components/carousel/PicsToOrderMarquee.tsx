@@ -17,8 +17,10 @@ const picsToOrderImages = [
     { src: "/picstoorder/pic11.PNG", alt: "Картина 11" },
 ];
 
-export function PicsToOrderMarquee() {
+export function PicsToOrderMarquee({ children }: { children?: React.ReactNode }) {
     const [isDesktop, setIsDesktop] = useState(false);
+    const [isMobileTextboxVisible, setIsMobileTextboxVisible] = useState(true);
+    const hideTextboxTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [contentSize, setContentSize] = useState(0);
 
@@ -127,6 +129,12 @@ export function PicsToOrderMarquee() {
     const handleDragStart = (pos: number) => {
         setIsDragging(true);
         stopInertia();
+        
+        if (!isDesktop) {
+            if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+            setIsMobileTextboxVisible(false);
+        }
+
         dragStartPos.current = pos;
         dragStartOffset.current = scrollOffset.current;
         
@@ -154,6 +162,13 @@ export function PicsToOrderMarquee() {
     const handleDragEnd = () => {
         setIsDragging(false);
         lastTimestamp.current = 0; // Reset animation timer
+
+        if (!isDesktop) {
+            if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+            hideTextboxTimeoutRef.current = setTimeout(() => {
+                setIsMobileTextboxVisible(true);
+            }, 500);
+        }
 
         // Start Inertia
         if (Math.abs(velocityRef.current) > 0.1) {
@@ -287,7 +302,7 @@ export function PicsToOrderMarquee() {
                         onMouseDown={(e) => e.stopPropagation()}
                         onTouchStart={(e) => e.stopPropagation()}
                         onClick={(e) => { e.stopPropagation(); handleManualScroll('prev'); }}
-                        className="pointer-events-auto w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white/80 hover:bg-black/40 hover:text-white transition-all active:scale-95 shadow-lg"
+                        className="pointer-events-auto w-12 h-12 flex items-center justify-center text-white/80 hover:scale-110 hover:text-white transition-all active:scale-95"
                         title="Назад"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -298,13 +313,25 @@ export function PicsToOrderMarquee() {
                         onMouseDown={(e) => e.stopPropagation()}
                         onTouchStart={(e) => e.stopPropagation()}
                         onClick={(e) => { e.stopPropagation(); handleManualScroll('next'); }}
-                        className="pointer-events-auto w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white/80 hover:bg-black/40 hover:text-white transition-all active:scale-95 shadow-lg"
+                        className="pointer-events-auto w-12 h-12 flex items-center justify-center text-white/80 hover:scale-110 hover:text-white transition-all active:scale-95"
                         title="Вперед"
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M9 18l6-6-6-6" />
                         </svg>
                     </button>
+                </div>
+            )}
+
+            {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
+            {children && (
+                <div 
+                    data-visible={isDesktop || isMobileTextboxVisible}
+                    className={`group absolute inset-0 pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+                >
+                    <div className="relative z-20 w-full h-full flex justify-center">
+                        {children}
+                    </div>
                 </div>
             )}
         </div>

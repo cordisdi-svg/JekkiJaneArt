@@ -287,25 +287,11 @@ export default function PicsToOrderPage() {
                         bottom: "var(--nav-height)",
                     }}
                 >
-                    {/* on mobile we want the carousel from the very top, so override */}
-                    <div
-                        className="w-full h-full"
-                        style={{
-                            /* mobile: push top back to 0 via negative margin trick isn't possible with absolute.
-                               Instead we wrap the marquee in a full-height container and on mobile
-                               we add overflow so it bleeds up visually. */
-                        }}
-                    >
+                    <div className="w-full h-full">
                         <PicsToOrderMarquee />
                     </div>
                 </div>
-                {/* Mobile: carousel covers whole active zone (buttons overlay on top) */}
-                <div
-                    className="absolute left-0 right-0 pointer-events-none md:hidden"
-                    style={{ top: 0, bottom: "var(--nav-height-mobile)" }}
-                >
-                    <PicsToOrderMarquee />
-                </div>
+                {/* Mobile: carousel covers whole active zone (buttons overlay on top) is now below in MOBILE LAYOUT section to wrap children */}
 
                 {/* ════════════════════════════════════════════════
             DESKTOP LAYOUT  (lg and up)
@@ -336,7 +322,7 @@ export default function PicsToOrderPage() {
                                 {/* Label: takes up remaining space, centered within itself */}
                                 <span
                                     className="flex-1 text-center leading-snug"
-                                    style={{ fontFamily: "Abibas, serif", fontSize: "22px" }}
+                                    style={{ fontFamily: "Fontatica4F, sans-serif", fontSize: "25px" }}
                                 >
                                     {btn.label}
                                 </span>
@@ -367,101 +353,118 @@ export default function PicsToOrderPage() {
             MOBILE LAYOUT  (below lg)
         ════════════════════════════════════════════════ */}
 
-                {/* Right column — 30% width, round buttons */}
                 <div
-                    className="absolute right-0 top-0 z-20 flex lg:hidden flex-col"
-                    style={{
-                        width: "30%",
-                        bottom: "var(--nav-height-mobile)",
-                        padding: "10px 8px",
-                        gap: 0,
-                        justifyContent: "space-around",
-                    }}
+                    className="absolute left-0 right-0 md:hidden z-10"
+                    style={{ top: 0, bottom: "var(--nav-height-mobile)" }}
                 >
-                    {BUTTONS.map((btn) => {
-                        const isActive = mobileOpen === btn.id;
-                        return (
-                            <button
-                                key={btn.id}
-                                onClick={() => handleMobileClick(btn.id)}
-                                className="relative rounded-full border text-white/90 text-[11px] text-center px-2 select-none"
-                                style={{
-                                    animationName: isActive ? "none" : "pto-pulse",
-                                    animationDuration: "3s",
-                                    animationTimingFunction: "ease-in-out",
-                                    animationIterationCount: "infinite",
-                                    transform: isActive ? "scale(1.0)" : undefined,
-                                    transition: "transform 0.3s ease, background 0.3s ease",
-                                    aspectRatio: "1/1",
-                                    background: isActive
-                                        ? "rgba(55,38,70,0.90)"    // slightly brighter than nav
-                                        : NAV_BG,
-                                    borderColor: isActive ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.20)",
-                                    backdropFilter: NAV_BLUR,
-                                    WebkitBackdropFilter: NAV_BLUR,
-                                    fontFamily: "Abibas, serif",
-                                    fontSize: "15px",
-                                    lineHeight: "1.35",
-                                }}
-                            >
-                                <span className="block">{btn.label}</span>
-                            </button>
-                        );
-                    })}
-                </div>
-
-                {/* Mobile text panel — height = fit-content (auto, not full-height) */}
-                {mobileOpen && (
-                    <div
-                        className="absolute z-30 lg:hidden"
-                        style={{
-                            left: "16px",
-                            right: "calc(30% + 16px)",
-                            top: "16px",
-                            maxHeight: "calc(100svh - var(--nav-height-mobile) - 32px)",
-                            overflowY: "auto",
-                        }}
-                    >
+                    <PicsToOrderMarquee>
+                        {/* Right column — 37.5% width, round buttons */}
                         <div
-                            className="w-full rounded-xl border border-white/15 shadow-xl"
+                            className="absolute right-0 top-0 z-20 flex flex-col pointer-events-auto"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onTouchStart={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onMouseUp={(e) => e.stopPropagation()}
                             style={{
-                                background: "rgba(20,14,30,0.82)",
-                                backdropFilter: NAV_BLUR,
-                                WebkitBackdropFilter: NAV_BLUR,
+                                width: "37.5%",
+                                bottom: 0,
+                                padding: "10px 8px",
+                                gap: 0,
+                                justifyContent: "space-around",
                             }}
-                            onClick={() => setMobileOpen(null)}
                         >
+                            {BUTTONS.map((btn) => {
+                                const isActive = mobileOpen === btn.id;
+                                return (
+                                    <button
+                                        key={btn.id}
+                                        onClick={() => handleMobileClick(btn.id)}
+                                        className="relative rounded-full border text-white/90 text-[11px] text-center px-2 select-none"
+                                        style={{
+                                            animationName: isActive ? "none" : "pto-pulse",
+                                            animationDuration: "3s",
+                                            animationTimingFunction: "ease-in-out",
+                                            animationIterationCount: "infinite",
+                                            transform: isActive ? "scale(1.0)" : undefined,
+                                            transition: "transform 0.3s ease, background 0.3s ease",
+                                            aspectRatio: "1/1",
+                                            background: isActive
+                                                ? "rgba(55,38,70,0.60)"
+                                                : "rgba(30,22,40,0.50)",
+                                            borderColor: isActive ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.20)",
+                                            backdropFilter: NAV_BLUR,
+                                            WebkitBackdropFilter: NAV_BLUR,
+                                            fontFamily: "Fontatica4F, sans-serif",
+                                            fontSize: "17px",
+                                            lineHeight: "1.25",
+                                        }}
+                                    >
+                                        <span className="block">{btn.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Mobile text panel — height = fit-content (auto, not full-height) */}
+                        {mobileOpen && (
                             <div
+                                className="absolute pointer-events-auto"
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
+                                onTouchMove={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onMouseUp={(e) => e.stopPropagation()}
+                                onWheel={(e) => e.stopPropagation()}
                                 style={{
-                                    padding: "16px",
-                                    color: "rgba(255,255,255,0.92)",
-                                    fontFamily: "Comfortaa, sans-serif",
-                                    fontSize: "15px",
-                                    lineHeight: "1.4",
+                                    left: "14px",
+                                    right: "calc(37.5% + 14px)",
+                                    top: "14px",
+                                    maxHeight: "calc(100svh - var(--nav-height-mobile) - 28px)",
+                                    overflowY: "auto",
                                 }}
                             >
-                                {activeMobileBtn?.id === "sizes" ? (
-                                    <Image
-                                        src="/picstoorder/sizes.png"
-                                        alt="Шпаргалка по размерам"
-                                        width={600}
-                                        height={400}
-                                        className="w-full h-auto rounded-lg"
-                                    />
-                                ) : (
-                                    <>
-                                        <p className="whitespace-pre-line m-0 mb-4">{activeMobileBtn?.text}</p>
-                                        {activeMobileBtn?.id === "price" && (
-                                            <div className="mt-4 pt-4 border-t border-white/10">
-                                                <OrderButton isMobile={true} />
-                                            </div>
+                                <div
+                                    className="w-full rounded-xl border border-white/15 shadow-xl"
+                                    style={{
+                                        background: "rgba(20,14,30,0.82)",
+                                        backdropFilter: NAV_BLUR,
+                                        WebkitBackdropFilter: NAV_BLUR,
+                                    }}
+                                    onClick={() => setMobileOpen(null)}
+                                >
+                                    <div
+                                        style={{
+                                            padding: activeMobileBtn?.id === "price" ? "12px 14px" : "16px",
+                                            color: "rgba(255,255,255,0.92)",
+                                            fontFamily: "Comfortaa, sans-serif",
+                                            fontSize: activeMobileBtn?.id === "price" ? "13.5px" : "15px",
+                                            lineHeight: activeMobileBtn?.id === "price" ? "1.25" : "1.4",
+                                        }}
+                                    >
+                                        {activeMobileBtn?.id === "sizes" ? (
+                                            <Image
+                                                src="/picstoorder/sizes.png"
+                                                alt="Шпаргалка по размерам"
+                                                width={600}
+                                                height={400}
+                                                className="w-full h-auto rounded-lg"
+                                            />
+                                        ) : (
+                                            <>
+                                                <p className={`whitespace-pre-line m-0 ${activeMobileBtn?.id === "price" ? 'mb-2' : 'mb-4'}`}>{activeMobileBtn?.text}</p>
+                                                {activeMobileBtn?.id === "price" && (
+                                                    <div className="mt-2 pt-2 border-t border-white/10">
+                                                        <OrderButton isMobile={true} />
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
-                                    </>
-                                )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                )}
+                        )}
+                    </PicsToOrderMarquee>
+                </div>
             </div>
         </PageBackground >
     );

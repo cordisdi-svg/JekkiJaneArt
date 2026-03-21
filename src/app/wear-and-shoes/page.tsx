@@ -20,40 +20,44 @@ export default function WearAndShoesPage() {
         {/* ── МОБИЛА ── */}
         <div className="md:hidden h-full relative">
 
-          {/* Прокручивающаяся карусель из изображений */}
-          <WearMarquee />
-
-          {/* Текстовый блок сверху с подложкой и анимацией */}
-          <div className="absolute inset-x-0 top-0 pt-4 px-6 z-10 pointer-events-none">
-            <div
-              className="bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)] flex flex-col pointer-events-auto"
-              style={{
-                height: "calc(0.5 * (100svh - var(--nav-height-mobile) - 1rem))",
-              }}
-            >
-              <style>{`
-                  .custom-transparent-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                    background: transparent;
-                  }
-                  .custom-transparent-scrollbar::-webkit-scrollbar-thumb {
-                    background-color: rgba(255, 255, 255, 0.3);
-                    border-radius: 10px;
-                  }
-                `}</style>
-              <div 
-                ref={scrollRefMobile}
-                className="overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-1"
-                style={{ touchAction: "pan-y" }}
+          {/* Прокручивающаяся карусель из изображений с вложенным текстовым блоком */}
+          <WearMarquee>
+            <div className="w-full px-6 pointer-events-none">
+              <div
+                className="bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)] flex flex-col pointer-events-auto max-w-full mx-auto"
+                style={{
+                  height: "calc(0.5 * (100svh - var(--nav-height-mobile) - 1rem))",
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onWheel={(e) => e.stopPropagation()}
               >
-                <div className="text-white text-[15px] leading-[1.4] font-comfortaa-light">
-                  <TypewriterText scrollRef={scrollRefMobile} delay={26}>
-                    {DesktopContent({ showTitle: true })}
-                  </TypewriterText>
+                <style>{`
+                    .custom-transparent-scrollbar::-webkit-scrollbar {
+                      width: 4px;
+                      background: transparent;
+                    }
+                    .custom-transparent-scrollbar::-webkit-scrollbar-thumb {
+                      background-color: rgba(255, 255, 255, 0.3);
+                      border-radius: 10px;
+                    }
+                  `}</style>
+                <div 
+                  ref={scrollRefMobile}
+                  className="overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-1"
+                  style={{ touchAction: "pan-y" }}
+                >
+                  <div className="text-white text-[15px] leading-[1.4] font-comfortaa-light">
+                    <TypewriterText scrollRef={scrollRefMobile} delay={26}>
+                      {DesktopContent({ showTitle: true })}
+                    </TypewriterText>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </WearMarquee>
         </div>
 
         {/* ── ДЕСКТОП: два изображения + текст по центру ── */}

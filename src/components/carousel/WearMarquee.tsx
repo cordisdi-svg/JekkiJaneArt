@@ -14,9 +14,11 @@ const slides = [
     { src: "/wear-and-shoes/5.png", alt: "Роспись одежды 5" },
 ];
 
-export function WearMarquee() {
+export function WearMarquee({ children }: { children?: React.ReactNode }) {
     const [isDesktop, setIsDesktop] = useState(false);
     const [desktopIndex, setDesktopIndex] = useState(0);
+    const [isMobileTextboxVisible, setIsMobileTextboxVisible] = useState(true);
+    const hideTextboxTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Mobile specific refs
     const containerRef = useRef<HTMLDivElement>(null);
@@ -38,6 +40,12 @@ export function WearMarquee() {
             cancelAnimationFrame(inertiaRafRef.current);
             inertiaRafRef.current = null;
         }
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+        };
     }, []);
 
     // 1. Desktop Detection
@@ -98,6 +106,9 @@ export function WearMarquee() {
         isInteracting.current = true;
         stopInertia();
 
+        if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+        setIsMobileTextboxVisible(false);
+
         const container = containerRef.current;
         const track = trackRef.current;
         const setHeight = track.scrollHeight / 2;
@@ -144,6 +155,11 @@ export function WearMarquee() {
     const handlePointerUp = () => {
         isInteracting.current = false;
         lastTimeAnim.current = 0;
+
+        if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+        hideTextboxTimeoutRef.current = setTimeout(() => {
+            setIsMobileTextboxVisible(true);
+        }, 500);
 
         // Start Inertia
         if (Math.abs(velocityRef.current) > 0.1) {
@@ -231,6 +247,18 @@ export function WearMarquee() {
                     </div>
                 ))}
             </div>
+
+            {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
+            {children && (
+                <div 
+                    data-visible={isDesktop || isMobileTextboxVisible}
+                    className={`group absolute inset-0 flex items-center items-start pt-4 pointer-events-none transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+                >
+                    <div className="relative z-20 w-full flex justify-center h-full">
+                        {children}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
