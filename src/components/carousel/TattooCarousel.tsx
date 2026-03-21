@@ -34,25 +34,25 @@ function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 function TextContent({ mobile = false }: { mobile?: boolean }) {
     return (
         <div className={`flex flex-col text-white ${mobile
-            ? 'gap-[5px] text-[12px] leading-tight'
-            : 'gap-[6px] text-[13px] lg:text-[15px] leading-snug'
-            }`}>
-            <p className={`font-bold text-white/95 ${mobile ? 'text-[13px]' : 'text-[13px] lg:text-[14px] whitespace-nowrap'
-                }`}>
-                Индивидуальный эскиз татуировки по вашему запросу.
+            ? 'gap-[7px] text-[13.2px] leading-tight'
+            : 'gap-[8px] text-[14.3px] lg:text-[16.5px] leading-snug'
+            }`} style={{ fontFamily: "'Comfortaa', sans-serif" }}>
+            <p className={`font-bold text-white/95 text-center ${mobile ? 'text-[21.5px]' : 'text-[26.8px] lg:text-[30px]'
+                }`} style={{ fontFamily: "Fontatica4F" }}>
+                Эскиз татуировки по вашему запросу
             </p>
-            <div className={`flex flex-col ${mobile ? 'gap-[1px]' : 'gap-[2px]'}`}>
+            <div className={`flex flex-col ${mobile ? 'gap-[1.1px]' : 'gap-[2.2px]'}`}>
                 <p className="font-semibold text-white/90">Процесс:</p>
-                <ul className={`list-none flex flex-col pl-1 text-white/80 ${mobile ? 'gap-0' : 'gap-[2px]'}`}>
+                <ul className={`list-none flex flex-col pl-1 text-white/80 ${mobile ? 'gap-0' : 'gap-[2.2px]'}`}>
                     <li>— Обсуждение идеи и символики</li>
                     <li>— Создание эскиза</li>
                     <li>— Правки</li>
                     <li>— Финальный файл для мастера</li>
                 </ul>
             </div>
-            <div className="flex flex-col gap-[6px]">
-                <p className="font-bold text-white/95">Стоимость: от 2 000 ₽</p>
-                <p className={`text-white/75 italic ${mobile ? 'text-[11px]' : 'text-[11px] lg:text-[13px]'}`}>
+            <div className="flex flex-col gap-[7px]">
+                <p className={`font-bold text-white/95 text-center ${mobile ? 'text-[17.2px]' : 'text-[18.6px] lg:text-[21.5px]'}`} style={{ fontFamily: "Fontatica4F" }}>Стоимость: от 2 000 ₽</p>
+                <p className={`text-white/75 italic ${mobile ? 'text-[12.1px]' : 'text-[12.1px] lg:text-[14.3px]'}`}>
                     Работаю в авторском стиле, с учётом анатомии и места нанесения.
                 </p>
             </div>
@@ -118,9 +118,9 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
         pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
         didMoveRef.current = false;
         longPressArmedRef.current = true;
-        
+
         if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
-        
+
         longPressTimeoutRef.current = setTimeout(() => {
             if (!didMoveRef.current && longPressArmedRef.current) {
                 activePreviewIndexRef.current = index;
@@ -130,7 +130,7 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                 stopInertia();
                 longPressArmedRef.current = false; // Disarm once fired
             }
-        }, 350);
+        }, 175);
     };
 
     const handleItemPointerUp = () => {
@@ -158,11 +158,11 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
         }
 
         if (!isDraggingRef.current) return;
-        
+
         const now = performance.now();
         const dt = Math.max(now - lastTimeRef.current, 1);
         const dx = e.clientX - lastPointerXRef.current;
-        
+
         // Scale velocity by DRAG_SENSITIVITY as requested
         velocityRef.current = (dx * DRAG_SENSITIVITY) / dt;
         lastTimeRef.current = now;
@@ -295,6 +295,18 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                 maskWrapperRef.current.style.filter = blurVal > 0 ? `blur(${blurVal}px)` : 'none';
             }
 
+            // 1. First find the index of the item that is MOST forward/center (highest t)
+            let maxTVal = -1;
+            let bestIdx = -1;
+            for (let j = 0; j < N; j++) {
+                const theta = angleRef.current + (j / N) * 2 * Math.PI;
+                const tt = (1 + Math.cos(theta)) / 2;
+                if (tt > maxTVal) {
+                    maxTVal = tt;
+                    bestIdx = j;
+                }
+            }
+
             imgRefs.current.forEach((el, i) => {
                 if (!el) return;
                 const θ = angleRef.current + (i / N) * 2 * Math.PI;
@@ -311,22 +323,22 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                 // If it's the active index, we animate it via the PREVIEW overlay
                 // and hide the original one in the orbit.
                 let finalOpacity = baseOpacity;
-                
+
                 if (activeIdx !== null && i === activeIdx) {
                     finalOpacity = baseOpacity * (1 - p);
-                    
+
                     if (previewImgRef.current) {
                         const targetScale = baseScale * 2;
                         const targetX = cx - hW;
                         const targetY = cy - hH;
-                        
+
                         const curX = x - hW;
                         const curY = y - hH;
-                        
+
                         const finalX = lerp(curX, targetX, p);
                         const finalY = lerp(curY, targetY, p);
                         const finalScale = lerp(baseScale, targetScale, p);
-                        
+
                         previewImgRef.current.style.transform = `translate(${finalX}px, ${finalY}px) scale(${finalScale})`;
                         previewImgRef.current.style.opacity = p.toString();
                     }
@@ -336,6 +348,22 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                 el.style.opacity = finalOpacity.toString();
                 el.style.zIndex = zIndex.toString();
                 el.style.filter = 'none'; // Background blur handled on container level
+
+                const hintEl = el.querySelector('.magic-hint') as HTMLElement | null;
+                if (hintEl) {
+                    if (i === bestIdx && t > 0.985 && activeIdx === null && !isHoldingRef.current) {
+                        // Normalize t from 0.985 to 1.0 into 0.0 to 1.0
+                        const nt = (t - 0.985) / 0.015;
+                        hintEl.style.opacity = nt.toString();
+                        const iconEl = hintEl.firstElementChild as HTMLElement;
+                        if (iconEl) {
+                            // Scale up gracefully to create a pulse effect as it passes the very center
+                            iconEl.style.transform = `scale(${0.7 + 0.4 * nt})`;
+                        }
+                    } else {
+                        hintEl.style.opacity = '0';
+                    }
+                }
             });
 
             rafRef.current = requestAnimationFrame(step);
@@ -378,8 +406,8 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     // Textbox positioning
     // Mobile: width 58.5% (78%×0.75), centred, bottom at 43.5% from nav
     const textboxStyle: React.CSSProperties = mobile
-        ? { bottom: '43.5%', left: '50%', transform: 'translateX(-50%)', width: '58.5%', zIndex: 50 }
-        : { top: '5%', left: 'calc(27.5% + 5px)', width: 'calc(45% - 10px)', zIndex: 50 };
+        ? { bottom: '43.5%', left: '50%', transform: 'translateX(-50%)', width: '65%', zIndex: 50 }
+        : { top: '5%', left: '25%', width: '50%', zIndex: 50 };
 
     // CSS mask: opaque everywhere EXCEPT the textbox rectangle (transparent there)
     const { l, t: mt, w: mw, h: mh } = maskBounds;
@@ -439,6 +467,14 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                             className="object-cover"
                             sizes="(max-width: 768px) 55vw, 20vw"
                         />
+                        <div className={`magic-hint absolute inset-0 flex items-end justify-center ${mobile ? 'pb-2' : 'pb-4'} pointer-events-none opacity-0`}>
+                            <div className={`bg-black/40 ${mobile ? 'w-[18px] h-[18px]' : 'w-9 h-9'} flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)] border border-white/20 will-change-transform`}>
+                                <svg viewBox="0 0 24 24" className={`${mobile ? 'w-[10px] h-[10px]' : 'w-5 h-5'} stroke-white fill-transparent`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 11V6a2 2 0 1 1 4 0v7a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-1" />
+                                    <path d="M11 11H9a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4V9a2 2 0 1 0-4 0v2" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </div>

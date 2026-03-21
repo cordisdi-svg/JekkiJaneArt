@@ -94,24 +94,26 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
             const containerRect = container.getBoundingClientRect();
             const cursorRect = cursor.getBoundingClientRect();
             
-            // 150px margin to handle paragraph jumps/newlines
+            // 200px margin (increased for large jumps) to handle skip/newlines
             const isVisible = (
                 cursorRect.top >= containerRect.top &&
-                cursorRect.bottom <= containerRect.bottom + 150
+                cursorRect.bottom <= containerRect.bottom + 200
             );
             
-            if (isVisible) {
+            if (isVisible || charIndex >= totalChars) {
                 isAutoScrollingRef.current = true;
-                cursor.scrollIntoView({ block: "nearest", behavior: "auto" });
+                cursor.scrollIntoView({ 
+                    block: charIndex >= totalChars ? "end" : "nearest", 
+                    behavior: "auto" 
+                });
                 
                 // Clear the flag after the scroll is processed
-                // requestAnimationFrame ensures it's cleared after the browser has a chance to handle the scroll
                 requestAnimationFrame(() => {
                     isAutoScrollingRef.current = false;
                 });
             }
         }
-    }, [charIndex, scrollRef]);
+    }, [charIndex, totalChars, scrollRef]);
 
     // Render tree with clipped text
     const renderTree = () => {
@@ -182,8 +184,30 @@ export function TypewriterText({ children, delay = 35, cursorChar, scrollRef }: 
         return cloneAndClip(children);
     };
 
+    const handleClick = () => {
+        if (charIndex >= totalChars) return;
+        
+        // Un-freeze auto-scroll so the skip can trigger a scroll update
+        freezeAutoScrollUntilRef.current = 0;
+        
+        // Skip to end
+        setCharIndex(totalChars);
+        
+        // Force a scroll jump to the bottom after layout updates
+        if (scrollRef?.current) {
+            requestAnimationFrame(() => {
+                if (scrollRef.current) {
+                    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+                }
+            });
+        }
+    };
+
     return (
-        <div className="relative w-full h-full">
+        <div 
+            className={`relative w-full h-full min-h-full ${charIndex < totalChars ? 'cursor-pointer' : ''}`}
+            onClick={handleClick}
+        >
             {renderTree()}
         </div>
     );

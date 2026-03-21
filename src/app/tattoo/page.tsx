@@ -11,7 +11,7 @@ export default function TattooPage() {
         <div className="hidden md:flex flex-row gap-4 px-4 w-full h-full">
 
           {/* Left image: 1.png — gap-4 from all touching edges */}
-          <div className="relative aspect-[3/4] flex-shrink-0 overflow-hidden rounded-2xl shadow-xl my-4">
+          <div className="relative aspect-[3/4] flex-shrink-0 my-4" style={{ WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)', maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)' }}>
             <Image
               src="/tattoo/1.png"
               alt="Татуировка — портфолио"

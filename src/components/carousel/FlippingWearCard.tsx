@@ -5,19 +5,36 @@ import { useEffect, useState } from "react";
 
 interface FlippingWearCardProps {
     images: string[];
+    initialDelay?: number;
+    interval?: number;
 }
 
 const TRANSITION_DURATION = 1500;
 
-export function FlippingWearCard({ images }: FlippingWearCardProps) {
+export function FlippingWearCard({ images, initialDelay = 0, interval = 3000 }: FlippingWearCardProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isTransitioning, setIsTransitioning] = useState(true);
 
     const handleAdvance = () => {
-        if (currentIndex === images.length) return; 
         setCurrentIndex(prev => prev + 1);
         setIsTransitioning(true);
     };
+
+    // Auto-advance logic
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+        const startTimeout = setTimeout(() => {
+            // First jump happens after initialDelay
+            handleAdvance();
+            // Then every 'interval'
+            intervalId = setInterval(handleAdvance, interval);
+        }, initialDelay);
+
+        return () => {
+            clearTimeout(startTimeout);
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [initialDelay, interval]);
 
     // Handle seamless snap when we reach the cloned first image
     useEffect(() => {

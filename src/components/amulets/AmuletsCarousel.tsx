@@ -172,7 +172,9 @@ function AmuletsDesktopCarousel() {
             const delta = time - lastTimeRef.current;
             lastTimeRef.current = time;
 
-            if (!isPaused && !isOrderMenuOpen && !showEighthSprite && !delayedSparkle) {
+            const isLastSlide = idx === n - 1 && activeSeq === null;
+
+            if (!isPaused && !isOrderMenuOpen && !showEighthSprite && !delayedSparkle && !isLastSlide) {
                 accumulatedTimeRef.current += delta;
                 const limit = 3000; // Desktop step = 3000ms
                 if (accumulatedTimeRef.current >= limit) {
@@ -188,7 +190,7 @@ function AmuletsDesktopCarousel() {
             cancelAnimationFrame(rafId);
             lastTimeRef.current = 0;
         };
-    }, [isPaused, isOrderMenuOpen, showEighthSprite, delayedSparkle, handleLoop]);
+    }, [isPaused, isOrderMenuOpen, showEighthSprite, delayedSparkle, handleLoop, idx, n, activeSeq]);
 
     // Reset timer on slide change or sequence state toggle
     useEffect(() => {
@@ -555,8 +557,10 @@ function AmuletsMobileCarousel() {
             const delta = time - lastTimeRef.current;
             lastTimeRef.current = time;
 
+            const isLastSlide = idx === n - 1 && activeSeq === null;
+
             // Pause timer if user is interacting, menu is open, or it's currently animating
-            if (!isPaused && !isAnimating && !isSeqAnimating && !isOrderMenuOpen && !showEighthSprite) {
+            if (!isPaused && !isAnimating && !isSeqAnimating && !isOrderMenuOpen && !showEighthSprite && !isLastSlide) {
                 accumulatedTimeRef.current += delta;
                 const limit = 2000; // Mobile step = 2000ms
                 if (accumulatedTimeRef.current >= limit) {
@@ -577,7 +581,7 @@ function AmuletsMobileCarousel() {
             cancelAnimationFrame(rafId);
             lastTimeRef.current = 0;
         };
-    }, [isPaused, isAnimating, isSeqAnimating, isOrderMenuOpen, showEighthSprite, next, activeSeq]);
+    }, [isPaused, isAnimating, isSeqAnimating, isOrderMenuOpen, showEighthSprite, next, activeSeq, idx, n]);
 
     // Reset timer on slide change or flip
     useEffect(() => {
@@ -810,14 +814,14 @@ function AmuletsMobileCarousel() {
 function SparkleBorder({ progress }: { progress: number }) {
     return (
         <div className="pointer-events-none absolute inset-0 z-20">
-            <svg className="absolute inset-0 h-full w-full drop-shadow-[0_0_8px_rgba(255,36,0,0.8)] xl:drop-shadow-[0_0_12px_rgba(255,36,0,0.9)]">
+            <svg className="absolute inset-0 h-full w-full drop-shadow-[0_0_6px_rgba(156,15,6,0.7)] xl:drop-shadow-[0_0_10px_rgba(156,15,6,0.8)]">
                 <rect
                     x="1" y="1"
                     width="calc(100% - 2px)" height="calc(100% - 2px)"
                     rx="31"
                     fill="none"
-                    stroke="rgba(255, 36, 0)"
-                    strokeWidth="3"
+                    stroke="rgb(156, 15, 6)"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                     pathLength="100"
                     style={{

@@ -75,29 +75,49 @@ export function BottomNavigation() {
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         borderTop: "1px solid rgba(255,255,255,0.12)",
-        fontFamily: "'RavenholmBold', serif",
+        fontFamily: "Fontatica4F",
+        fontWeight: 700,
         letterSpacing: "0.02em",
       }}
       aria-label="Bottom navigation"
     >
+      <style>{`
+        @keyframes slow-shine {
+          0%, 42.8% { transform: translateX(-300%) skewX(-25deg); }
+          100% { transform: translateX(400%) skewX(-25deg); }
+        }
+        .btn-shine-layer {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 50%;
+          background: linear-gradient(90deg, rgba(255,36,0,0), rgba(255,36,0,0.5), rgba(255,36,0,0));
+          animation: slow-shine 7s linear infinite;
+          pointer-events: none;
+        }
+      `}</style>
+
       <div className="hidden h-[var(--nav-height-desktop)] w-full lg:flex">
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
           <Triangle direction="left" />
         </button>
-        <button type="button" className={`${navCellClass(pathname === "/")} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
-        <button type="button" className={`${navCellClass(false)} w-[25%] text-[clamp(16px,2.2vw,32px)] leading-none px-1`} onClick={() => openModal("order")}>Заказать</button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={handleReviewsClick}>
+        <button type="button" className={`${navCellClass(pathname === "/")} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
+        <button type="button" className={`relative overflow-hidden ${navCellClass(false)} w-[25%] text-[clamp(18.5px,2.5vw,36px)] leading-none px-1`} onClick={() => openModal("order")}>
+          <div className="btn-shine-layer" />
+          <span className="relative z-10">Заказать</span>
+        </button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={handleReviewsClick}>
           {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
         </button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%] border-r border-white/20 text-[clamp(14px,1.8vw,26px)] leading-none px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] border-r border-white/20 text-[clamp(15px,1.9vw,26px)] leading-none px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
         <button type="button" className="flex h-full w-[5%] items-center justify-center" onClick={handleNext} aria-label="Следующая страница">
           <Triangle direction="right" />
         </button>
       </div>
 
-      <div 
-        className="relative flex h-[var(--nav-height-mobile)] w-full flex-col lg:hidden" 
+      <div
+        className="relative flex h-[var(--nav-height-mobile)] w-full flex-col lg:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
@@ -113,15 +133,18 @@ export function BottomNavigation() {
         </div>
 
         <div className="grid h-1/2 grid-cols-2">
-          <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(20px,6vw,28px)] leading-none px-1`} onClick={() => openModal("order")}>Заказать</button>
-          <button type="button" className={`${navCellClass(pathname === "/")} border-t border-white/20 text-[clamp(20px,6vw,28px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+          <button type="button" className={`relative overflow-hidden ${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => openModal("order")}>
+            <div className="btn-shine-layer" />
+            <span className="relative z-10">Заказать</span>
+          </button>
+          <button type="button" className={`${navCellClass(pathname === "/")} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
         </div>
         <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
-          <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
-          <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4vw,22px)] leading-tight px-1`} onClick={handleReviewsClick}>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.7vw,20px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(18px,4.6vw,25px)] leading-tight px-1`} onClick={handleReviewsClick}>
             {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
           </button>
-          <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.8vw,20px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
+          <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4.4vw,23px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
         </div>
       </div>
     </nav>

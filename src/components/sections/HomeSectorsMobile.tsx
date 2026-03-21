@@ -7,8 +7,8 @@ import { useState } from "react";
 const MOBILE_SECTORS = [
   { id: 1, label: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", heightPercent: 14, align: "center" as const },
   { id: 2, label: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", heightPercent: 14, align: "center" as const },
-  { id: 3, label: "Картины-амулеты", href: "/amulets", imageSrc: "/amulets/1-(tech).png", heightPercent: 22, align: "right-half" as const },
-  { id: 4, label: "Стены\nи мебель", href: "/walls", imageSrc: "/walls/tech.png", heightPercent: 22, align: "right-half" as const },
+  { id: 3, label: "Картины амулеты", href: "/amulets", imageSrc: "/amulets/1-(tech).png", heightPercent: 22, align: "right-half" as const },
+  { id: 4, label: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.png", heightPercent: 22, align: "right-half" as const },
   { id: 5, label: "Одежда и обувь", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", heightPercent: 14, align: "center" as const },
   { id: 6, label: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", heightPercent: 14, align: "center" as const }
 ];
@@ -40,7 +40,7 @@ export function HomeSectorsMobile() {
               style={{
                 height: `${sector.heightPercent}%`,
                 borderBottomWidth: isNotLast ? "1px" : "0",
-                borderBottomColor: "#111",
+                borderBottomColor: "#444444",
                 opacity: active !== null && !isActive ? 0.3 : 1
               }}
             >
@@ -50,12 +50,12 @@ export function HomeSectorsMobile() {
               </div>
 
               {/* Overlay for darkening the background */}
-              <div className="absolute inset-0 bg-black/40 transition-colors group-active:bg-black/60" />
+              <div className="absolute inset-0 bg-black/[0.45] transition-colors group-active:bg-black/[0.65]" />
 
-              <div className={`relative z-10 px-4 ${sector.align === 'center' ? 'w-full text-center' : 'w-1/2 ml-auto text-center'}`}>
-                <span className="font-abibas text-[clamp(1rem,4.5vw,1.3rem)] font-semibold uppercase tracking-wider text-white whitespace-pre-line" style={{
-                  textShadow: "0 2px 4px rgba(0,0,0,0.8)",
-                  WebkitTextStroke: "1px rgba(0,0,0,0.4)",
+              <div className={`relative z-10 px-4 ${sector.align === 'center' ? 'w-full text-center' : 'w-[41%] ml-auto text-center'}`}>
+                <span className="font-abibas text-[clamp(1.38rem,6.21vw,1.79rem)] font-semibold uppercase tracking-wider text-[#e5e5e5] whitespace-pre-line" style={{
+                  textShadow: "0 2px 6px rgba(90,0,0,0.95), 0 0 4px rgba(90,0,0,1)",
+                  WebkitTextStroke: "1px rgba(60,5,5,0.6)",
                   paintOrder: "stroke"
                 }}>
                   {sector.label}
@@ -83,13 +83,13 @@ export function HomeSectorsMobile() {
           aria-label="О художнице"
         >
           {/* Main Icon scaled naturally to fit the new area, shifted to stay left-aligned, and brightened */}
-          <Image 
-            src="/mainpage/mainpage-icon-mobile.png" 
-            alt="О художнице" 
-            fill 
-            className="object-contain object-left" 
-            style={{ filter: 'brightness(1.15)' }} 
-            sizes="63vw" 
+          <Image
+            src="/mainpage/mainpage-icon-mobile.png"
+            alt="О художнице"
+            fill
+            className="object-contain object-left"
+            style={{ filter: 'brightness(1.15)' }}
+            sizes="63vw"
           />
         </button>
       </div>

@@ -63,6 +63,8 @@ export default function WearAndShoesPage() {
           <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
             <FlippingWearCard
               images={["/wear-and-shoes/1.png", "/wear-and-shoes/2.jpeg", "/wear-and-shoes/3.jpeg", "/wear-and-shoes/4.png", "/wear-and-shoes/5.png"]}
+              initialDelay={6000}
+              interval={6000}
             />
           </div>
 
@@ -90,8 +92,8 @@ export default function WearAndShoesPage() {
                 `}</style>
 
                 {/* Static Title */}
-                <h2 className="font-abibas text-2xl lg:text-3xl xl:text-4xl text-center mb-6 mt-2">
-                  Индивидуальная художественная роспись одежды и обуви
+                <h2 className="font-fontatica text-[28px] lg:text-[42px] xl:text-[50px] text-center mb-4 mt-2 leading-tight uppercase font-bold text-white/95">
+                  Роспись одежды и обуви
                 </h2>
 
                 {/* Scrollable Unified Area */}
@@ -112,6 +114,8 @@ export default function WearAndShoesPage() {
           <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
             <FlippingWearCard
               images={["/wear-and-shoes/3.jpeg", "/wear-and-shoes/4.png", "/wear-and-shoes/5.png", "/wear-and-shoes/1.png", "/wear-and-shoes/2.jpeg"]}
+              initialDelay={2500}
+              interval={6000}
             />
           </div>
 
@@ -125,8 +129,8 @@ function DesktopContent({ showTitle = false }: { showTitle?: boolean } = {}) {
   return (
     <>
       {showTitle && (
-        <h2 className="font-abibas text-xl text-center mb-6 mt-2">
-          Индивидуальная художественная роспись одежды и обуви
+        <h2 className="font-fontatica text-[24px] lg:text-[28px] text-center mb-6 mt-2 uppercase font-bold text-white/95">
+          Роспись одежды и обуви
         </h2>
       )}
       <p className="mb-4">
@@ -135,7 +139,7 @@ function DesktopContent({ showTitle = false }: { showTitle?: boolean } = {}) {
         Каждая работа — единственный экземпляр, созданный вручную. Вы получаете вещь, которой больше ни у кого не будет.
       </p>
 
-      <p className="font-abibas text-[20px] xl:text-[24px] mb-2 font-bold leading-tight">
+      <p className="font-fontatica text-[28px] xl:text-[34px] mb-2 font-bold leading-tight">
         Возможна роспись:
       </p>
       <ul className="list-none flex flex-col gap-1 mb-4">
@@ -156,7 +160,7 @@ function DesktopContent({ showTitle = false }: { showTitle?: boolean } = {}) {
         Рисунок сохраняет цвет и детализацию даже при регулярной носке.
       </p>
 
-      <p className="font-abibas text-[20px] xl:text-[24px] mb-2 font-bold leading-tight">
+      <p className="font-fontatica text-[28px] xl:text-[34px] mb-2 font-bold leading-tight">
         Что можно сделать
       </p>
       <ul className="list-none flex flex-col gap-1 mb-4">
@@ -166,7 +170,7 @@ function DesktopContent({ showTitle = false }: { showTitle?: boolean } = {}) {
         <li>• разработать образ для съёмок, выступлений или бренда</li>
       </ul>
 
-      <p className="font-abibas text-[20px] xl:text-[24px] mb-2 font-bold leading-tight">
+      <p className="font-fontatica text-[28px] xl:text-[34px] mb-2 font-bold leading-tight">
         Как проходит работа
       </p>
       <div className="flex flex-col gap-3 mb-4">
@@ -192,7 +196,7 @@ function DesktopContent({ showTitle = false }: { showTitle?: boolean } = {}) {
         </div>
       </div>
 
-      <p className="font-abibas text-[20px] xl:text-[24px] mb-2 font-bold leading-tight">
+      <p className="font-fontatica text-[28px] xl:text-[34px] mb-2 font-bold leading-tight">
         Почему заказывают у меня
       </p>
       <ul className="list-none flex flex-col gap-1 mb-6">

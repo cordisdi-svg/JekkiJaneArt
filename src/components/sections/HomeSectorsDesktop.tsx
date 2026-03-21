@@ -35,7 +35,7 @@ const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
 
 const DESKTOP_SECTORS: Sector[] = [
   { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", start: -148, end: -32 },
-  { id: 2, lines: ["Роспись стен", "и мебели"], ariaLabel: "Роспись стен и мебели", href: "/walls", imageSrc: "/walls/tech.png", start: -32, end: 0 },
+  { id: 2, lines: ["Интерьеры"], ariaLabel: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.png", start: -32, end: 0 },
   { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", start: 0, end: 32 },
   { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
   { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", start: 148, end: 180 },
@@ -222,7 +222,7 @@ export function HomeSectorsDesktop() {
                 <Image src={sector.imageSrc} alt="" fill className="object-cover animate-bg-scale" sizes="100vw" />
               </div>
             </span>
-            <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.22)" : "rgba(0,0,0,0.30)" }} />
+            <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.27)" : "rgba(0,0,0,0.35)" }} />
 
             <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden>
               <defs>
@@ -235,8 +235,8 @@ export function HomeSectorsDesktop() {
                 <path
                   d={pointsToPath(sector.points)}
                   fill="none"
-                  stroke={isHovered ? "#9c0f06" : "#42545f"}
-                  strokeWidth={isHovered ? 6 : 3}
+                  stroke={isHovered ? "#9c0f06" : "#444444"}
+                  strokeWidth={isHovered ? 6 : 1}
                   strokeLinejoin="round"
                   strokeLinecap="round"
                   vectorEffect="non-scaling-stroke"
@@ -245,15 +245,15 @@ export function HomeSectorsDesktop() {
             </svg>
 
             <span
-              className="font-abibas pointer-events-none absolute text-center text-[clamp(1.2rem,2.2vw,2.2rem)] font-semibold leading-[1.1] text-white"
+              className="font-abibas pointer-events-none absolute text-center text-[clamp(1.68rem,3.08vw,3.08rem)] font-semibold leading-[1.1] text-[#e5e5e5]"
               style={{
                 left: sector.labelPos.left,
                 top: sector.labelPos.top,
                 transform: `translate(-50%, -50%) translate(${offset.dx}px, ${offset.dy}px)`,
                 maxWidth: "80%",
                 textWrap: "balance",
-                textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
-                WebkitTextStroke: "3px rgba(0,0,0,0.65)",
+                textShadow: "0 2px 12px rgba(156,15,6,0.85), 0 0 6px rgba(156,15,6,0.9)",
+                WebkitTextStroke: "3px rgba(60,5,5,0.85)",
                 paintOrder: "stroke",
                 zIndex: 3
               }}
@@ -281,19 +281,19 @@ export function HomeSectorsDesktop() {
           filter: hovered === "center" ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
         }}
       >
-        <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.28)", zIndex: 1 }} />
-        <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 3}px ${hovered === "center" ? "#9c0f06" : "#42545f"}`, zIndex: 2 }} />
+        <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.28)" : "rgba(0,0,0,0.38)", zIndex: 1 }} />
+        <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 1.5}px ${hovered === "center" ? "#9c0f06" : "#444444"}`, zIndex: 2 }} />
         <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5, transform: "scale(1.595)", overflow: "visible" }}>
           <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
         </div>
         <span
-          className="font-abibas pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[clamp(1.05rem,1.8vw,1.7rem)] font-semibold text-white transition-opacity duration-200"
+          className="font-abibas pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[clamp(1.26rem,2.16vw,2.04rem)] font-semibold text-[#e5e5e5] transition-opacity duration-200"
           style={{
             bottom: "10%",
             zIndex: 6,
             opacity: hovered === "center" ? 1 : 0,
-            textShadow: "0 2px 8px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.7)",
-            WebkitTextStroke: "2px rgba(0,0,0,0.65)",
+            textShadow: "0 2px 12px rgba(156,15,6,0.85), 0 0 6px rgba(156,15,6,0.9)",
+            WebkitTextStroke: "2px rgba(60,5,5,0.85)",
             paintOrder: "stroke"
           }}
         >

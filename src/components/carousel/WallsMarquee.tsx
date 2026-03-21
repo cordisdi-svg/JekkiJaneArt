@@ -15,7 +15,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const marqueeRef = useRef<HTMLDivElement>(null);
     const [isDesktop, setIsDesktop] = useState(false);
-    
+
     // Interaction states
     const isInteracting = useRef(false);
     const [isMobileTextboxVisible, setIsMobileTextboxVisible] = useState(true);
@@ -24,7 +24,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
     const startPos = useRef({ x: 0, y: 0 });
     const lastPointerX = useRef(0);
     const initialScroll = useRef({ left: 0, top: 0 });
-    
+
     // Momentum refs
     const velocityRef = useRef(0);
     const lastTimeRef = useRef(0);
@@ -69,7 +69,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                 const container = containerRef.current;
                 const marquee = marqueeRef.current;
                 const speed = getSpeed();
-                
+
                 if (isDesktop) {
                     container.scrollLeft += speed * deltaTime;
                     const setWidth = marquee.scrollWidth / 2;
@@ -131,7 +131,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
         container.setPointerCapture(e.pointerId);
         startPos.current = { x: e.clientX, y: e.clientY };
-        
+
         lastTimeRef.current = performance.now();
         lastPosRef.current = isDesktop ? e.clientX : e.clientY;
         velocityRef.current = 0;
@@ -139,15 +139,15 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         if (isDesktop) {
             lastPointerX.current = e.clientX;
         }
-        initialScroll.current = { 
-            left: container.scrollLeft, 
-            top: container.scrollTop 
+        initialScroll.current = {
+            left: container.scrollLeft,
+            top: container.scrollTop
         };
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
         if (!isInteracting.current || !containerRef.current || !marqueeRef.current) return;
-        
+
         const dy = e.clientY - startPos.current.y;
         const marquee = marqueeRef.current;
         const container = containerRef.current;
@@ -156,7 +156,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         const dt = Math.max(now - lastTimeRef.current, 1);
         const currentPos = isDesktop ? e.clientX : e.clientY;
         const deltaPos = currentPos - lastPosRef.current;
-        
+
         // Velocity (px / ms)
         velocityRef.current = deltaPos / dt;
         lastTimeRef.current = now;
@@ -164,7 +164,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
         if (isDesktop) {
             const setWidth = marquee.scrollWidth / 2;
-            
+
             // Pre-normalization & Edge Guard before calculating delta
             while (container.scrollLeft >= setWidth) container.scrollLeft -= setWidth;
             while (container.scrollLeft < 0) container.scrollLeft += setWidth;
@@ -177,21 +177,21 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
             const deltaX = e.clientX - lastPointerX.current;
             let newScrollLeft = container.scrollLeft - deltaX;
-            
+
             // Normalize result
             while (newScrollLeft >= setWidth) newScrollLeft -= setWidth;
             while (newScrollLeft < 0) newScrollLeft += setWidth;
-            
+
             container.scrollLeft = newScrollLeft;
             lastPointerX.current = e.clientX;
         } else {
             const setHeight = marquee.scrollHeight / 2;
             let newScrollTop = initialScroll.current.top - dy;
-            
+
             // Normalize result only, do NOT touch initialScroll.current
             while (newScrollTop >= setHeight) newScrollTop -= setHeight;
             while (newScrollTop < 0) newScrollTop += setHeight;
-            
+
             container.scrollTop = newScrollTop;
         }
     };
@@ -234,7 +234,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                     const setWidth = marquee.scrollWidth / 2;
                     // Apply velocity (flipped because scroll direction and pointer delta are opposite in logic)
                     container.scrollLeft -= v * 16;
-                    
+
                     while (container.scrollLeft >= setWidth) container.scrollLeft -= setWidth;
                     while (container.scrollLeft < 0) container.scrollLeft += setWidth;
                 } else {
@@ -255,7 +255,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         if (!containerRef.current || !marqueeRef.current) return;
         const container = containerRef.current;
         const marquee = marqueeRef.current;
-        
+
         if (isDesktop) {
             const setWidth = marquee.scrollWidth / 2;
 
@@ -277,14 +277,14 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         } else {
             const setHeight = marquee.scrollHeight / 2;
             container.scrollTop += e.deltaY;
-            
+
             while (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
             while (container.scrollTop < 0) container.scrollTop += setHeight;
         }
     };
 
     return (
-        <div 
+        <div
             className={`marquee-wrapper relative w-full h-full py-0 md:py-2 overflow-hidden cursor-grab active:cursor-grabbing pointer-events-auto`}
             style={{ touchAction: 'none' }}
             onPointerDown={handlePointerDown}
@@ -363,7 +363,10 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
             {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
             {children && (
-                <div className={`absolute inset-0 flex items-center justify-center pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}>
+                <div 
+                    data-visible={isDesktop || isMobileTextboxVisible}
+                    className={`group absolute inset-0 flex items-center justify-center pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+                >
                     <div className="relative z-20 w-full flex justify-center">
                         {children}
                     </div>

@@ -11,6 +11,22 @@
 }
 
 @font-face {
+  font-family: 'Gabriela';
+  src: url('/fonts/Gabriela-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Underdog';
+  src: url('/fonts/Underdog-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Fontatica4F';
   src: url('/fonts/Fontatica4F.ttf') format('truetype');
   font-weight: normal;
@@ -86,6 +102,14 @@
   font-family: 'Abibas';
   src: url('/fonts/Abibas.ttf') format('truetype');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -202,6 +226,8 @@
   --nav-height-desktop: 7vh;
   --nav-height-mobile: 17svh;
   --nav-height: var(--nav-height-mobile);
+  --font-family-underdog: 'Underdog', cursive;
+  --letter-spacing-underdog: 0.02em;
 }
 
 @media (min-width: 1024px) {
@@ -254,5 +280,6 @@ picture {
   -webkit-touch-callout: none;
   user-select: none;
   -webkit-user-select: none;
-  pointer-events: none; /* Only for the pixel image itself */
-}
+  pointer-events: none;
+  /* Only for the pixel image itself */
+}
