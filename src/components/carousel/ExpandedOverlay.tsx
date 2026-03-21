@@ -7,6 +7,13 @@ import { PaintingData } from "@/data/availablePics";
 // ─── Expanded overlay (covers full viewport including nav) ────────────────────
 export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () => void }) {
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
+    const [showPinchHint, setShowPinchHint] = useState(false);
+    
+    // Hint animation refs
+    const hintTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const hintAnimTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const hasPinchedRef = useRef(false);
+
     const scrollRef = useRef<HTMLDivElement>(null);
     const autoscrollPausedRef = useRef(false);
     const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -33,6 +40,16 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
     const suppressClickRef = useRef(false);
     const pointerCoordsRef = useRef({ x: 0, y: 0 });
     const rafTrackingRef = useRef<number | null>(null);
+
+    // New references for edge-flip and dynamic zoom
+    const targetZoomRef = useRef(2);
+    const currentZoomRef = useRef(2);
+    const targetOffsetXRef = useRef(0);
+    const currentOffsetXRef = useRef(0);
+    const targetOffsetYRef = useRef(0);
+    const currentOffsetYRef = useRef(0);
+    const secondaryPointerRef = useRef<{ id: number, startX: number, startY: number } | null>(null);
+    const primaryPointerStartDistRef = useRef<number>(0);
 
     const stopInertia = useCallback(() => {
         if (inertiaRafRef.current) {
@@ -153,28 +170,63 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         const clampedX = Math.max(rect.left, Math.min(x, rect.left + rect.width));
         const clampedY = Math.max(rect.top, Math.min(y, rect.top + rect.height));
 
-        const magSize = window.innerWidth < 768 ? 184 : 230; 
+        const isDesktop = window.innerWidth >= 768;
+        const magSize = isDesktop ? 300 : 184; 
 
-        // Center on X, but slightly above Y so finger doesn't block it
-        const magX = clampedX - magSize / 2;
-        const magY = clampedY - magSize / 2 - (magSize / 2 + 10);
+        // Base Offsets
+        const baseOffsetX = 0;
+        const baseOffsetY = isDesktop ? 0 : -(magSize / 2 + 10);
+
+        // Native Edge-Flip thresholds
+        // Calculated against native pointer coordinate strictly, protecting from oscillatory feedback
+        const nativeCenterX = x + baseOffsetX;
+        const nativeCenterY = y + baseOffsetY;
+        const boundaryThreshold = magSize / 2;
+
+        // X Flip 
+        if (nativeCenterX < 0) {
+            targetOffsetXRef.current = magSize / 2 + 10;
+        } else if (nativeCenterX > window.innerWidth) {
+            targetOffsetXRef.current = -(magSize / 2 + 10);
+        } else if (nativeCenterX > boundaryThreshold + 20 && nativeCenterX < window.innerWidth - boundaryThreshold - 20) {
+            targetOffsetXRef.current = baseOffsetX; // Safe zone return
+        }
+
+        // Y Flip
+        if (nativeCenterY < 0) {
+            targetOffsetYRef.current = magSize / 2 + 10;
+        } else if (nativeCenterY > window.innerHeight) {
+            targetOffsetYRef.current = -(magSize / 2 + 10);
+        } else if (nativeCenterY > boundaryThreshold + 20 && nativeCenterY < window.innerHeight - boundaryThreshold - 20) {
+            targetOffsetYRef.current = baseOffsetY; // Safe zone return
+        }
+
+        // Smoothing interpolations in rAF loop
+        currentZoomRef.current += (targetZoomRef.current - currentZoomRef.current) * 0.15;
+        currentOffsetXRef.current += (targetOffsetXRef.current - currentOffsetXRef.current) * 0.15;
+        currentOffsetYRef.current += (targetOffsetYRef.current - currentOffsetYRef.current) * 0.15;
+
+        // Ensure currentZoom safely bounds between hardware limitations just in case
+        const zoom = currentZoomRef.current;
+
+        const magX = clampedX - magSize / 2 + currentOffsetXRef.current;
+        const magY = clampedY - magSize / 2 + currentOffsetYRef.current;
 
         magnifierRef.current.style.transform = `translate3d(${magX}px, ${magY}px, 0)`;
         magnifierRef.current.style.width = `${magSize}px`;
         magnifierRef.current.style.height = `${magSize}px`;
 
-        const zoom = 2;
         const relX = clampedX - rect.left;
         const relY = clampedY - rect.top;
 
         const zoomedX = relX * zoom;
         const zoomedY = relY * zoom;
 
-        // Position inner zoomed image so that the coordinate (zoomedX, zoomedY) is at the center of the magnifier
-        const transX = (magSize / 2) - zoomedX;
-        const transY = (magSize / 2) - zoomedY;
+        // Position inner zoomed image dynamically countering screen offset so sample-content coordinates remain perfectly locked
+        const transX = (magSize / 2) - zoomedX - currentOffsetXRef.current;
+        const transY = (magSize / 2) - zoomedY - currentOffsetYRef.current;
 
-        // Clamp translation so we do not show empty pixels out of bounds
+        // Clamp translation securely
         const maxTransX = 0;
         const minTransX = magSize - (rect.width * zoom);
         const finalTransX = minTransX > maxTransX ? (magSize - rect.width * zoom) / 2 : Math.max(minTransX, Math.min(maxTransX, transX));
@@ -190,8 +242,31 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         if (!magnifierRef.current) return;
         magnifierActiveRef.current = visible;
         if (visible) {
+            const isDesktop = window.innerWidth >= 768;
+            targetZoomRef.current = 2;
+            currentZoomRef.current = 2;
+            targetOffsetXRef.current = isDesktop ? 0 : 0;
+            currentOffsetXRef.current = targetOffsetXRef.current;
+            targetOffsetYRef.current = isDesktop ? 0 : -(184 / 2 + 10);
+            currentOffsetYRef.current = targetOffsetYRef.current;
+            
             magnifierRef.current.style.opacity = '1';
             magnifierRef.current.style.visibility = 'visible';
+            
+            // Pinch to zoom hint trigger logic
+            hasPinchedRef.current = false;
+            setShowPinchHint(false);
+            if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+            if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
+            if (!isDesktop) {
+                hintTimerRef.current = setTimeout(() => {
+                    if (!hasPinchedRef.current && magnifierActiveRef.current) {
+                        setShowPinchHint(true);
+                        hintAnimTimerRef.current = setTimeout(() => setShowPinchHint(false), 3000);
+                    }
+                }, 2500);
+            }
+
             if (!rafTrackingRef.current) {
                 const track = () => {
                     if (!magnifierActiveRef.current) {
@@ -210,6 +285,9 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 cancelAnimationFrame(rafTrackingRef.current);
                 rafTrackingRef.current = null;
             }
+            if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+            if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
+            setShowPinchHint(false);
         }
     };
 
@@ -230,8 +308,22 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
     };
 
     const handlePointerDownImage = (e: React.PointerEvent) => {
-        if (!e.isPrimary || activePointerIdRef.current !== null) return;
-        if (e.pointerType === 'mouse') return; // Desktop handled via hover
+        if (e.pointerType === 'mouse') {
+            targetZoomRef.current = 3;
+            return;
+        }
+
+        // Mobile dual-touch handling
+        if (activePointerIdRef.current !== null) {
+            if (magnifierActiveRef.current && !secondaryPointerRef.current && e.pointerId !== activePointerIdRef.current) {
+                secondaryPointerRef.current = { id: e.pointerId, startX: e.clientX, startY: e.clientY };
+                primaryPointerStartDistRef.current = Math.hypot(e.clientX - pointerCoordsRef.current.x, e.clientY - pointerCoordsRef.current.y);
+                try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err){}
+            }
+            return;
+        }
+
+        if (!e.isPrimary) return;
         if (!isInsideVisibleRect(e.clientX, e.clientY)) return;
 
         activePointerIdRef.current = e.pointerId;
@@ -263,6 +355,23 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             return;
         }
 
+        // Secondary mobile touch handling
+        if (secondaryPointerRef.current && e.pointerId === secondaryPointerRef.current.id) {
+            if (!hasPinchedRef.current) {
+                hasPinchedRef.current = true;
+                setShowPinchHint(false);
+                if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+                if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
+            }
+            
+            const currentDist = Math.hypot(e.clientX - pointerCoordsRef.current.x, e.clientY - pointerCoordsRef.current.y);
+            if (primaryPointerStartDistRef.current > 0) {
+                const ratio = currentDist / primaryPointerStartDistRef.current;
+                targetZoomRef.current = Math.max(2, Math.min(3, 2 * ratio));
+            }
+            return;
+        }
+
         if (e.pointerId !== activePointerIdRef.current) return;
         pointerCoordsRef.current = { x: e.clientX, y: e.clientY };
 
@@ -274,7 +383,16 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
     };
 
     const handlePointerUpImage = (e: React.PointerEvent) => {
-        if (e.pointerType === 'mouse') return;
+        if (e.pointerType === 'mouse') {
+            targetZoomRef.current = 2;
+            return;
+        }
+        if (secondaryPointerRef.current && e.pointerId === secondaryPointerRef.current.id) {
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch(err){}
+            secondaryPointerRef.current = null;
+            targetZoomRef.current = 2; // Ease back smoothly
+            return;
+        }
         if (e.pointerId !== activePointerIdRef.current) return;
         if (magnifierActiveRef.current) {
             suppressClickRef.current = true;
@@ -285,11 +403,17 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
 
     const handlePointerLeaveImage = (e: React.PointerEvent) => {
         if (e.pointerType === 'mouse') {
+            targetZoomRef.current = 2;
             hideMagnifier();
             if (hoverDelayTimerRef.current) {
                 clearTimeout(hoverDelayTimerRef.current);
                 hoverDelayTimerRef.current = null;
             }
+        } else if (secondaryPointerRef.current && e.pointerId === secondaryPointerRef.current.id) {
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch(err){}
+            secondaryPointerRef.current = null;
+            targetZoomRef.current = 2;
+            return;
         } else if (e.pointerId === activePointerIdRef.current) {
             hideMagnifier();
         }
@@ -386,7 +510,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
             {/* Magnifier Portal */}
             <div 
                 ref={magnifierRef}
-                className="fixed top-0 left-0 z-[100000] pointer-events-none rounded-full overflow-hidden border border-gray-400 shadow-2xl opacity-0 invisible"
+                className="fixed top-0 left-0 z-[100000] pointer-events-none shadow-2xl opacity-0 invisible rounded-full"
                 style={{ 
                     willChange: 'transform',
                     imageRendering: 'auto',
@@ -394,16 +518,31 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                     transform: 'translateZ(0)'
                 }}
             >
-                <div 
-                   ref={zoomedImageRef}
-                   className="absolute top-0 left-0 pointer-events-none"
-                   style={{
-                       transformOrigin: 'top left',
-                       willChange: 'transform',
-                   }}
-                >
-                    <Image src={copyUrl} alt="" fill sizes="100vw" className="object-contain" unoptimized priority />
+                {/* Inner bounds container replacing the outer class limitations */}
+                <div className="absolute inset-0 rounded-full overflow-hidden border border-gray-400">
+                    <div 
+                       ref={zoomedImageRef}
+                       className="absolute top-0 left-0 pointer-events-none"
+                       style={{
+                           transformOrigin: 'top left',
+                           willChange: 'transform',
+                       }}
+                    >
+                        <Image src={copyUrl} alt="" fill sizes="100vw" className="object-contain" unoptimized priority />
+                    </div>
                 </div>
+
+                {/* Mobile pinch hint layered directly inside magnifier to exit its edges cleanly */}
+                {showPinchHint && (
+                    <div className="absolute inset-0 pointer-events-none z-10 w-full h-full">
+                        <div className="absolute left-[5%] top-1/2 text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] pinch-hint-left">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                        </div>
+                        <div className="absolute right-[5%] top-1/2 text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] pinch-hint-right">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Square painting card */}
@@ -503,6 +642,25 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 </div>
 
                 <style>{`
+                .pinch-hint-left {
+                    animation: pinchHintLeftAnim 1.8s ease-in-out forwards;
+                }
+                .pinch-hint-right {
+                    animation: pinchHintRightAnim 1.8s ease-in-out forwards;
+                }
+                @keyframes pinchHintLeftAnim {
+                    0% { opacity: 0; transform: translateY(-50%) translateX(0); }
+                    20% { opacity: 0.9; transform: translateY(-50%) translateX(0); }
+                    80% { opacity: 0.9; transform: translateY(-50%) translateX(-25px); }
+                    100% { opacity: 0; transform: translateY(-50%) translateX(-25px); }
+                }
+                @keyframes pinchHintRightAnim {
+                    0% { opacity: 0; transform: translateY(-50%) translateX(0); }
+                    20% { opacity: 0.9; transform: translateY(-50%) translateX(0); }
+                    80% { opacity: 0.9; transform: translateY(-50%) translateX(25px); }
+                    100% { opacity: 0; transform: translateY(-50%) translateX(25px); }
+                }
+
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 6px;
                 }
