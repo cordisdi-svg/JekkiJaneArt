@@ -128,6 +128,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
     // Handlers
     const handleDragStart = (pos: number) => {
         setIsDragging(true);
+        isDraggingRef.current = true;
         stopInertia();
 
         if (!isDesktop) {
@@ -160,7 +161,9 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
     };
 
     const handleDragEnd = () => {
+        if (!isDraggingRef.current) return;
         setIsDragging(false);
+        isDraggingRef.current = false;
         lastTimestamp.current = 0; // Reset animation timer
 
         if (!isDesktop) {
@@ -170,8 +173,9 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             }, 1200);
         }
 
-        // Start Inertia
-        if (Math.abs(velocityRef.current) > 0.1) {
+        // Start Inertia only if moved enough
+        const dragDistance = Math.abs(lastPosRef.current - dragStartPos.current);
+        if (dragDistance > 5 && Math.abs(velocityRef.current) > 0.1) {
             const friction = 0.95;
             let v = velocityRef.current;
             const maxV = 3;

@@ -497,6 +497,7 @@ function AmuletsMobileCarousel() {
     type ActiveSeqState = { seqIdx: number; flipped: boolean };
     const [activeSeq, setActiveSeq] = useState<ActiveSeqState | null>(null);
     const [isSeqAnimating, setIsSeqAnimating] = useState(false);
+    const [hasAutoFlipped, setHasAutoFlipped] = useState(false);
 
     // --- Autoplay Timer (requestAnimationFrame) ---
     const accumulatedTimeRef = useRef(0);
@@ -532,11 +533,13 @@ function AmuletsMobileCarousel() {
             setIsOrderMenuOpen(false);
             setShowEighthSprite(false);
             setIsSeqAnimating(false);
+            setHasAutoFlipped(false);
         } else {
             const startsFlipped = seqIdx === 2;
             setActiveSeq({ seqIdx, flipped: startsFlipped }); // "Для пар" (index 2) starts flipped
             setIsOrderMenuOpen(false);
             setShowEighthSprite(false);
+            setHasAutoFlipped(false);
             if (startsFlipped) {
                 setIsSeqAnimating(true);
                 setTimeout(() => setIsSeqAnimating(false), 2500);
@@ -562,14 +565,19 @@ function AmuletsMobileCarousel() {
             // Pause timer if user is interacting, menu is open, or it's currently animating
             if (!isPaused && !isAnimating && !isSeqAnimating && !isOrderMenuOpen && !showEighthSprite && !isLastSlide) {
                 accumulatedTimeRef.current += delta;
-                const limit = 2000; // Mobile step = 2000ms
+                
+                // If in sequence, use 4s for the first flip; else use 2s for slide transitions
+                const isFlipStep = activeSeq !== null && !activeSeq.flipped && !hasAutoFlipped;
+                const limit = isFlipStep ? 4000 : 2000;
+
                 if (accumulatedTimeRef.current >= limit) {
                     accumulatedTimeRef.current = 0;
                     if (activeSeq === null) {
                         next();
-                    } else if (!activeSeq.flipped) {
+                    } else if (!activeSeq.flipped && !hasAutoFlipped) {
+                        setHasAutoFlipped(true);
                         setIsSeqAnimating(true);
-                        setActiveSeq(prev => prev ? { ...prev, flipped: true } : null);
+                        setActiveSeq((prev: ActiveSeqState | null) => prev ? { ...prev, flipped: true } : null);
                         setTimeout(() => setIsSeqAnimating(false), 2500);
                     }
                 }
@@ -581,7 +589,7 @@ function AmuletsMobileCarousel() {
             cancelAnimationFrame(rafId);
             lastTimeRef.current = 0;
         };
-    }, [isPaused, isAnimating, isSeqAnimating, isOrderMenuOpen, showEighthSprite, next, activeSeq, idx, n]);
+    }, [isPaused, isAnimating, isSeqAnimating, isOrderMenuOpen, showEighthSprite, next, activeSeq, idx, n, hasAutoFlipped]);
 
     // Reset timer on slide change or flip
     useEffect(() => {
@@ -599,14 +607,15 @@ function AmuletsMobileCarousel() {
                 if (activeSeq === null) {
                     next();
                 } else if (!activeSeq.flipped) {
+                    setHasAutoFlipped(true); // Stop auto-flip if user flips manually
                     setIsSeqAnimating(true);
-                    setActiveSeq(prev => prev ? { ...prev, flipped: true } : null);
+                    setActiveSeq((prev: ActiveSeqState | null) => prev ? { ...prev, flipped: true } : null);
                     setTimeout(() => setIsSeqAnimating(false), 2500);
                 }
             } else { // Swipe down
                 if (activeSeq !== null && activeSeq.flipped) {
-                    // Manual flip back
-                    setActiveSeq(prev => prev ? { ...prev, flipped: false } : null);
+                    setHasAutoFlipped(true); // User manually flipped back, do not auto-flip again
+                    setActiveSeq((prev: ActiveSeqState | null) => prev ? { ...prev, flipped: false } : null);
                 } else if (activeSeq === null) {
                     prev();
                 }
@@ -639,11 +648,11 @@ function AmuletsMobileCarousel() {
         <div
             ref={containerRef}
             className="relative w-full h-full flex flex-col items-center justify-start overflow-hidden"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
+            onTouchStart={(e) => { setIsPaused(true); handleTouchStart(e); }}
+            onTouchEnd={(e) => { setIsPaused(false); handleTouchEnd(e); }}
+            onTouchCancel={() => setIsPaused(false)}
             onClick={() => {
                 if (isOrderMenuOpen) setIsOrderMenuOpen(false);
-                else setIsPaused(p => !p);
             }}
         >
             <style>{`

@@ -69,7 +69,20 @@ export function BottomNavigation() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 z-[100] w-full"
+      className="fixed bottom-0 left-0 z-[100] w-full pointer-events-auto"
+      onPointerDown={(e) => e.stopPropagation()}
+      onPointerUp={(e) => e.stopPropagation()}
+      onPointerMove={(e) => e.stopPropagation()}
+      onPointerCancel={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
+      onTouchCancel={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onMouseMove={(e) => e.stopPropagation()}
+      onMouseUp={(e) => e.stopPropagation()}
+      onWheel={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
       style={{
         background: "rgba(0, 0, 0, 0.15)", // Matching walls page bg-black/15
         backdropFilter: "blur(12px)",

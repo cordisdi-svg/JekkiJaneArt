@@ -183,15 +183,30 @@ function SizesLightbox({ onClose }: { onClose: () => void }) {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md cursor-pointer p-4"
-            onClick={onClose}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md cursor-pointer p-4 pointer-events-auto"
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
+            onPointerMove={(e) => e.stopPropagation()}
+            onPointerCancel={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+            onTouchCancel={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseMove={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+            onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+            }}
         >
             <Image
                 src="/picstoorder/sizes.png"
                 alt="Шпаргалка по размерам"
                 width={1200}
                 height={900}
-                className="max-h-[90vh] max-w-[90vw] w-auto h-auto object-contain rounded-xl shadow-2xl"
+                className="max-h-[90vh] max-w-[90vw] w-auto h-auto object-contain rounded-xl shadow-2xl relative z-10"
                 priority
             />
         </div>
@@ -362,9 +377,18 @@ export default function PicsToOrderPage() {
                         <div
                             className="absolute right-0 top-0 z-20 flex flex-col pointer-events-auto"
                             onPointerDown={(e) => e.stopPropagation()}
+                            onPointerUp={(e) => e.stopPropagation()}
+                            onPointerMove={(e) => e.stopPropagation()}
+                            onPointerCancel={(e) => e.stopPropagation()}
                             onTouchStart={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
+                            onTouchEnd={(e) => e.stopPropagation()}
+                            onTouchCancel={(e) => e.stopPropagation()}
                             onMouseDown={(e) => e.stopPropagation()}
+                            onMouseMove={(e) => e.stopPropagation()}
                             onMouseUp={(e) => e.stopPropagation()}
+                            onWheel={(e) => e.stopPropagation()}
+                            onClick={(e) => e.stopPropagation()}
                             style={{
                                 width: "37.5%",
                                 bottom: 0,
@@ -408,9 +432,15 @@ export default function PicsToOrderPage() {
                             <div
                                 className="absolute pointer-events-auto"
                                 onPointerDown={(e) => e.stopPropagation()}
+                                onPointerUp={(e) => e.stopPropagation()}
+                                onPointerMove={(e) => e.stopPropagation()}
+                                onPointerCancel={(e) => e.stopPropagation()}
                                 onTouchStart={(e) => e.stopPropagation()}
                                 onTouchMove={(e) => e.stopPropagation()}
+                                onTouchEnd={(e) => e.stopPropagation()}
+                                onTouchCancel={(e) => e.stopPropagation()}
                                 onMouseDown={(e) => e.stopPropagation()}
+                                onMouseMove={(e) => e.stopPropagation()}
                                 onMouseUp={(e) => e.stopPropagation()}
                                 onWheel={(e) => e.stopPropagation()}
                                 style={{
@@ -422,15 +452,27 @@ export default function PicsToOrderPage() {
                                 }}
                             >
                                 <div
-                                    className="relative w-full rounded-xl border border-transparent shadow-xl
-                                               before:absolute before:inset-0 before:bg-[#140E1E]/82 before:backdrop-blur-md 
-                                               before:rounded-xl before:border before:border-white/15 
-                                               before:opacity-0 group-data-[visible=true]:before:opacity-100 
-                                               before:transition-opacity before:duration-[1500ms] before:pointer-events-none"
+                                    className="w-full rounded-xl border border-white/15 shadow-xl pointer-events-auto"
+                                    style={{
+                                        background: "rgba(20,14,30,0.82)",
+                                        backdropFilter: NAV_BLUR,
+                                        WebkitBackdropFilter: NAV_BLUR,
+                                    }}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    onPointerUp={(e) => e.stopPropagation()}
+                                    onPointerMove={(e) => e.stopPropagation()}
+                                    onPointerCancel={(e) => e.stopPropagation()}
+                                    onTouchStart={(e) => e.stopPropagation()}
+                                    onTouchMove={(e) => e.stopPropagation()}
+                                    onTouchEnd={(e) => e.stopPropagation()}
+                                    onTouchCancel={(e) => e.stopPropagation()}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onMouseMove={(e) => e.stopPropagation()}
+                                    onMouseUp={(e) => e.stopPropagation()}
+                                    onWheel={(e) => e.stopPropagation()}
                                     onClick={() => setMobileOpen(null)}
                                 >
                                     <div
-                                        className="relative z-10"
                                         style={{
                                             padding: activeMobileBtn?.id === "price" ? "12px 14px" : "16px",
                                             color: "rgba(255,255,255,0.92)",

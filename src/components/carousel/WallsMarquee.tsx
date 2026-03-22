@@ -204,7 +204,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
             hideTextboxTimeoutRef.current = setTimeout(() => {
                 setIsMobileTextboxVisible(true);
-            }, 500);
+            }, 1500);
         }
 
         // Start Inertia
