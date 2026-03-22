@@ -77,9 +77,6 @@ export function HomeSectorsMobile() {
             setTimeout(() => router.push("/about"), 500);
           }}
           className="relative pointer-events-auto overflow-hidden transition-transform active:scale-95 flex items-center justify-center w-full h-full"
-          style={{
-            opacity: active !== null && active !== 0 ? 0.3 : 1
-          }}
           aria-label="О художнице"
         >
           {/* Main Icon scaled naturally to fit the new area, shifted to stay left-aligned, and brightened */}
