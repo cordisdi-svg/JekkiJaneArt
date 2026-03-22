@@ -379,27 +379,25 @@ export default function PicsToOrderPage() {
                                     <button
                                         key={btn.id}
                                         onClick={() => handleMobileClick(btn.id)}
-                                        className="relative rounded-full border text-white/90 text-[11px] text-center px-2 select-none"
+                                        className={`relative rounded-full border border-transparent text-white/90 text-[11px] text-center px-2 select-none
+                                                   before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md 
+                                                   before:opacity-0 group-data-[visible=true]:before:opacity-100 
+                                                   before:transition-opacity before:duration-[1500ms] before:pointer-events-none
+                                                   ${isActive ? "before:bg-[#372646]/60 before:border-white/35" : "before:bg-[#1E1628]/50 before:border-white/20"}`}
                                         style={{
                                             animationName: isActive ? "none" : "pto-pulse",
                                             animationDuration: "3s",
                                             animationTimingFunction: "ease-in-out",
                                             animationIterationCount: "infinite",
                                             transform: isActive ? "scale(1.0)" : undefined,
-                                            transition: "transform 0.3s ease, background 0.3s ease",
+                                            transition: "transform 0.3s ease",
                                             aspectRatio: "1/1",
-                                            background: isActive
-                                                ? "rgba(55,38,70,0.60)"
-                                                : "rgba(30,22,40,0.50)",
-                                            borderColor: isActive ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.20)",
-                                            backdropFilter: NAV_BLUR,
-                                            WebkitBackdropFilter: NAV_BLUR,
                                             fontFamily: "Fontatica4F, sans-serif",
                                             fontSize: "17px",
                                             lineHeight: "1.25",
                                         }}
                                     >
-                                        <span className="block">{btn.label}</span>
+                                        <span className="relative z-10 block">{btn.label}</span>
                                     </button>
                                 );
                             })}
@@ -424,15 +422,15 @@ export default function PicsToOrderPage() {
                                 }}
                             >
                                 <div
-                                    className="w-full rounded-xl border border-white/15 shadow-xl"
-                                    style={{
-                                        background: "rgba(20,14,30,0.82)",
-                                        backdropFilter: NAV_BLUR,
-                                        WebkitBackdropFilter: NAV_BLUR,
-                                    }}
+                                    className="relative w-full rounded-xl border border-transparent shadow-xl
+                                               before:absolute before:inset-0 before:bg-[#140E1E]/82 before:backdrop-blur-md 
+                                               before:rounded-xl before:border before:border-white/15 
+                                               before:opacity-0 group-data-[visible=true]:before:opacity-100 
+                                               before:transition-opacity before:duration-[1500ms] before:pointer-events-none"
                                     onClick={() => setMobileOpen(null)}
                                 >
                                     <div
+                                        className="relative z-10"
                                         style={{
                                             padding: activeMobileBtn?.id === "price" ? "12px 14px" : "16px",
                                             color: "rgba(255,255,255,0.92)",

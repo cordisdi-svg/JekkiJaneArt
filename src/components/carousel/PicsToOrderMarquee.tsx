@@ -76,7 +76,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         const resizeObserver = new ResizeObserver(updateSize);
         resizeObserver.observe(setRef.current);
         updateSize();
-        
+
         const interval = setInterval(updateSize, 1000);
         return () => {
             resizeObserver.disconnect();
@@ -105,7 +105,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             }
 
             scrollOffset.current = ((scrollOffset.current % size) + size) % size;
-            
+
             if (desktop) {
                 contentRef.current.style.transform = `translateX(-${scrollOffset.current}px)`;
             } else {
@@ -129,7 +129,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
     const handleDragStart = (pos: number) => {
         setIsDragging(true);
         stopInertia();
-        
+
         if (!isDesktop) {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
             setIsMobileTextboxVisible(false);
@@ -137,7 +137,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
 
         dragStartPos.current = pos;
         dragStartOffset.current = scrollOffset.current;
-        
+
         lastTimeRef.current = performance.now();
         lastPosRef.current = pos;
         velocityRef.current = 0;
@@ -145,11 +145,11 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
 
     const handleDragMove = (pos: number) => {
         if (!isDragging || contentSize <= 0) return;
-        
+
         const now = performance.now();
         const dt = Math.max(now - lastTimeRef.current, 1);
         const deltaPos = pos - lastPosRef.current;
-        
+
         // Velocity (px / ms)
         velocityRef.current = deltaPos / dt;
         lastTimeRef.current = now;
@@ -167,7 +167,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
             hideTextboxTimeoutRef.current = setTimeout(() => {
                 setIsMobileTextboxVisible(true);
-            }, 500);
+            }, 1200);
         }
 
         // Start Inertia
@@ -192,7 +192,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
 
                 // Apply velocity (flipped)
                 scrollOffset.current -= v * 16;
-                
+
                 // Wrap is handled by animate() loop but we can do it here too for safety
                 scrollOffset.current = ((scrollOffset.current % size) + size) % size;
 
@@ -230,7 +230,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
     };
 
     return (
-        <div 
+        <div
             className="relative w-full h-full overflow-hidden md:py-2 group pointer-events-auto"
             style={{ touchAction: isDesktop ? 'pan-y' : 'none' }}
             onMouseLeave={handleMouseUp}
@@ -243,16 +243,16 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchCancel}
         >
-            <div 
+            <div
                 ref={contentRef}
                 className="flex flex-col md:flex-row w-full md:w-max h-max md:h-full"
-                style={{ 
+                style={{
                     cursor: isDragging ? 'grabbing' : 'grab',
                     willChange: 'transform'
                 }}
             >
                 {/* First set */}
-                <div 
+                <div
                     ref={setRef}
                     className="flex flex-col md:flex-row shrink-0 gap-3 md:gap-4 pb-3 md:pb-0 md:px-2"
                 >
@@ -325,7 +325,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
 
             {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
             {children && (
-                <div 
+                <div
                     data-visible={isDesktop || isMobileTextboxVisible}
                     className={`group absolute inset-0 pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
                 >
