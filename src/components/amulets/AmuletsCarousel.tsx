@@ -565,7 +565,7 @@ function AmuletsMobileCarousel() {
             // Pause timer if user is interacting, menu is open, or it's currently animating
             if (!isPaused && !isAnimating && !isSeqAnimating && !isOrderMenuOpen && !showEighthSprite && !isLastSlide) {
                 accumulatedTimeRef.current += delta;
-                
+
                 // If in sequence, use 4s for the first flip; else use 2s for slide transitions
                 const isFlipStep = activeSeq !== null && !activeSeq.flipped && !hasAutoFlipped;
                 const limit = isFlipStep ? 4000 : 2000;

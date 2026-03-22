@@ -363,7 +363,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
             {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
             {children && (
-                <div 
+                <div
                     data-visible={isDesktop || isMobileTextboxVisible}
                     className={`group absolute inset-0 flex items-center justify-center pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
                 >

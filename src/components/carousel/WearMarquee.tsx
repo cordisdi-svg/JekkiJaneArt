@@ -169,7 +169,7 @@ export function WearMarquee() {
                 const setHeight = track.scrollHeight / 2;
 
                 container.scrollTop -= v * 16;
-                
+
                 while (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
                 while (container.scrollTop < 0) container.scrollTop += setHeight;
 
