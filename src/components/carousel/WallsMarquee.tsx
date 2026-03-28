@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 const wallsImages = [
     { src: '/walls/1.png', alt: 'Роспись 1' },
@@ -12,9 +13,11 @@ const wallsImages = [
 ];
 
 export function WallsMarquee({ children }: { children?: React.ReactNode }) {
+    const isTouchDevice = useIsTouchDevice();
     const containerRef = useRef<HTMLDivElement>(null);
     const marqueeRef = useRef<HTMLDivElement>(null);
-    const [isDesktop, setIsDesktop] = useState(false);
+    // Derived once from pointer capability — never changes during session.
+    const isDesktop = !isTouchDevice;
 
     // Interaction states
     const isInteracting = useRef(false);
@@ -48,12 +51,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         return (size / 2) / 41000;
     }, [isDesktop]);
 
-    useEffect(() => {
-        const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
-        checkDesktop();
-        window.addEventListener('resize', checkDesktop);
-        return () => window.removeEventListener('resize', checkDesktop);
-    }, []);
+    // No resize listener for device detection — isTouchDevice is evaluated once at load.
 
     useEffect(() => {
         const animate = (time: number) => {
@@ -89,7 +87,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         return () => {
             if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         };
-    }, [isDesktop, getSpeed]);
+    }, [getSpeed]);
 
     useEffect(() => {
         return () => {
@@ -305,7 +303,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                     display: flex;
                     flex-direction: column;
                 }
-                @media (min-width: 768px) {
+                @media (pointer: fine) {
                     .run-marquee {
                         flex-direction: row;
                         width: max-content;
@@ -319,11 +317,11 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                 <div ref={marqueeRef} className="run-marquee h-full">
 
                     {/* Первый сет */}
-                    <div className="flex flex-col md:flex-row shrink-0 gap-3 md:gap-4 pb-3 md:pb-0 md:px-2">
+                    <div className={`flex shrink-0 ${isDesktop ? 'flex-row gap-4 pb-0 px-2' : 'flex-col gap-3 pb-3'}`}>
                         {wallsImages.map((img, i) => (
                             <div
                                 key={`set1-${i}`}
-                                className="relative mx-auto md:mx-0 w-[calc(100vw-24px)] md:w-auto md:h-full aspect-[4/5] flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-xl border border-white/10"
+                                className={`relative flex-shrink-0 aspect-[4/5] cursor-pointer rounded-2xl overflow-hidden shadow-xl border border-white/10 ${isDesktop ? 'mx-0 w-auto h-full' : 'mx-auto w-[calc(100vw-24px)]'}`}
                             >
                                 <Image
                                     src={img.src}
@@ -339,11 +337,11 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                     </div>
 
                     {/* Дублированный сет (для петли) */}
-                    <div aria-hidden className="flex flex-col md:flex-row shrink-0 gap-3 md:gap-4 pb-3 md:pb-0 md:px-2">
+                    <div aria-hidden className={`flex shrink-0 ${isDesktop ? 'flex-row gap-4 pb-0 px-2' : 'flex-col gap-3 pb-3'}`}>
                         {wallsImages.map((img, i) => (
                             <div
                                 key={`set2-${i}`}
-                                className="relative mx-auto md:mx-0 w-[calc(100vw-24px)] md:w-auto md:h-full aspect-[4/5] flex-shrink-0 cursor-pointer rounded-2xl overflow-hidden shadow-xl border border-white/10"
+                                className={`relative flex-shrink-0 aspect-[4/5] cursor-pointer rounded-2xl overflow-hidden shadow-xl border border-white/10 ${isDesktop ? 'mx-0 w-auto h-full' : 'mx-auto w-[calc(100vw-24px)]'}`}
                             >
                                 <Image
                                     src={img.src}
@@ -365,7 +363,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             {children && (
                 <div
                     data-visible={isDesktop || isMobileTextboxVisible}
-                    className={`group absolute inset-0 flex items-center justify-center pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+                    className={`group absolute inset-0 flex items-center justify-center transition-all duration-300 ${isDesktop ? 'pointer-events-auto' : 'pointer-events-none'} ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
                 >
                     <div className="relative z-20 w-full flex justify-center">
                         {children}

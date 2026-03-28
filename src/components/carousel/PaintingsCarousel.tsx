@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { availablePics, PaintingData } from "@/data/availablePics";
 import { ExpandedOverlay } from "./ExpandedOverlay";
+import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function mod(n: number, m: number) { return ((n % m) + m) % m; }
@@ -35,12 +36,13 @@ function computeX(distance: number, step: number): number {
 
 // ─── Arrow ────────────────────────────────────────────────────────────────────
 function ArrowBtn({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) {
+    const isTouchDevice = useIsTouchDevice();
     return (
         <button type="button" onClick={onClick}
             aria-label={direction === "left" ? "Предыдущая" : "Следующая"}
             className="absolute top-0 z-30 flex h-full cursor-pointer items-center justify-center opacity-55 transition-opacity hover:opacity-90 active:scale-95"
             style={{ [direction]: 0, width: "36px" }}>
-            <svg viewBox="0 0 12 34" className="h-14 w-5 md:h-20 md:w-6" fill="rgba(255,255,255,0.92)" aria-hidden>
+            <svg viewBox="0 0 12 34" className={isTouchDevice ? "h-14 w-5" : "h-20 w-6"} fill="rgba(255,255,255,0.92)" aria-hidden>
                 {direction === "left" ? <path d="M11 1 1 17l10 16V1Z" /> : <path d="M1 1l10 16L1 33V1Z" />}
             </svg>
         </button>
@@ -49,6 +51,7 @@ function ArrowBtn({ direction, onClick }: { direction: "left" | "right"; onClick
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export function PaintingsCarousel() {
+    const isTouchDevice = useIsTouchDevice();
     const items = availablePics;
     const n = items.length;
 
@@ -97,7 +100,7 @@ export function PaintingsCarousel() {
             if (!el) return;
             const w = el.offsetWidth;
             const h = el.offsetHeight;
-            const mob = w < 768;
+            const mob = isTouchDevice; // touch device always uses mobile card proportions
             isMobileRef.current = mob;
             if (mob) {
                 const cw = w * 0.85;
@@ -116,7 +119,7 @@ export function PaintingsCarousel() {
         measure();
         window.addEventListener("resize", measure);
         return () => window.removeEventListener("resize", measure);
-    }, []);
+    }, [isTouchDevice]);
 
     // ── Update img srcs for a given base index ────────────────────────────────
     const syncImgSrcs = (base: number) => {

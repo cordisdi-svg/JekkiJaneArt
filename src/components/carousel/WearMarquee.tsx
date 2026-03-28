@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 // Высота одного слайда = активная зона
 const SLIDE_H = "calc(100svh - var(--nav-height-mobile))";
@@ -15,7 +16,9 @@ const slides = [
 ];
 
 export function WearMarquee() {
-    const [isDesktop, setIsDesktop] = useState(false);
+    const isTouchDevice = useIsTouchDevice();
+    // Derived once from pointer capability — never changes during session.
+    const isDesktop = !isTouchDevice;
     const [desktopIndex, setDesktopIndex] = useState(0);
 
     // Mobile specific refs
@@ -40,13 +43,7 @@ export function WearMarquee() {
         }
     }, []);
 
-    // 1. Desktop Detection
-    useEffect(() => {
-        const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
-        checkDesktop();
-        window.addEventListener("resize", checkDesktop);
-        return () => window.removeEventListener("resize", checkDesktop);
-    }, []);
+    // No resize listener for device detection — isTouchDevice is evaluated once at load.
 
     // 2. Desktop Handler
     const handleDesktopAdvance = useCallback(() => {
@@ -90,7 +87,7 @@ export function WearMarquee() {
             lastTimeAnim.current = 0;
             stopInertia();
         };
-    }, [isDesktop, stopInertia]);
+    }, [stopInertia]);
 
     // 4. Mobile Pointer Handlers
     const handlePointerDown = (e: React.PointerEvent) => {

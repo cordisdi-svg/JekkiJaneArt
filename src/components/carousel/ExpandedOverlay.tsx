@@ -42,6 +42,10 @@ export function ExpandedOverlay({
     const magnifierRef = useRef<HTMLDivElement>(null);
     const zoomedImageRef = useRef<HTMLImageElement>(null);
 
+    // Stable touch-device flag (pointer: coarse). useRef so it's read in rAF/callbacks
+    // without stale closures, and is safe on hybrid devices (evaluated once at mount).
+    const isTouchDeviceRef = useRef(false);
+
     const visibleRectRef = useRef<{ left: number, top: number, width: number, height: number, intrinsicWidth: number, intrinsicHeight: number } | null>(null);
     const magnifierActiveRef = useRef(false);
     const activePointerIdRef = useRef<number | null>(null);
@@ -50,8 +54,10 @@ export function ExpandedOverlay({
     const suppressClickRef = useRef(false);
     const pointerCoordsRef = useRef({ x: 0, y: 0 });
     const rafTrackingRef = useRef<number | null>(null);
+    // Pending rAF id for geometry recalc (deduplicated)
+    const geoRafRef = useRef<number | null>(null);
 
-    // New references for edge-flip and dynamic zoom
+    // Edge-flip and dynamic zoom
     const targetZoomRef = useRef(2);
     const currentZoomRef = useRef(2);
     const targetOffsetXRef = useRef(0);
@@ -74,8 +80,8 @@ export function ExpandedOverlay({
     }, []);
 
     const resumeAutoscroll = useCallback(() => {
-        // Only autoscroll on mobile (as requested)
-        if (typeof window !== 'undefined' && window.innerWidth >= 768) return;
+        // Only autoscroll on touch devices
+        if (!isTouchDeviceRef.current) return;
 
         if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
         resumeTimeoutRef.current = setTimeout(() => {
@@ -84,6 +90,9 @@ export function ExpandedOverlay({
     }, []);
 
     useEffect(() => {
+        // Evaluate touch capability once at mount (stable for the lifetime of the overlay)
+        isTouchDeviceRef.current = window.matchMedia('(pointer: coarse)').matches;
+
         const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
         window.addEventListener("keydown", h);
         document.body.classList.add("overlay-open");
@@ -112,60 +121,72 @@ export function ExpandedOverlay({
     }, [onClose, stopInertia]);
 
     // ─── Magnifier Logic ───
-    const calcGeometry = useCallback(() => {
-        if (!imageContainerRef.current || !visibleRectRef.current?.intrinsicWidth) return;
-        const containerRect = imageContainerRef.current.getBoundingClientRect();
-        const { intrinsicWidth, intrinsicHeight } = visibleRectRef.current;
 
-        const containerAspect = containerRect.width / containerRect.height;
-        const imageAspect = intrinsicWidth / intrinsicHeight;
+    // scheduleGeometry: deduplicated rAF wrapper so we always read layout
+    // one frame after the browser has finished reflow (avoids resize race-conditions).
+    const scheduleGeometry = useCallback(() => {
+        if (geoRafRef.current !== null) return; // already scheduled
+        geoRafRef.current = requestAnimationFrame(() => {
+            geoRafRef.current = null;
+            if (!imageContainerRef.current || !visibleRectRef.current?.intrinsicWidth) return;
+            const containerRect = imageContainerRef.current.getBoundingClientRect();
+            const { intrinsicWidth, intrinsicHeight } = visibleRectRef.current;
 
-        let renderWidth, renderHeight;
-        if (imageAspect > containerAspect) {
-            renderWidth = containerRect.width;
-            renderHeight = containerRect.width / imageAspect;
-        } else {
-            renderHeight = containerRect.height;
-            renderWidth = containerRect.height * imageAspect;
-        }
+            const containerAspect = containerRect.width / containerRect.height;
+            const imageAspect = intrinsicWidth / intrinsicHeight;
 
-        const renderLeft = containerRect.left + (containerRect.width - renderWidth) / 2;
-        const renderTop = containerRect.top + (containerRect.height - renderHeight) / 2;
+            let renderWidth, renderHeight;
+            if (imageAspect > containerAspect) {
+                renderWidth = containerRect.width;
+                renderHeight = containerRect.width / imageAspect;
+            } else {
+                renderHeight = containerRect.height;
+                renderWidth = containerRect.height * imageAspect;
+            }
 
-        visibleRectRef.current = {
-            left: renderLeft,
-            top: renderTop,
-            width: renderWidth,
-            height: renderHeight,
-            intrinsicWidth,
-            intrinsicHeight
-        };
+            const renderLeft = containerRect.left + (containerRect.width - renderWidth) / 2;
+            const renderTop  = containerRect.top  + (containerRect.height - renderHeight) / 2;
 
-        if (zoomedImageRef.current) {
-            zoomedImageRef.current.style.width = `${renderWidth}px`;
-            zoomedImageRef.current.style.height = `${renderHeight}px`;
-        }
-    }, []);
+            visibleRectRef.current = {
+                left: renderLeft,
+                top: renderTop,
+                width: renderWidth,
+                height: renderHeight,
+                intrinsicWidth,
+                intrinsicHeight
+            };
+
+            if (zoomedImageRef.current) {
+                zoomedImageRef.current.style.width  = `${renderWidth}px`;
+                zoomedImageRef.current.style.height = `${renderHeight}px`;
+            }
+
+            // After geometry is fresh, guarantee autoscroll is running on touch.
+            // This is safe to call redundantly — it checks isTouchDeviceRef internally.
+            resumeAutoscroll();
+        });
+    }, [resumeAutoscroll]);
 
     useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
-        const resizeObserver = new ResizeObserver(() => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => calcGeometry(), 100);
-        });
+        // ResizeObserver on the image container — fires on element size changes.
+        const resizeObserver = new ResizeObserver(() => scheduleGeometry());
         if (imageContainerRef.current) {
             resizeObserver.observe(imageContainerRef.current);
         }
-        window.addEventListener('resize', calcGeometry);
-        window.addEventListener('orientationchange', calcGeometry);
+        // window resize covers viewport changes (including device rotation,
+        // which also fires resize). orientationchange is NOT needed — it fires
+        // before layout settles, causing stale getBoundingClientRect reads.
+        window.addEventListener('resize', scheduleGeometry);
         return () => {
             resizeObserver.disconnect();
-            clearTimeout(timeoutId);
-            window.removeEventListener('resize', calcGeometry);
-            window.removeEventListener('orientationchange', calcGeometry);
+            if (geoRafRef.current !== null) {
+                cancelAnimationFrame(geoRafRef.current);
+                geoRafRef.current = null;
+            }
+            window.removeEventListener('resize', scheduleGeometry);
             hideMagnifier();
         };
-    }, [calcGeometry]);
+    }, [scheduleGeometry]);
 
     const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         const target = e.target as HTMLImageElement;
@@ -174,7 +195,7 @@ export function ExpandedOverlay({
             intrinsicWidth: target.naturalWidth,
             intrinsicHeight: target.naturalHeight
         };
-        calcGeometry();
+        scheduleGeometry();
     };
 
     const updateMagnifierDOM = () => {
@@ -185,70 +206,82 @@ export function ExpandedOverlay({
         const clampedX = Math.max(rect.left, Math.min(x, rect.left + rect.width));
         const clampedY = Math.max(rect.top, Math.min(y, rect.top + rect.height));
 
-        const isDesktop = window.innerWidth >= 768;
-        const magSize = isDesktop ? 300 : 184;
+        const isTouch = isTouchDeviceRef.current;
+        // magSize: desktop uses 300px lens; touch uses ~60% of the shorter viewport edge
+        // clamped to [160, 220] so it scales with screen but stays usable on tiny phones.
+        const magSize = isTouch
+            ? Math.min(220, Math.max(160, Math.min(window.innerWidth, window.innerHeight) * 0.38))
+            : 300;
 
-        // Base Offsets
+        // baseOffsetY: on touch the lens floats above the finger.
+        // We anchor it so its bottom edge clears the finger with ~10px gap.
+        // No baseOffsetX — no coordinate swap, no X inversion.
         const baseOffsetX = 0;
-        const baseOffsetY = isDesktop ? 0 : -(magSize / 2 + 10);
+        const baseOffsetY = isTouch ? -(magSize / 2 + 10) : 0;
 
-        // Native Edge-Flip thresholds
-        // Calculated against native pointer coordinate strictly, protecting from oscillatory feedback
-        const nativeCenterX = x + baseOffsetX;
+        // Edge-flip thresholds — calculated against the native pointer position,
+        // not the offset position, to prevent oscillation.
+        const nativeCenterX = x + baseOffsetX; // baseOffsetX=0, explicit for clarity
         const nativeCenterY = y + baseOffsetY;
         const boundaryThreshold = magSize / 2;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
 
-        // X Flip 
+        // X Flip
         if (nativeCenterX < 0) {
             targetOffsetXRef.current = magSize / 2 + 10;
-        } else if (nativeCenterX > window.innerWidth) {
+        } else if (nativeCenterX > vw) {
             targetOffsetXRef.current = -(magSize / 2 + 10);
-        } else if (nativeCenterX > boundaryThreshold + 20 && nativeCenterX < window.innerWidth - boundaryThreshold - 20) {
-            targetOffsetXRef.current = baseOffsetX; // Safe zone return
+        } else if (nativeCenterX > boundaryThreshold + 20 && nativeCenterX < vw - boundaryThreshold - 20) {
+            targetOffsetXRef.current = baseOffsetX; // safe zone — return to natural
         }
 
         // Y Flip
         if (nativeCenterY < 0) {
             targetOffsetYRef.current = magSize / 2 + 10;
-        } else if (nativeCenterY > window.innerHeight) {
+        } else if (nativeCenterY > vh) {
             targetOffsetYRef.current = -(magSize / 2 + 10);
-        } else if (nativeCenterY > boundaryThreshold + 20 && nativeCenterY < window.innerHeight - boundaryThreshold - 20) {
-            targetOffsetYRef.current = baseOffsetY; // Safe zone return
+        } else if (nativeCenterY > boundaryThreshold + 20 && nativeCenterY < vh - boundaryThreshold - 20) {
+            targetOffsetYRef.current = baseOffsetY; // safe zone — return to natural
         }
 
-        // Smoothing interpolations in rAF loop
-        currentZoomRef.current += (targetZoomRef.current - currentZoomRef.current) * 0.15;
+        // Smooth interpolation (runs every rAF frame)
+        currentZoomRef.current   += (targetZoomRef.current   - currentZoomRef.current)   * 0.15;
         currentOffsetXRef.current += (targetOffsetXRef.current - currentOffsetXRef.current) * 0.15;
         currentOffsetYRef.current += (targetOffsetYRef.current - currentOffsetYRef.current) * 0.15;
 
-        // Ensure currentZoom safely bounds between hardware limitations just in case
         const zoom = currentZoomRef.current;
 
         const magX = clampedX - magSize / 2 + currentOffsetXRef.current;
         const magY = clampedY - magSize / 2 + currentOffsetYRef.current;
 
         magnifierRef.current.style.transform = `translate3d(${magX}px, ${magY}px, 0)`;
-        magnifierRef.current.style.width = `${magSize}px`;
+        magnifierRef.current.style.width  = `${magSize}px`;
         magnifierRef.current.style.height = `${magSize}px`;
 
+        // Relative position inside the visible image (clientX/Y — no coordinate swap).
         const relX = clampedX - rect.left;
         const relY = clampedY - rect.top;
 
         const zoomedX = relX * zoom;
         const zoomedY = relY * zoom;
 
-        // Position inner zoomed image dynamically countering screen offset so sample-content coordinates remain perfectly locked
+        // Translate so the sampled point stays centered in the lens.
         const transX = (magSize / 2) - zoomedX - currentOffsetXRef.current;
         const transY = (magSize / 2) - zoomedY - currentOffsetYRef.current;
 
-        // Clamp translation securely
+        // Clamp so we never show empty space beyond image edges.
         const maxTransX = 0;
         const minTransX = magSize - (rect.width * zoom);
-        const finalTransX = minTransX > maxTransX ? (magSize - rect.width * zoom) / 2 : Math.max(minTransX, Math.min(maxTransX, transX));
+        const finalTransX = minTransX > maxTransX
+            ? (magSize - rect.width  * zoom) / 2
+            : Math.max(minTransX, Math.min(maxTransX, transX));
 
         const maxTransY = 0;
         const minTransY = magSize - (rect.height * zoom);
-        const finalTransY = minTransY > maxTransY ? (magSize - rect.height * zoom) / 2 : Math.max(minTransY, Math.min(maxTransY, transY));
+        const finalTransY = minTransY > maxTransY
+            ? (magSize - rect.height * zoom) / 2
+            : Math.max(minTransY, Math.min(maxTransY, transY));
 
         zoomedImageRef.current.style.transform = `translate3d(${finalTransX}px, ${finalTransY}px, 0) scale(${zoom})`;
     };
@@ -257,12 +290,20 @@ export function ExpandedOverlay({
         if (!magnifierRef.current) return;
         magnifierActiveRef.current = visible;
         if (visible) {
-            const isDesktop = window.innerWidth >= 768;
+            const isTouch = isTouchDeviceRef.current;
+            // Derive initial magSize the same way updateMagnifierDOM does,
+            // so offsets are coherent from the first frame.
+            const magSize = isTouch
+                ? Math.min(220, Math.max(160, Math.min(window.innerWidth, window.innerHeight) * 0.38))
+                : 300;
+
             targetZoomRef.current = 2;
             currentZoomRef.current = 2;
-            targetOffsetXRef.current = isDesktop ? 0 : 0;
-            currentOffsetXRef.current = targetOffsetXRef.current;
-            targetOffsetYRef.current = isDesktop ? 0 : -(184 / 2 + 10);
+            // No X offset — no coordinate swap.
+            targetOffsetXRef.current  = 0;
+            currentOffsetXRef.current = 0;
+            // Y offset: lens floats above finger on touch, centered on cursor on desktop.
+            targetOffsetYRef.current  = isTouch ? -(magSize / 2 + 10) : 0;
             currentOffsetYRef.current = targetOffsetYRef.current;
 
             magnifierRef.current.style.opacity = '1';
@@ -273,7 +314,7 @@ export function ExpandedOverlay({
             setShowPinchHint(false);
             if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
             if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
-            if (!isDesktop) {
+            if (isTouch) {
                 hintTimerRef.current = setTimeout(() => {
                     if (!hasPinchedRef.current && magnifierActiveRef.current) {
                         setShowPinchHint(true);
@@ -504,7 +545,8 @@ export function ExpandedOverlay({
     const wasSwipeRef = useRef(false);
 
     const handleContainerPointerDown = (e: React.PointerEvent) => {
-        if (!e.isPrimary || (typeof window !== 'undefined' && window.innerWidth >= 768)) return;
+        // Swipe-to-navigate is a touch-only interaction
+        if (!e.isPrimary || !isTouchDeviceRef.current) return;
         if (magnifierActiveRef.current) return;
         swipeStartXRef.current = e.clientX;
         swipeStartYRef.current = e.clientY;
@@ -712,7 +754,7 @@ export function ExpandedOverlay({
                 .social-popup-size {
                     height: calc(max(20px, 5cqh) * 1.5);
                 }
-                @media (min-width: 768px) {
+                @media (pointer: fine) {
                     .social-popup-size {
                         height: calc(max(20px, 5cqh) * 3);
                     }

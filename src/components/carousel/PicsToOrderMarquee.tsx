@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 const picsToOrderImages = [
     { src: "/picstoorder/pic1.JPG", alt: "Картина 1" },
@@ -18,12 +19,15 @@ const picsToOrderImages = [
 ];
 
 export function PicsToOrderMarquee({ children }: { children?: React.ReactNode }) {
-    const [isDesktop, setIsDesktop] = useState(false);
+    const isTouchDevice = useIsTouchDevice();
+    // Derived once from pointer capability — never changes during session.
+    const isDesktop = !isTouchDevice;
     const [isMobileTextboxVisible, setIsMobileTextboxVisible] = useState(true);
     const hideTextboxTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [contentSize, setContentSize] = useState(0);
 
+    // isDesktopRef: stable constant ref, no longer needs an effect to sync.
     const isDesktopRef = useRef(isDesktop);
     const isDraggingRef = useRef(isDragging);
     const contentSizeRef = useRef(contentSize);
@@ -50,17 +54,11 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         }
     }, []);
 
-    // Sync refs with state
-    useEffect(() => { isDesktopRef.current = isDesktop; }, [isDesktop]);
+    // Sync isDragging and contentSize refs with state
     useEffect(() => { isDraggingRef.current = isDragging; }, [isDragging]);
     useEffect(() => { contentSizeRef.current = contentSize; }, [contentSize]);
 
-    useEffect(() => {
-        const checkMatch = () => setIsDesktop(window.innerWidth >= 768);
-        checkMatch();
-        window.addEventListener("resize", checkMatch);
-        return () => window.removeEventListener("resize", checkMatch);
-    }, []);
+    // No resize listener for device detection — isTouchDevice is evaluated once at load.
 
     useEffect(() => {
         if (!setRef.current) return;
@@ -252,7 +250,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         >
             <div
                 ref={contentRef}
-                className="flex flex-col md:flex-row w-full md:w-max h-max md:h-full"
+                className={`flex ${isDesktop ? 'flex-row w-max h-full' : 'flex-col w-full h-max'}`}
                 style={{
                     cursor: isDragging ? 'grabbing' : 'grab',
                     willChange: 'transform'
@@ -261,12 +259,12 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
                 {/* First set */}
                 <div
                     ref={setRef}
-                    className="flex flex-col md:flex-row shrink-0 gap-3 md:gap-4 pb-3 md:pb-0 md:px-2"
+                    className={`flex shrink-0 ${isDesktop ? 'flex-row gap-4 pb-0 px-2' : 'flex-col gap-3 pb-3'}`}
                 >
                     {picsToOrderImages.map((img, i) => (
                         <div
                             key={`set1-${i}`}
-                            className="relative mx-auto md:mx-0 w-[calc(100vw-24px)] md:w-auto md:h-full aspect-[4/5] flex-shrink-0 rounded-2xl overflow-hidden shadow-xl border border-white/10 select-none pointer-events-none"
+                            className={`relative flex-shrink-0 aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border border-white/10 select-none pointer-events-none ${isDesktop ? 'mx-0 w-auto h-full' : 'mx-auto w-[calc(100vw-24px)]'}`}
                         >
                             <Image
                                 src={img.src}
@@ -286,7 +284,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
                     {picsToOrderImages.map((img, i) => (
                         <div
                             key={`set2-${i}`}
-                            className="relative mx-auto md:mx-0 w-[calc(100vw-24px)] md:w-auto md:h-full aspect-[4/5] flex-shrink-0 rounded-2xl overflow-hidden shadow-xl border border-white/10 select-none pointer-events-none"
+                            className={`relative flex-shrink-0 aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border border-white/10 select-none pointer-events-none ${isDesktop ? 'mx-0 w-auto h-full' : 'mx-auto w-[calc(100vw-24px)]'}`}
                         >
                             <Image
                                 src={img.src}
@@ -334,7 +332,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             {children && (
                 <div
                     data-visible={isDesktop || isMobileTextboxVisible}
-                    className={`group absolute inset-0 pointer-events-none md:pointer-events-auto transition-all duration-300 ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+                    className={`group absolute inset-0 transition-all duration-300 ${isDesktop ? 'pointer-events-auto' : 'pointer-events-none'} ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
                 >
                     <div className="relative z-20 w-full h-full flex justify-center">
                         {children}
