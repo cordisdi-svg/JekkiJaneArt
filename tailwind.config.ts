@@ -7,6 +7,13 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
+    screens: {
+      'sm': { 'raw': '(min-width: 640px) and (pointer: fine)' },
+      'md': { 'raw': '(min-width: 768px) and (pointer: fine)' },
+      'lg': { 'raw': '(min-width: 1024px) and (pointer: fine)' },
+      'xl': { 'raw': '(min-width: 1280px) and (pointer: fine)' },
+      '2xl': { 'raw': '(min-width: 1536px) and (pointer: fine)' },
+    },
     extend: {
       fontFamily: {
         indikazka: ['IndiKazka', 'sans-serif'],

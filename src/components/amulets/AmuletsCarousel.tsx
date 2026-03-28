@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 const AMULET_IMAGES = [
     { src: "/amulets/1.png", alt: "Amulet 1" },
@@ -100,14 +101,7 @@ function SequenceSpotlight({ flipped, images, rounded = true }: { flipped: boole
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export function AmuletsCarousel() {
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+    const isMobile = useIsTouchDevice(); // touch device → mobile carousel, stable across orientation changes
 
     if (isMobile) {
         return <AmuletsMobileCarousel />;
