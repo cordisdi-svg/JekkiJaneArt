@@ -80,9 +80,6 @@ export function ExpandedOverlay({
     }, []);
 
     const resumeAutoscroll = useCallback(() => {
-        // Only autoscroll on touch devices
-        if (!isTouchDeviceRef.current) return;
-
         if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
         resumeTimeoutRef.current = setTimeout(() => {
             autoscrollPausedRef.current = false;
@@ -97,15 +94,15 @@ export function ExpandedOverlay({
         window.addEventListener("keydown", h);
         document.body.classList.add("overlay-open");
 
-        // Autoscroll logic
+        // Autoscroll logic (start paused, will resume after 7s via timeout)
+        autoscrollPausedRef.current = true;
         resumeAutoscroll();
 
         const scrollStep = () => {
             const el = scrollRef.current;
             if (el && !autoscrollPausedRef.current && !isDraggingRef.current && !inertiaRafRef.current) {
-                if (el.scrollTop + el.clientHeight < el.scrollHeight - 1) {
-                    el.scrollTop += 0.15;
-                }
+                // Пытаемся скроллить. Если el.scrollHeight > el.clientHeight, скролл возможен.
+                el.scrollTop += 0.4;
             }
             rafRef.current = requestAnimationFrame(scrollStep);
         };
@@ -700,21 +697,20 @@ export function ExpandedOverlay({
                         <h2 className="text-center text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-wide text-white drop-shadow-md">{item.title}</h2>
                     </div>
 
-                    <div className="px-5 md:px-8 mt-2 flex flex-col gap-3">
+                    {/* Характеристики (перемещены выше и лишились подблока) */}
+                    <div className="shrink-0 px-5 md:px-8 mt-2 flex flex-col gap-1.5 opacity-90">
+                        <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Архетип:</span> <span className="font-medium">{item.description.archetype}</span></p>
+                        <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Энергия:</span> <span className="font-medium">{item.description.energy}</span></p>
+                        <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Подходит тем кто:</span> {item.description.target}</p>
+                        <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Атмосфера:</span> {item.description.atmosphere}</p>
+                    </div>
+
+                    <div className="px-5 md:px-8 mt-4 flex flex-col gap-3">
                         {item.description.body.map((para, i) => (
                             <p key={i} className="font-light text-[15px] md:text-base lg:text-lg leading-relaxed text-balance">
                                 {para}
                             </p>
                         ))}
-                    </div>
-
-                    <div className="shrink-0 pt-4 px-5 md:px-8">
-                        <div className="flex flex-col gap-2 p-4 bg-black/20 rounded-xl border border-white/10">
-                            <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Архетип:</span> <span className="font-medium">{item.description.archetype}</span></p>
-                            <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Энергия:</span> <span className="font-medium">{item.description.energy}</span></p>
-                            <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Подходит тем кто:</span> {item.description.target}</p>
-                            <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Атмосфера:</span> {item.description.atmosphere}</p>
-                        </div>
                     </div>
                 </div>
 
