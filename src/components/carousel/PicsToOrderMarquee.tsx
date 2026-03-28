@@ -226,10 +226,13 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
 
     const handleWheel = (e: React.WheelEvent) => {
         if (contentSize <= 0) return;
-        const delta = isDesktop ? e.deltaX : e.deltaY;
-        const otherDelta = isDesktop ? e.deltaY : e.deltaX;
-        if (Math.abs(delta) > Math.abs(otherDelta)) {
-            scrollOffset.current += delta;
+        // On desktop, map vertical wheel (deltaY) OR horizontal wheel (deltaX) to scrolling
+        // On trackpads, deltaX usually is larger for horizontal swipes. On mice, deltaY is present.
+        const amount = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        
+        // Add minimal threshold to avoid micro-jitters
+        if (Math.abs(amount) > 1) {
+            scrollOffset.current += amount;
         }
     };
 
