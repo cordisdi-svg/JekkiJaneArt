@@ -265,6 +265,18 @@ export function PaintingsCarousel() {
         queuedRef.current = null;
     };
 
+    const stepExpanded = (dir: 1 | -1) => {
+        const nextPos = Math.round(posRef.current) + dir;
+        posRef.current = nextPos;
+        velocityRef.current = 0;
+        targetRef.current = nextPos;
+        isAnimRef.current = false;
+        
+        let wrappedIdx = nextPos % items.length;
+        if (wrappedIdx < 0) wrappedIdx += items.length;
+        setOverlayItem(items[wrappedIdx]);
+    };
+
     // ── Wheel ─────────────────────────────────────────────────────────────────
     useEffect(() => {
         const el = containerRef.current;
@@ -351,7 +363,12 @@ export function PaintingsCarousel() {
 
     return (
         <>
-            {expanded && <ExpandedOverlay item={overlayItem} onClose={() => setExpanded(false)} />}
+            {expanded && <ExpandedOverlay 
+                item={overlayItem} 
+                onClose={() => setExpanded(false)}
+                onNext={() => stepExpanded(1)}
+                onPrev={() => stepExpanded(-1)}
+            />}
 
             <div
                 ref={containerRef}

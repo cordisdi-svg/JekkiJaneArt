@@ -5,7 +5,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PaintingData } from "@/data/availablePics";
 
 // ─── Expanded overlay (covers full viewport including nav) ────────────────────
-export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose: () => void }) {
+export function ExpandedOverlay({ 
+    item, 
+    onClose,
+    onNext,
+    onPrev
+}: { 
+    item: PaintingData; 
+    onClose: () => void;
+    onNext?: () => void;
+    onPrev?: () => void;
+}) {
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
     const [showPinchHint, setShowPinchHint] = useState(false);
 
@@ -489,14 +499,67 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
         }
     };
 
+    const swipeStartXRef = useRef<number | null>(null);
+    const swipeStartYRef = useRef<number | null>(null);
+    const wasSwipeRef = useRef(false);
+
+    const handleContainerPointerDown = (e: React.PointerEvent) => {
+        if (!e.isPrimary || (typeof window !== 'undefined' && window.innerWidth >= 768)) return;
+        if (magnifierActiveRef.current) return;
+        swipeStartXRef.current = e.clientX;
+        swipeStartYRef.current = e.clientY;
+        wasSwipeRef.current = false;
+    };
+
+    const handleContainerPointerMove = (e: React.PointerEvent) => {
+        // Cancel swipe if secondary pointer (pinch) or magnifier activates
+        if (!e.isPrimary || magnifierActiveRef.current) {
+            swipeStartXRef.current = null;
+            return;
+        }
+        if (swipeStartXRef.current === null || swipeStartYRef.current === null) return;
+        const dx = e.clientX - swipeStartXRef.current;
+        const dy = e.clientY - swipeStartYRef.current;
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+            wasSwipeRef.current = true;
+        }
+    };
+
+    const handleContainerPointerUp = (e: React.PointerEvent) => {
+        if (!e.isPrimary || swipeStartXRef.current === null || swipeStartYRef.current === null) return;
+        
+        if (magnifierActiveRef.current) {
+            swipeStartXRef.current = null;
+            swipeStartYRef.current = null;
+            return;
+        }
+
+        const dx = e.clientX - swipeStartXRef.current;
+        const dy = e.clientY - swipeStartYRef.current;
+        swipeStartXRef.current = null;
+        swipeStartYRef.current = null;
+
+        // Increased swipe threshold from 100 to 150 for a more decisive swipe
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 150) {
+            if (dx > 0 && onPrev) onPrev();
+            else if (dx < 0 && onNext) onNext();
+        }
+    };
+
     const copyUrl = item.src.replace(/\.(png|jpg|jpeg)$/i, (m) => "copy" + m);
 
     return (
         <div
             className="fixed inset-0 flex flex-col md:flex-row items-center justify-center p-[2vh] md:p-[3svh] pb-[max(2vh,env(safe-area-inset-bottom)+5px)] gap-[3vh] md:gap-[4svh] w-full h-full mx-auto max-w-[1600px] bg-black/70"
             style={{ zIndex: 9999, backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}
+            onPointerDown={handleContainerPointerDown}
+            onPointerMove={handleContainerPointerMove}
+            onPointerUp={handleContainerPointerUp}
+            onPointerCancel={handleContainerPointerUp}
             onClick={(e) => {
-                if (!suppressClickRef.current) onClose();
+                if (!suppressClickRef.current && !wasSwipeRef.current && e.target === e.currentTarget) {
+                    onClose();
+                }
             }}
         >
             {/* Close Button Top Right */}
@@ -616,10 +679,10 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 {/* Fixed Action Area (Bottom) - Separated physically from the scroll container */}
                 <div className="shrink-0 relative p-4 pt-2 pb-2">
                     {/* Social Order Popup Layer */}
-                    <div className={`absolute bottom-[calc(100%+8px)] left-4 right-4 pointer-events-none transition-all duration-500 ease-out origin-bottom ${isOrderMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50" : "opacity-0 scale-[0.6] translate-y-10 z-[-1]"}`} style={{ height: "calc(max(20px, 5cqh) * 1.5)" }}>
+                    <div className={`social-popup-size absolute bottom-[calc(100%+8px)] left-4 right-4 pointer-events-none transition-all duration-500 ease-out origin-bottom ${isOrderMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50" : "opacity-0 scale-[0.6] translate-y-10 z-[-1]"}`}>
                         <div className="relative w-full h-full">
                             <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
-                                className="absolute left-[25%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
+                                className="absolute left-[25%] md:left-[19%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
                                 <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-contain" /></div>
                             </a>
@@ -629,7 +692,7 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                                 <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.png" alt="IG" fill className="object-contain" /></div>
                             </a>
                             <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
-                                className="absolute left-[75%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
+                                className="absolute left-[75%] md:left-[81%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
                                 <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.png" alt="VK" fill className="object-contain" /></div>
                             </a>
@@ -646,6 +709,14 @@ export function ExpandedOverlay({ item, onClose }: { item: PaintingData; onClose
                 </div>
 
                 <style>{`
+                .social-popup-size {
+                    height: calc(max(20px, 5cqh) * 1.5);
+                }
+                @media (min-width: 768px) {
+                    .social-popup-size {
+                        height: calc(max(20px, 5cqh) * 3);
+                    }
+                }
                 .pinch-hint-left {
                     animation: pinchHintLeftAnim 1.8s ease-in-out forwards;
                 }

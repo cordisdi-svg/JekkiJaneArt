@@ -14,7 +14,7 @@ function Triangle({ direction, className = "" }: { direction: "left" | "right"; 
 }
 
 function navCellClass(isActive: boolean) {
-  return `h-full w-full border-l border-white/20 text-white/95 transition-colors hover:bg-white/10 ${isActive ? "bg-white/15" : ""
+  return `h-full w-full border-l border-white/20 text-white/95 transition-colors lg:hover:bg-white/10 active:bg-white/15 ${isActive ? "bg-white/15" : ""
     }`;
 }
 
