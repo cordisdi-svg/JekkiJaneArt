@@ -230,10 +230,8 @@
   --letter-spacing-underdog: 0.02em;
 }
 
-@media (min-width: 1024px) {
-  :root {
-    --nav-height: var(--nav-height-desktop);
-  }
+body.is-desktop {
+  --nav-height: var(--nav-height-desktop);
 }
 
 * {
@@ -250,14 +248,29 @@ body {
   overflow-x: hidden;
 }
 
-@media (max-width: 1023px) {
-
-  html,
-  body {
-    height: 100svh;
-    overflow: hidden;
-  }
+/* Стабильное управление лэйаутом из DeviceLayoutSync 
+(не зависит от ширины/поворота экрана) */
+body.is-desktop {
+  height: auto;
+  overflow: visible;
 }
+
+body.is-touch {
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Нейтральное состояние: опираемся на системный pointer для избегания мерцания до загрузки JS */
+@media (pointer: fine) {
+  .hide-on-desktop { display: none !important; }
+}
+@media (pointer: coarse) {
+  .hide-on-mobile { display: none !important; }
+}
+
+/* Строгое состояние: когда JS отработал, применяем жёстко */
+body.is-desktop .hide-on-desktop { display: none !important; }
+body.is-touch .hide-on-mobile { display: none !important; }
 
 body.overlay-open nav {
   visibility: hidden;

@@ -283,7 +283,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
     return (
         <div
-            className={`marquee-wrapper relative w-full h-full py-0 md:py-2 overflow-hidden cursor-grab active:cursor-grabbing pointer-events-auto`}
+            className={`marquee-wrapper relative w-full h-full py-0 overflow-hidden cursor-grab active:cursor-grabbing pointer-events-auto`}
             style={{ touchAction: 'none' }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}

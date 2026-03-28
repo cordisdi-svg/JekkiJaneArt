@@ -3,6 +3,7 @@ import "./globals.css";
 import { BottomNavigation } from "@/components/nav/BottomNavigation";
 import { ModalProvider } from "@/components/modals/ModalProvider";
 import { InteractionGuards } from "@/components/system/InteractionGuards";
+import { DeviceLayoutSync } from "@/components/system/DeviceLayoutSync";
 
 export const metadata: Metadata = {
   title: "Портфолио художницы",
@@ -81,8 +82,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <InteractionGuards />
+        <DeviceLayoutSync />
         <ModalProvider>
-          <div className="h-svh lg:h-auto lg:min-h-screen overflow-hidden lg:overflow-visible">
+          <div className="w-full h-full relative">
             <main className="w-full h-full">
               {children}
             </main>
