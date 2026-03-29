@@ -91,24 +91,24 @@ function OrderButton({ isMobile }: { isMobile: boolean }) {
     return (
         <div className="relative w-full">
             {/* Social Buttons Layer */}
-            <div className={`absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 flex ${isMobile ? 'gap-3' : 'gap-4'} transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"}`}>
+            <div className={`absolute bottom-[calc(100%+12px)] transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"} ${isMobile ? 'left-1/2 -translate-x-1/2 flex gap-3' : 'left-0 right-0 flex justify-evenly'}`}>
                 <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={isMobile ? 22 : 30} height={isMobile ? 22 : 30} className="object-contain"  unoptimized />
+                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/Instagram_icon.webp" alt="IG" width={isMobile ? 20 : 28} height={isMobile ? 20 : 28} className="object-contain"  unoptimized />
+                    <Image src="/Instagram_icon.webp" alt="IG" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/vk-logo.webp" alt="VK" width={isMobile ? 22 : 30} height={isMobile ? 22 : 30} className="object-contain"  unoptimized />
+                    <Image src="/vk-logo.webp" alt="VK" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="object-contain"  unoptimized />
                 </a>
             </div>
 

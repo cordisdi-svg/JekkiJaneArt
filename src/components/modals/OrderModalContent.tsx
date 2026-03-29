@@ -68,7 +68,7 @@ export function OrderModalContent() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-4 py-1">
+      <div className="flex items-center justify-center gap-4 -my-[2px]">
         {links.map((link) => (
           <a
             key={link.label}
@@ -76,9 +76,9 @@ export function OrderModalContent() {
             target="_blank"
             rel="noreferrer"
             aria-label={link.label}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/20 backdrop-blur-sm transition-all active:bg-black/40 active:scale-95 lg:hover:bg-black/30"
+            className="flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/10 bg-black/20 backdrop-blur-sm transition-all active:bg-black/40 active:scale-95 lg:hover:bg-black/30"
           >
-            <Image src={link.icon} alt="" width={28} height={28}  unoptimized />
+            <Image src={link.icon} alt="" width={35} height={35} className="object-contain" unoptimized />
           </a>
         ))}
       </div>
