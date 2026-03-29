@@ -87,6 +87,12 @@ export function ExpandedOverlay({
     }, []);
 
     useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = 0;
+        }
+    }, [item]);
+
+    useEffect(() => {
         // Evaluate touch capability once at mount (stable for the lifetime of the overlay)
         isTouchDeviceRef.current = window.matchMedia('(pointer: coarse)').matches;
 

@@ -10,19 +10,28 @@ function OrderButton({ isMobile }: { isMobile: boolean }) {
             <div className={`absolute bottom-[calc(100%+12px)] left-0 right-0 flex justify-evenly transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"}`}>
                 <a href="http://t.me/zzzhekichannnn" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className={`relative isolate flex h-14 w-14 items-center justify-center rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95
+                               before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md before:bg-black/20
+                               before:transition-opacity before:duration-[1500ms] before:-z-10 before:pointer-events-none
+                               ${isMenuOpen ? 'before:opacity-100' : 'before:opacity-0'}`}
                 >
                     <Image src="/Telegram_logo.svg.webp" alt="TG" width={32} height={32} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className={`relative isolate flex h-14 w-14 items-center justify-center rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95
+                               before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md before:bg-black/20
+                               before:transition-opacity before:duration-[1500ms] before:-z-10 before:pointer-events-none
+                               ${isMenuOpen ? 'before:opacity-100' : 'before:opacity-0'}`}
                 >
                     <Image src="/Instagram_icon.webp" alt="IG" width={32} height={32} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className={`relative isolate flex h-14 w-14 items-center justify-center rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95
+                               before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md before:bg-black/20
+                               before:transition-opacity before:duration-[1500ms] before:-z-10 before:pointer-events-none
+                               ${isMenuOpen ? 'before:opacity-100' : 'before:opacity-0'}`}
                 >
                     <Image src="/vk-logo.webp" alt="VK" width={32} height={32} className="object-contain"  unoptimized />
                 </a>
