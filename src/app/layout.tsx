@@ -4,6 +4,7 @@ import { BottomNavigation } from "@/components/nav/BottomNavigation";
 import { ModalProvider } from "@/components/modals/ModalProvider";
 import { InteractionGuards } from "@/components/system/InteractionGuards";
 import { DeviceLayoutSync } from "@/components/system/DeviceLayoutSync";
+import { InstagramTooltip } from "@/components/ui/InstagramTooltip";
 
 export const metadata: Metadata = {
   title: "Портфолио художницы",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <InteractionGuards />
         <DeviceLayoutSync />
+        <InstagramTooltip />
         <ModalProvider>
           <div className="w-full h-full relative">
             <main className="w-full h-full">
