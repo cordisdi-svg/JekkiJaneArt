@@ -3,7 +3,7 @@ import { WallsMarquee } from "@/components/carousel/WallsMarquee";
 
 export default function WallsPage() {
   return (
-    <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
+    <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
       {/* Constraints exactly to the viewport boundary to stop scrolling on mobile */}
       <div className="font-fontatica relative flex h-[100svh] w-full flex-col items-center justify-center overflow-hidden pb-[var(--nav-height-mobile)] lg:pb-[var(--nav-height-desktop)]">
 

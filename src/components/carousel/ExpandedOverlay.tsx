@@ -585,7 +585,7 @@ export function ExpandedOverlay({
         }
     };
 
-    const copyUrl = item.src.replace(/\.(png|jpg|jpeg)$/i, (m) => "copy" + m);
+    const copyUrl = item.src.replace(/\.(png|jpg|jpeg|webp)$/i, (m) => "copy" + m);
 
     return (
         <div
@@ -672,6 +672,7 @@ export function ExpandedOverlay({
                     sizes="(max-width: 768px) 95vw, 85vh"
                     className="object-contain"
                     priority
+                    unoptimized
                     draggable={false}
                     onLoad={handleImageLoad}
                 />
@@ -722,17 +723,17 @@ export function ExpandedOverlay({
                             <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                                 className="absolute left-[25%] md:left-[19%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
-                                <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-contain" /></div>
+                                <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.webp" alt="TG" fill className="object-contain"  unoptimized /></div>
                             </a>
                             <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                                 className="absolute left-[50%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
-                                <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.png" alt="IG" fill className="object-contain" /></div>
+                                <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.webp" alt="IG" fill className="object-contain"  unoptimized /></div>
                             </a>
                             <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                                 className="absolute left-[75%] md:left-[81%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
-                                <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.png" alt="VK" fill className="object-contain" /></div>
+                                <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.webp" alt="VK" fill className="object-contain"  unoptimized /></div>
                             </a>
                         </div>
                     </div>

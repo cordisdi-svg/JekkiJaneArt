@@ -143,19 +143,19 @@ function OrderButton({ isMobile }: { isMobile: boolean }) {
                     onClick={(e) => e.stopPropagation()}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
                 >
-                    <Image src="/Telegram_logo.svg.png" alt="TG" width={22} height={22} className="object-contain" />
+                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={22} height={22} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
                 >
-                    <Image src="/Instagram_icon.png" alt="IG" width={20} height={20} className="object-contain" />
+                    <Image src="/Instagram_icon.webp" alt="IG" width={20} height={20} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
                 >
-                    <Image src="/vk-logo.png" alt="VK" width={22} height={22} className="object-contain" />
+                    <Image src="/vk-logo.webp" alt="VK" width={22} height={22} className="object-contain"  unoptimized />
                 </a>
             </div>
 
@@ -202,13 +202,13 @@ function SizesLightbox({ onClose }: { onClose: () => void }) {
             }}
         >
             <Image
-                src="/picstoorder/sizes.png"
+                src="/picstoorder/sizes.webp"
                 alt="Шпаргалка по размерам"
                 width={1200}
                 height={900}
                 className="max-h-[90vh] max-w-[90vw] w-auto h-auto object-contain rounded-xl shadow-2xl relative z-10"
                 priority
-            />
+             unoptimized />
         </div>
     );
 }
@@ -279,7 +279,7 @@ export default function PicsToOrderPage() {
     const BTN_BAR_PCT = 12;
 
     return (
-        <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
+        <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
             {showSizes && <SizesLightbox onClose={() => setShowSizes(false)} />}
 
             {/* Google Font already loaded in layout.tsx via Playfair Display */}
@@ -483,12 +483,12 @@ export default function PicsToOrderPage() {
                                     >
                                         {activeMobileBtn?.id === "sizes" ? (
                                             <Image
-                                                src="/picstoorder/sizes.png"
+                                                src="/picstoorder/sizes.webp"
                                                 alt="Шпаргалка по размерам"
                                                 width={600}
                                                 height={400}
                                                 className="w-full h-auto rounded-lg"
-                                            />
+                                             unoptimized />
                                         ) : (
                                             <>
                                                 <p className={`whitespace-pre-line m-0 ${activeMobileBtn?.id === "price" ? 'mb-2' : 'mb-4'}`}>{activeMobileBtn?.text}</p>

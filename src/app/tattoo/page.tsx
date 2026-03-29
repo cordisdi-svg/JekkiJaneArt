@@ -4,7 +4,7 @@ import { TattooCarousel } from "@/components/carousel/TattooCarousel";
 
 export default function TattooPage() {
   return (
-    <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
+    <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
       <div className="relative h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)] lg:pb-[var(--nav-height-desktop)]">
 
         {/* Desktop only — left image + right carousel */}
@@ -13,13 +13,13 @@ export default function TattooPage() {
           {/* Left image: 1.png — gap-4 from all touching edges */}
           <div className="relative aspect-[3/4] flex-shrink-0 my-4" style={{ WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)', maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)' }}>
             <Image
-              src="/tattoo/1.png"
+              src="/tattoo/1.webp"
               alt="Татуировка — портфолио"
               fill
               className="object-cover"
               sizes="30vw"
               priority
-            />
+             unoptimized />
           </div>
 
           {/* Right zone: translateY(-8px) lifts the entire carousel object intact, creating gap-2 above nav */}
@@ -33,7 +33,7 @@ export default function TattooPage() {
         <div
           className="md:hidden relative h-full w-full overflow-hidden"
           style={{
-            backgroundImage: "url('/tattoo/1-mobile.png')",
+            backgroundImage: "url('/tattoo/1-mobile.webp')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}

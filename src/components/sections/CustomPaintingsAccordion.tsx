@@ -56,7 +56,7 @@ export function CustomPaintingsAccordion() {
       {sizeOpen ? (
         <div className="fixed inset-0 z-[1100] bg-black/70 p-4" onClick={() => setSizeOpen(false)} role="presentation">
           <div className="relative h-full w-full" onClick={(e) => e.stopPropagation()}>
-            <Image src="/picstoorder/sizes.png" alt="Шпаргалка размеров" fill className="object-contain" />
+            <Image src="/picstoorder/sizes.webp" alt="Шпаргалка размеров" fill className="object-contain"  unoptimized />
           </div>
         </div>
       ) : null}

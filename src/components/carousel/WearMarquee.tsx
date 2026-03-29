@@ -8,11 +8,11 @@ import { useIsTouchDevice } from "@/lib/deviceDetect";
 const SLIDE_H = "calc(100svh - var(--nav-height-mobile))";
 
 const slides = [
-    { src: "/wear-and-shoes/1.png", alt: "Роспись одежды" },
-    { src: "/wear-and-shoes/2.JPEG", alt: "Роспись обуви" },
-    { src: "/wear-and-shoes/3.jpeg", alt: "Роспись одежды 3" },
-    { src: "/wear-and-shoes/4.png", alt: "Роспись одежды 4" },
-    { src: "/wear-and-shoes/5.png", alt: "Роспись одежды 5" },
+    { src: "/wear-and-shoes/1.webp", alt: "Роспись одежды" },
+    { src: "/wear-and-shoes/2.webp", alt: "Роспись обуви" },
+    { src: "/wear-and-shoes/3.webp", alt: "Роспись одежды 3" },
+    { src: "/wear-and-shoes/4.webp", alt: "Роспись одежды 4" },
+    { src: "/wear-and-shoes/5.webp", alt: "Роспись одежды 5" },
 ];
 
 export function WearMarquee() {
@@ -194,7 +194,7 @@ export function WearMarquee() {
                     className="object-cover"
                     sizes="100vw"
                     priority
-                />
+                 />
             </button>
         );
     }
@@ -224,7 +224,7 @@ export function WearMarquee() {
                             className="object-cover"
                             sizes="100vw"
                             priority={i < 2}
-                        />
+                         />
                     </div>
                 ))}
             </div>

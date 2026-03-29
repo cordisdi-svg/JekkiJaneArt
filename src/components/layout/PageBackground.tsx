@@ -10,7 +10,7 @@ export function PageBackground({
   return (
     <div className="relative h-full overflow-hidden">
       {backgroundSrc ? (
-        <Image src={backgroundSrc} alt="" fill priority className="z-0 object-cover" aria-hidden />
+        <Image src={backgroundSrc} alt="" fill priority className="z-0 object-cover" aria-hidden  unoptimized />
       ) : null}
       <div className="relative z-10 h-full">{children}</div>
     </div>

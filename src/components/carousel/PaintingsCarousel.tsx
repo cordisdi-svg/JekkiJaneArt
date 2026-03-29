@@ -429,9 +429,9 @@ export function PaintingsCarousel() {
                         style={{ bottom: "calc(7.25% + max(8px, 2.5%))", left: "2.5%", gap: "max(8px, 2.5%)" }}
                     >
                         {[
-                            { href: "http://t.me/jinnyji", src: "/Telegram_logo.svg.png", alt: "TG", size: "90%" },
-                            { href: "https://www.instagram.com/jekki.jane.art/", src: "/Instagram_icon.png", alt: "IG", size: "80%" },
-                            { href: "https://vk.ru/id437361077", src: "/vk-logo.png", alt: "VK", size: "110%" },
+                            { href: "http://t.me/jinnyji", src: "/Telegram_logo.svg.webp", alt: "TG", size: "90%" },
+                            { href: "https://www.instagram.com/jekki.jane.art/", src: "/Instagram_icon.webp", alt: "IG", size: "80%" },
+                            { href: "https://vk.ru/id437361077", src: "/vk-logo.webp", alt: "VK", size: "110%" },
                         ].map(({ href, src, alt, size }) => (
                             <a key={alt} href={href} target="_blank" rel="noreferrer"
                                 className="pointer-events-auto aspect-square rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
@@ -439,7 +439,7 @@ export function PaintingsCarousel() {
                                 onClick={e => e.stopPropagation()}>
                                 <div className="absolute inset-0 bg-transparent mix-blend-screen pointer-events-none" />
                                 <div style={{ position: "relative", width: size, height: size }}>
-                                    <Image src={src} alt={alt} fill className="object-contain" />
+                                    <Image src={src} alt={alt} fill className="object-contain"  unoptimized />
                                 </div>
                             </a>
                         ))}

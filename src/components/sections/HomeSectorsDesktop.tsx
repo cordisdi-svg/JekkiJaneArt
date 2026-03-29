@@ -34,11 +34,11 @@ const LABEL_OFFSET: Record<number, { dx: number; dy: number }> = {
 };
 
 const DESKTOP_SECTORS: Sector[] = [
-  { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", start: -148, end: -32 },
-  { id: 2, lines: ["Интерьеры"], ariaLabel: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.png", start: -32, end: 0 },
-  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", start: 0, end: 32 },
+  { id: 1, lines: ["Доступные картины"], ariaLabel: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.webp", start: -148, end: -32 },
+  { id: 2, lines: ["Интерьеры"], ariaLabel: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.webp", start: -32, end: 0 },
+  { id: 3, lines: ["Роспись одежды", "и обуви"], ariaLabel: "Роспись одежды и обуви", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.webp", start: 0, end: 32 },
   { id: 4, lines: ["Картины-талисманы"], ariaLabel: "Картины-талисманы", href: "/amulets", imageSrc: "/amulets/1-(tech).png", start: 32, end: 148 },
-  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", start: 148, end: 180 },
+  { id: 5, lines: ["Тату", "эскизы"], ariaLabel: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.webp", start: 148, end: 180 },
   { id: 6, lines: ["Картины", "на заказ"], ariaLabel: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", start: -180, end: -148 }
 ];
 
@@ -219,7 +219,7 @@ export function HomeSectorsDesktop() {
                   transform: "translate(-50%, -50%)"
                 }}
               >
-                <Image src={sector.imageSrc} alt="" fill className="object-cover animate-bg-scale" sizes="100vw" />
+                <Image src={sector.imageSrc} alt="" fill className="object-cover animate-bg-scale" sizes="100vw"  unoptimized />
               </div>
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.27)" : "rgba(0,0,0,0.35)" }} />
@@ -284,7 +284,7 @@ export function HomeSectorsDesktop() {
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.28)" : "rgba(0,0,0,0.38)", zIndex: 1 }} />
         <span className="absolute inset-0 pointer-events-none rounded-full transition-all duration-200" style={{ boxShadow: `inset 0 0 0 ${hovered === "center" ? 6 : 1.5}px ${hovered === "center" ? "#9c0f06" : "#444444"}`, zIndex: 2 }} />
         <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5, transform: "scale(1.595)", overflow: "visible" }}>
-          <Image src="/mainpage/mainpage-icon.png" alt="JEKKI JANE ART" fill className="object-contain" />
+          <Image src="/mainpage/mainpage-icon.webp" alt="JEKKI JANE ART" fill className="object-contain"  unoptimized />
         </div>
         <span
           className="font-abibas pointer-events-none absolute left-1/2 -translate-x-1/2 text-center text-[clamp(1.26rem,2.16vw,2.04rem)] font-semibold text-[#e5e5e5] transition-opacity duration-200"

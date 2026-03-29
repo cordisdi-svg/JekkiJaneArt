@@ -13,7 +13,7 @@ export default function WearAndShoesPage() {
   const scrollRefMobile = useRef<HTMLDivElement>(null);
 
   return (
-    <PageBackground backgroundSrc="/mainpage/mainpage-back.png">
+    <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
       {/* Активная зона */}
       <div className="font-comfortaa-light relative h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)] lg:pb-[var(--nav-height-desktop)]">
 
@@ -62,7 +62,7 @@ export default function WearAndShoesPage() {
           {/* Изображение 1 (левое) */}
           <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
             <FlippingWearCard
-              images={["/wear-and-shoes/1.png", "/wear-and-shoes/2.jpeg", "/wear-and-shoes/3.jpeg", "/wear-and-shoes/4.png", "/wear-and-shoes/5.png"]}
+              images={["/wear-and-shoes/1.webp", "/wear-and-shoes/2.webp", "/wear-and-shoes/3.webp", "/wear-and-shoes/4.webp", "/wear-and-shoes/5.webp"]}
               initialDelay={6000}
               interval={6000}
             />
@@ -113,7 +113,7 @@ export default function WearAndShoesPage() {
           {/* Изображение 2 (правое) */}
           <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
             <FlippingWearCard
-              images={["/wear-and-shoes/3.jpeg", "/wear-and-shoes/4.png", "/wear-and-shoes/5.png", "/wear-and-shoes/1.png", "/wear-and-shoes/2.jpeg"]}
+              images={["/wear-and-shoes/3.webp", "/wear-and-shoes/4.webp", "/wear-and-shoes/5.webp", "/wear-and-shoes/1.webp", "/wear-and-shoes/2.webp"]}
               initialDelay={2500}
               interval={6000}
             />

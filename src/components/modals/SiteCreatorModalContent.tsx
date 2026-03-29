@@ -1,8 +1,8 @@
 import Image from "next/image";
 
 const links = [
-  { icon: "/Telegram_logo.svg.png", href: "https://t.me/magimist", label: "Telegram создателя сайта" },
-  { icon: "/Instagram_icon.png", href: "https://www.instagram.com/magistr_iney", label: "Instagram создателя сайта" }
+  { icon: "/Telegram_logo.svg.webp", href: "https://t.me/magimist", label: "Telegram создателя сайта" },
+  { icon: "/Instagram_icon.webp", href: "https://www.instagram.com/magistr_iney", label: "Instagram создателя сайта" }
 ];
 
 export function SiteCreatorModalContent() {
@@ -60,7 +60,7 @@ export function SiteCreatorModalContent() {
               aria-label={link.label}
               className="flex h-[48px] w-[48px] items-center justify-center rounded-full border border-white/20 bg-black/30 backdrop-blur-md transition-transform hover:scale-110 active:scale-95 shadow-md"
             >
-              <Image src={link.icon} alt="" width={28} height={28} className="object-contain" />
+              <Image src={link.icon} alt="" width={28} height={28} className="object-contain"  unoptimized />
             </a>
           ))}
         </div>

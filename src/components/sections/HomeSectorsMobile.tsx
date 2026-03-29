@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const MOBILE_SECTORS = [
-  { id: 1, label: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.png", heightPercent: 14, align: "center" as const },
+  { id: 1, label: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.webp", heightPercent: 14, align: "center" as const },
   { id: 2, label: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", heightPercent: 14, align: "center" as const },
   { id: 3, label: "Картины амулеты", href: "/amulets", imageSrc: "/amulets/1-(tech).png", heightPercent: 22, align: "right-half" as const },
-  { id: 4, label: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.png", heightPercent: 22, align: "right-half" as const },
-  { id: 5, label: "Одежда и обувь", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.png", heightPercent: 14, align: "center" as const },
-  { id: 6, label: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.png", heightPercent: 14, align: "center" as const }
+  { id: 4, label: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.webp", heightPercent: 22, align: "right-half" as const },
+  { id: 5, label: "Одежда и обувь", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.webp", heightPercent: 14, align: "center" as const },
+  { id: 6, label: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.webp", heightPercent: 14, align: "center" as const }
 ];
 
 export function HomeSectorsMobile() {
@@ -46,7 +46,7 @@ export function HomeSectorsMobile() {
             >
               {/* Background Image */}
               <div className="absolute inset-0">
-                <Image src={sector.imageSrc} alt="" fill className="object-cover blur-[1px] animate-bg-scale" sizes="100vw" />
+                <Image src={sector.imageSrc} alt="" fill className="object-cover blur-[1px] animate-bg-scale" sizes="100vw"  unoptimized />
               </div>
 
               {/* Overlay for darkening the background */}
@@ -81,13 +81,13 @@ export function HomeSectorsMobile() {
         >
           {/* Main Icon scaled naturally to fit the new area, shifted to stay left-aligned, and brightened */}
           <Image
-            src="/mainpage/mainpage-icon-mobile.png"
+            src="/mainpage/mainpage-icon-mobile.webp"
             alt="О художнице"
             fill
             className="object-contain object-left"
             style={{ filter: 'brightness(1.15)' }}
             sizes="63vw"
-          />
+           unoptimized />
         </button>
       </div>
     </section>

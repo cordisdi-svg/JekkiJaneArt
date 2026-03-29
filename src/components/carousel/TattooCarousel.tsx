@@ -24,9 +24,9 @@ const M_MAX_SCALE = 1.0;
 const M_MIN_SCALE = 0.20;
 
 const IMGS = [
-    '/tattoo/tattoo1.jpg', '/tattoo/tattoo2.jpg', '/tattoo/tattoo3.jpg',
-    '/tattoo/tattoo4.jpg', '/tattoo/tattoo5.jpg', '/tattoo/tattoo6.jpg',
-    '/tattoo/tattoo7.jpg', '/tattoo/tattoo8.jpg', '/tattoo/tattoo9.jpg',
+    '/tattoo/tattoo1.webp', '/tattoo/tattoo2.webp', '/tattoo/tattoo3.webp',
+    '/tattoo/tattoo4.webp', '/tattoo/tattoo5.webp', '/tattoo/tattoo6.webp',
+    '/tattoo/tattoo7.webp', '/tattoo/tattoo8.webp', '/tattoo/tattoo9.webp',
 ];
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
@@ -466,7 +466,7 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                             fill
                             className="object-cover"
                             sizes="(max-width: 768px) 55vw, 20vw"
-                        />
+                         unoptimized />
                         <div className={`magic-hint absolute inset-0 flex items-end justify-center ${mobile ? 'pb-2' : 'pb-4'} pointer-events-none opacity-0`}>
                             <div className={`bg-black/40 ${mobile ? 'w-[18px] h-[18px]' : 'w-9 h-9'} flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)] border border-white/20 will-change-transform`}>
                                 <svg viewBox="0 0 24 24" className={`${mobile ? 'w-[10px] h-[10px]' : 'w-5 h-5'} stroke-white fill-transparent`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -486,7 +486,7 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                     className="absolute top-0 left-0 pointer-events-none overflow-hidden rounded-xl shadow-2xl"
                     style={{ zIndex: 70, transformOrigin: '50% 50%', width: halfWRef.current * 2, height: halfHRef.current * 2 }}
                 >
-                    <Image src={previewSrc} alt="Preview" fill className="object-cover" />
+                    <Image src={previewSrc} alt="Preview" fill className="object-cover"  unoptimized />
                 </div>
             )}
         </div>

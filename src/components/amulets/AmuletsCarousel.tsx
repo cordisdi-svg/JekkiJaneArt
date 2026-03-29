@@ -5,13 +5,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 const AMULET_IMAGES = [
-    { src: "/amulets/1.png", alt: "Amulet 1" },
-    { src: "/amulets/2.png", alt: "Amulet 2" },
-    { src: "/amulets/3.png", alt: "Amulet 3" },
-    { src: "/amulets/4.JPEG", alt: "Amulet 4" },
-    { src: "/amulets/5.png", alt: "Amulet 5" },
-    { src: "/amulets/6.png", alt: "Amulet 6" },
-    { src: "/amulets/7.png", alt: "Amulet 7" },
+    { src: "/amulets/1.webp", alt: "Amulet 1" },
+    { src: "/amulets/2.webp", alt: "Amulet 2" },
+    { src: "/amulets/3.webp", alt: "Amulet 3" },
+    { src: "/amulets/4.webp", alt: "Amulet 4" },
+    { src: "/amulets/5.webp", alt: "Amulet 5" },
+    { src: "/amulets/6.webp", alt: "Amulet 6" },
+    { src: "/amulets/7.webp", alt: "Amulet 7" },
 ];
 
 type CarouselItem = typeof AMULET_IMAGES[number];
@@ -22,9 +22,9 @@ function mod(n: number, m: number) {
 
 // Sequence Definitions
 const SEQUENCES = [
-    { images: ["/amulets/for-man1.png", "/amulets/for-man2.png"], btnSrc: "/amulets/for-man1-button.png", label: "Для\nмужчин" },
-    { images: ["/amulets/for-woman1.png", "/amulets/for-woman2.png"], btnSrc: "/amulets/for-woman1-button.png", label: "Для\nженщин" },
-    { images: ["/amulets/for-pairs.png", "/amulets/for-pairs.png"], btnSrc: "/amulets/for-pairs-button.png", label: "Для\nпар" }
+    { images: ["/amulets/for-man1.webp", "/amulets/for-man2.webp"], btnSrc: "/amulets/for-man1-button.webp", label: "Для\nмужчин" },
+    { images: ["/amulets/for-woman1.webp", "/amulets/for-woman2.webp"], btnSrc: "/amulets/for-woman1-button.webp", label: "Для\nженщин" },
+    { images: ["/amulets/for-pairs.webp", "/amulets/for-pairs.webp"], btnSrc: "/amulets/for-pairs-button.webp", label: "Для\nпар" }
 ];
 
 // ─── Arrow button ─────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ function FarSlot({ item, fadeDir, isBlurred = false }: { item: CarouselItem; fad
             className="relative flex-shrink-0 rounded-[2rem] overflow-hidden drop-shadow-2xl transition-[filter] duration-700 ease-in-out"
             style={{ maskImage: maskVal, WebkitMaskImage: maskVal, aspectRatio: "11/16", filter: currentFilter, height: "81%" }}
         >
-            <Image src={item.src} alt={item.alt} fill sizes="26vw" className="object-contain" />
+            <Image src={item.src} alt={item.alt} fill sizes="26vw" className="object-contain"  unoptimized />
         </div>
     );
 }
@@ -68,7 +68,7 @@ function NearSlot({ item, isBlurred = false }: { item: CarouselItem; isBlurred?:
             className="relative flex-shrink-0 rounded-[2rem] overflow-hidden drop-shadow-2xl transition-[filter] duration-700 ease-in-out"
             style={{ height: "90%", aspectRatio: "11/16", filter: currentFilter }}
         >
-            <Image src={item.src} alt={item.alt} fill sizes="29vw" className="object-contain" />
+            <Image src={item.src} alt={item.alt} fill sizes="29vw" className="object-contain"  unoptimized />
         </div>
     );
 }
@@ -87,11 +87,11 @@ function SequenceSpotlight({ flipped, images, rounded = true }: { flipped: boole
                 }}
             >
                 <div className="relative h-full w-auto backface-hidden" style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}>
-                    <Image src={images[0]} alt="Sequence Part 1" width={1024} height={1489} quality={90} sizes="(max-width: 1024px) 100vw, 32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority />
+                    <Image src={images[0]} alt="Sequence Part 1" width={1024} height={1489} quality={90} sizes="(max-width: 1024px) 100vw, 32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority  unoptimized />
                 </div>
                 {hasBack && (
                     <div className="absolute inset-0 backface-hidden flex items-center justify-center" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-                        <Image src={images[1]} alt="Sequence Part 2" width={1024} height={1489} quality={90} sizes="(max-width: 1024px) 100vw, 32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority />
+                        <Image src={images[1]} alt="Sequence Part 2" width={1024} height={1489} quality={90} sizes="(max-width: 1024px) 100vw, 32vw" className={`h-full w-auto object-contain ${rounded ? 'rounded-[2rem]' : ''}`} priority  unoptimized />
                     </div>
                 )}
             </div>
@@ -274,14 +274,14 @@ function AmuletsDesktopCarousel() {
             content = (
                 <div className="relative flex h-full items-center justify-center">
                     <Image
-                        src="/amulets/8.png"
+                        src="/amulets/8.webp"
                         alt="Amulet 8"
                         width={500}
                         height={800}
                         sizes="32vw"
                         className="h-full w-auto object-contain rounded-[2rem]"
                         priority
-                    />
+                     unoptimized />
                 </div>
             );
         } else if (activeSeq !== null) {
@@ -297,7 +297,7 @@ function AmuletsDesktopCarousel() {
                         sizes="32vw"
                         className="h-full w-auto object-contain rounded-[2rem]"
                         priority
-                    />
+                     unoptimized />
                 </div>
             );
         }
@@ -315,24 +315,24 @@ function AmuletsDesktopCarousel() {
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
                            ${isOrderMenuOpen ? 'mt-[calc(-42.5px-170px)] ml-[-42.5px] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`}>
-                            <Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-cover" />
+                            <Image src="/Telegram_logo.svg.webp" alt="TG" fill className="object-cover"  unoptimized />
                         </a>
                         <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
                            ${isOrderMenuOpen ? 'mt-[calc(-42.5px-120px)] ml-[calc(-42.5px+120px)] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
-                            <Image src="/Instagram_icon.png" alt="IG" fill className="object-cover" />
+                            <Image src="/Instagram_icon.webp" alt="IG" fill className="object-cover"  unoptimized />
                         </a>
                         <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] overflow-hidden w-[85px] h-[85px] 
                            ${isOrderMenuOpen ? 'mt-[-42.5px] ml-[calc(-42.5px+170px)] opacity-100 scale-100 hover:scale-110 mini-btn-wrapper' : 'mt-[-42.5px] ml-[-42.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
-                            <Image src="/vk-logo.png" alt="VK" fill className="object-cover" />
+                            <Image src="/vk-logo.webp" alt="VK" fill className="object-cover"  unoptimized />
                         </a>
                         <button onClick={(e) => { e.stopPropagation(); setShowEighthSprite(prev => !prev); }}
                             className={`pointer-events-auto absolute left-1/2 top-1/2 transition-all duration-500 ease-in-out group flex items-center justify-center rounded-full border-[2px] ${showEighthSprite ? 'border-[rgba(255,36,0,0.8)] drop-shadow-[0_0_15px_rgba(255,36,0,0.6)]' : 'border-white/40 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]'} overflow-hidden w-[119px] h-[119px] 
                            ${isOrderMenuOpen ? `mt-[calc(-59.5px+204px)] ml-[-59.5px] opacity-100 scale-100 ${showEighthSprite ? '' : 'hover:scale-110'}` : 'mt-[-59.5px] ml-[-59.5px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '150ms' }}>
-                            <Image src="/amulets/8-button.png" alt="8" fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <Image src="/amulets/8-button.webp" alt="8" fill className="object-cover transition-transform duration-700 group-hover:scale-110"  unoptimized />
                             <div className={`absolute inset-0 transition-colors duration-300 z-10 ${showEighthSprite ? 'bg-black/10' : 'bg-black/40 group-hover:bg-black/20'}`} />
                             <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[20px] xl:text-[25px] tracking-wide text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 whitespace-nowrap">
                                 В ПОДАРОК
@@ -351,7 +351,7 @@ function AmuletsDesktopCarousel() {
                                 }
                             }}
                         >
-                            <Image src="/amulets/1-button.png" alt="Заказать" fill sizes="170px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <Image src="/amulets/1-button.webp" alt="Заказать" fill sizes="170px" className="object-cover transition-transform duration-700 group-hover:scale-110"  unoptimized />
                             <div className={`absolute inset-0 transition-colors duration-300 z-10 ${isOrderMenuOpen ? 'bg-black/10' : 'bg-black/40 group-hover:bg-black/20'}`} />
                             <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[25px] xl:text-[31px] tracking-wide text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-nowrap">
                                 {isOrderMenuOpen ? 'НАПИШИ МНЕ' : 'ЗАКАЗАТЬ'}
@@ -440,7 +440,7 @@ function AmuletsDesktopCarousel() {
                                     ${isActive ? 'border-[rgba(255,36,0,0.8)] drop-shadow-[0_0_15px_rgba(255,36,0,0.6)]' : 'border-white/40'} 
                                     drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] group transition-all duration-300`}
                                 >
-                                    <Image src={seq.btnSrc} alt={seq.label} fill sizes="170px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                                    <Image src={seq.btnSrc} alt={seq.label} fill sizes="170px" className="object-cover transition-transform duration-700 group-hover:scale-110"  unoptimized />
                                     <div className={`absolute inset-0 transition-colors duration-300 z-10 ${isActive ? 'bg-black/10' : 'bg-black/50 group-hover:bg-black/30'}`} />
                                     <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[20px] xl:text-[25px] tracking-wide text-center leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] px-2 whitespace-pre-line">
                                         {seq.label.toUpperCase()}
@@ -622,7 +622,7 @@ function AmuletsMobileCarousel() {
         if (showEighthSprite) {
             return (
                 <div className="relative flex h-full items-center justify-center">
-                    <Image src="/amulets/8.png" alt="Amulet 8" width={1024} height={1489} sizes="100vw" quality={90} className="h-full w-auto object-contain" priority />
+                    <Image src="/amulets/8.webp" alt="Amulet 8" width={1024} height={1489} sizes="100vw" quality={90} className="h-full w-auto object-contain" priority  unoptimized />
                 </div>
             );
         }
@@ -631,7 +631,7 @@ function AmuletsMobileCarousel() {
         }
         return (
             <div className="relative flex h-full items-center justify-center">
-                <Image src={items[idx].src} alt={items[idx].alt} width={1024} height={1489} sizes="100vw" quality={90} className="h-full w-auto object-contain" priority />
+                <Image src={items[idx].src} alt={items[idx].alt} width={1024} height={1489} sizes="100vw" quality={90} className="h-full w-auto object-contain" priority  unoptimized />
             </div>
         );
     };
@@ -719,7 +719,7 @@ function AmuletsMobileCarousel() {
                         }}
                     >
                         <div className="relative w-full h-full aspect-[11/16]">
-                            <Image src={items[mod(idx + (animationDirection === "next" ? 1 : -1), n)].src} alt="Next/Prev" fill quality={90} className="object-contain drop-shadow-2xl" />
+                            <Image src={items[mod(idx + (animationDirection === "next" ? 1 : -1), n)].src} alt="Next/Prev" fill quality={90} className="object-contain drop-shadow-2xl"  unoptimized />
                         </div>
                     </div>
                 )}
@@ -745,17 +745,17 @@ function AmuletsMobileCarousel() {
                         <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
                             ${isOrderMenuOpen ? 'top-[-5px] right-[105px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`}>
-                            <Image src="/vk-logo.png" alt="VK" fill className="object-cover" />
+                            <Image src="/vk-logo.webp" alt="VK" fill className="object-cover"  unoptimized />
                         </a>
                         <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
                             ${isOrderMenuOpen ? 'top-[27px] right-[114px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '50ms' }}>
-                            <Image src="/Instagram_icon.png" alt="IG" fill className="object-cover" />
+                            <Image src="/Instagram_icon.webp" alt="IG" fill className="object-cover"  unoptimized />
                         </a>
                         <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border border-white/40 drop-shadow-md overflow-hidden w-[40px] h-[40px] mini-btn-wrapper
                             ${isOrderMenuOpen ? 'top-[62px] right-[102px] opacity-100 scale-100' : 'top-[22px] right-[22px] opacity-0 scale-50 pointer-events-none'}`} style={{ transitionDelay: '100ms' }}>
-                            <Image src="/Telegram_logo.svg.png" alt="TG" fill className="object-cover" />
+                            <Image src="/Telegram_logo.svg.webp" alt="TG" fill className="object-cover"  unoptimized />
                         </a>
 
                         {/* Gift Button below socials - Strictly centered under mother */}
@@ -763,7 +763,7 @@ function AmuletsMobileCarousel() {
                             className={`pointer-events-auto absolute transition-all duration-500 ease-in-out flex items-center justify-center rounded-full border-2 ${showEighthSprite ? 'border-[rgba(255,36,0,0.8)] shadow-[0_0_10px_rgba(255,36,0,0.5)]' : 'border-white/40'} overflow-hidden w-[65px] h-[65px]
                             ${isOrderMenuOpen ? 'top-[160px] left-1/2 opacity-100 scale-100' : 'top-[10px] left-1/2 opacity-0 scale-50 pointer-events-none'}`}
                             style={{ transform: 'translateX(-50%)', transitionDelay: '150ms' }}>
-                            <Image src="/amulets/8-button.png" alt="8" fill className="object-cover" />
+                            <Image src="/amulets/8-button.webp" alt="8" fill className="object-cover"  unoptimized />
                             <div className={`absolute inset-0 z-10 ${showEighthSprite ? 'bg-black/10' : 'bg-black/40'}`} />
                             <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[10px] leading-tight text-center drop-shadow-md px-1 uppercase">В подарок</span>
                         </button>
@@ -778,7 +778,7 @@ function AmuletsMobileCarousel() {
                                 setIsOrderMenuOpen(!isOrderMenuOpen);
                             }}
                         >
-                            <Image src="/amulets/1-button.png" alt="Заказать" fill className="object-cover" />
+                            <Image src="/amulets/1-button.webp" alt="Заказать" fill className="object-cover"  unoptimized />
                             <div className={`absolute inset-0 z-10 ${isOrderMenuOpen ? 'bg-black/10' : 'bg-black/40'}`} />
                             <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[13px] leading-tight text-center drop-shadow-md uppercase">
                                 {isOrderMenuOpen ? 'Напиши мне' : 'Заказать'}
@@ -799,7 +799,7 @@ function AmuletsMobileCarousel() {
                                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleStartSequence(i); }}
                                     className={`relative w-full h-full flex items-center justify-center rounded-full border-2 ${isActive ? 'border-[rgba(255,36,0,0.8)] shadow-[0_0_10px_rgba(255,36,0,0.5)]' : 'border-white/40'} overflow-hidden transition-all duration-300 drop-shadow-lg`}
                                 >
-                                    <Image src={seq.btnSrc} alt={seq.label} fill className="object-cover" />
+                                    <Image src={seq.btnSrc} alt={seq.label} fill className="object-cover"  unoptimized />
                                     <div className={`absolute inset-0 z-10 ${isActive ? 'bg-black/10' : 'bg-black/50'}`} />
                                     <span style={{ fontFamily: "Fontatica4F" }} className="relative z-20 text-white text-[13px] leading-tight text-center drop-shadow-md px-1 whitespace-pre-line uppercase">
                                         {seq.label}

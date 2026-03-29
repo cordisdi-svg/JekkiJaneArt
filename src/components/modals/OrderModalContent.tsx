@@ -2,9 +2,9 @@ import Image from "next/image";
 import { useState } from "react";
 
 const links = [
-  { icon: "/Telegram_logo.svg.png", href: "http://t.me/zzzhekichannnn", label: "Telegram" },
-  { icon: "/Instagram_icon.png", href: "https://www.instagram.com/jekki.jane.art/", label: "Instagram" },
-  { icon: "/vk-logo.png", href: "https://vk.ru/id437361077", label: "VK" }
+  { icon: "/Telegram_logo.svg.webp", href: "http://t.me/zzzhekichannnn", label: "Telegram" },
+  { icon: "/Instagram_icon.webp", href: "https://www.instagram.com/jekki.jane.art/", label: "Instagram" },
+  { icon: "/vk-logo.webp", href: "https://vk.ru/id437361077", label: "VK" }
 ];
 
 function CopyButton({ textToCopy }: { textToCopy: string }) {
@@ -66,7 +66,7 @@ export function OrderModalContent() {
             aria-label={link.label}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/20 backdrop-blur-sm transition-colors hover:bg-black/30"
           >
-            <Image src={link.icon} alt="" width={28} height={28} />
+            <Image src={link.icon} alt="" width={28} height={28}  unoptimized />
           </a>
         ))}
       </div>

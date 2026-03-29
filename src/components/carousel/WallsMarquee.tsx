@@ -5,11 +5,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 const wallsImages = [
-    { src: '/walls/1.png', alt: 'Роспись 1' },
-    { src: '/walls/2.png', alt: 'Роспись 2' },
-    { src: '/walls/3.png', alt: 'Роспись 3' },
-    { src: '/walls/4.png', alt: 'Роспись 4' },
-    { src: '/walls/5.jpg', alt: 'Роспись 5' },
+    { src: '/walls/1.webp', alt: 'Роспись 1' },
+    { src: '/walls/2.webp', alt: 'Роспись 2' },
+    { src: '/walls/3.webp', alt: 'Роспись 3' },
+    { src: '/walls/4.webp', alt: 'Роспись 4' },
+    { src: '/walls/5.webp', alt: 'Роспись 5' },
 ];
 
 export function WallsMarquee({ children }: { children?: React.ReactNode }) {
@@ -331,7 +331,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                                     className="object-cover"
                                     priority
                                     draggable={false}
-                                />
+                                 unoptimized />
                             </div>
                         ))}
                     </div>
@@ -351,7 +351,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                                     className="object-cover"
                                     priority
                                     draggable={false}
-                                />
+                                 unoptimized />
                             </div>
                         ))}
                     </div>

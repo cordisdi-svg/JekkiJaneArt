@@ -10,12 +10,12 @@ const picsToOrderImages = [
     { src: "/picstoorder/pic3.JPG", alt: "Картина 3" },
     { src: "/picstoorder/pic4.JPG", alt: "Картина 4" },
     { src: "/picstoorder/pic5.JPG", alt: "Картина 5" },
-    { src: "/picstoorder/pic6.png", alt: "Картина 6" },
+    { src: "/picstoorder/pic6.PNG", alt: "Картина 6" },
     { src: "/picstoorder/pic7.JPG", alt: "Картина 7" },
     { src: "/picstoorder/pic8.JPG", alt: "Картина 8" },
     { src: "/picstoorder/pic9.JPG", alt: "Картина 9" },
     { src: "/picstoorder/pic10.JPG", alt: "Картина 10" },
-    { src: "/picstoorder/pic11.png", alt: "Картина 11" },
+    { src: "/picstoorder/pic11.PNG", alt: "Картина 11" },
 ];
 
 export function PicsToOrderMarquee({ children }: { children?: React.ReactNode }) {
@@ -342,4 +342,3 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         </div>
     );
 }
-

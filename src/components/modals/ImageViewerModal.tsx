@@ -18,7 +18,7 @@ export function ImageViewerModal({ src, alt, onClose }: { src: string; alt: stri
         </button>
         <div className="grid h-[92vh] w-full max-w-6xl grid-cols-1 gap-3 rounded-xl bg-black/30 p-3 lg:grid-cols-[2fr_1fr]" style={{ fontFamily: "'Comfortaa', sans-serif" }}>
           <div className="relative">
-            <Image src={src} alt={alt} fill className="object-contain" />
+            <Image src={src} alt={alt} fill className="object-contain"  unoptimized />
           </div>
           <div className="rounded-xl border border-white/10 bg-black/25 backdrop-blur-md p-4 text-sm text-white/95 leading-relaxed">Панель с описанием и видео будет добавлена позже.</div>
         </div>

@@ -12,19 +12,19 @@ function OrderButton({ isMobile }: { isMobile: boolean }) {
                     onClick={(e) => e.stopPropagation()}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
                 >
-                    <Image src="/Telegram_logo.svg.png" alt="TG" width={22} height={22} className="object-contain" />
+                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={22} height={22} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
                 >
-                    <Image src="/Instagram_icon.png" alt="IG" width={20} height={20} className="object-contain" />
+                    <Image src="/Instagram_icon.webp" alt="IG" width={20} height={20} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
                 >
-                    <Image src="/vk-logo.png" alt="VK" width={22} height={22} className="object-contain" />
+                    <Image src="/vk-logo.webp" alt="VK" width={22} height={22} className="object-contain"  unoptimized />
                 </a>
             </div>
 
@@ -62,7 +62,7 @@ export function CertificatesModalContent() {
                 <OrderButton isMobile={false} />
             </div>
 
-            <Image src="/sertificates/1.png" alt="Подарочный сертификат" width={520} height={520} className="h-auto w-full rounded-lg" />
+            <Image src="/sertificates/1.webp" alt="Подарочный сертификат" width={520} height={520} className="h-auto w-full rounded-lg"  unoptimized />
         </div>
     );
 }
