@@ -694,21 +694,22 @@ export function ExpandedOverlay({
                     className="w-full relative flex-1 flex flex-col font-comfortaa text-white/90 overflow-y-auto custom-scrollbar"
                     style={{ touchAction: "none", overscrollBehavior: "contain" }}
                 >
-                    <div className="shrink-0 p-5 pb-0 md:p-8 md:pb-0">
+                    <div className="shrink-0 order-1 p-5 pb-0 md:p-8 md:pb-2">
                         <h2 className="text-center text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-wide text-white drop-shadow-md">{item.title}</h2>
                     </div>
 
-                    {/* Характеристики (перемещены выше и лишились подблока) */}
-                    <div className="shrink-0 px-5 md:px-8 mt-2 flex flex-col gap-1.5 opacity-90">
+                    {/* Характеристики (мобила: сверху плоско, десктоп: снизу в боксе) */}
+                    <div className="shrink-0 order-2 md:order-3 mt-2 md:mt-6 mb-2 md:mb-8 mx-0 md:mx-8 px-5 md:px-6 py-0 md:py-5 md:bg-black/20 md:backdrop-blur-sm md:rounded-2xl md:border md:border-white/10 md:shadow-inner flex flex-col gap-1.5 opacity-90 xl:mb-12">
                         <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Архетип:</span> <span className="font-medium">{item.description.archetype}</span></p>
                         <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Энергия:</span> <span className="font-medium">{item.description.energy}</span></p>
                         <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Подходит тем кто:</span> {item.description.target}</p>
                         <p className="font-light text-[14px] md:text-[15px]"><span className="font-bold text-[#E91E63]">Атмосфера:</span> {item.description.atmosphere}</p>
                     </div>
 
-                    <div className="px-5 md:px-8 mt-4 flex flex-col gap-3">
+                    {/* Текстовое описание */}
+                    <div className="order-3 md:order-2 px-5 md:px-8 mt-4 md:mt-2 flex flex-col gap-3 pb-6 md:pb-0">
                         {item.description.body.map((para, i) => (
-                            <p key={i} className="font-light text-[15px] md:text-base lg:text-lg leading-relaxed text-balance">
+                            <p key={i} className="font-light text-[15px] md:text-base lg:text-[17px] leading-relaxed text-balance">
                                 {para}
                             </p>
                         ))}
