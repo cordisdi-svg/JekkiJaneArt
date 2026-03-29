@@ -37,7 +37,7 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
   return (
     <ModalContext.Provider value={value}>
       {children}
-      <BaseModal isOpen={Boolean(activeModal)} onClose={value.closeModal}>
+      <BaseModal isOpen={Boolean(activeModal)} onClose={value.closeModal} modalType={activeModal || undefined}>
         {activeModal ? modalContent[activeModal] : null}
       </BaseModal>
     </ModalContext.Provider>

@@ -12,7 +12,19 @@ function CopyButton({ textToCopy }: { textToCopy: string }) {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      if (typeof navigator !== "undefined" && navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try { document.execCommand('copy'); } catch {}
+        textArea.remove();
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (e) { }
@@ -22,7 +34,7 @@ function CopyButton({ textToCopy }: { textToCopy: string }) {
     <button
       onClick={handleCopy}
       title="Копировать"
-      className="ml-2 flex flex-shrink-0 items-center justify-center h-[26px] w-[26px] rounded bg-transparent hover:bg-white/10 transition-colors"
+      className="ml-2 flex flex-shrink-0 items-center justify-center h-[26px] w-[26px] rounded bg-transparent active:bg-white/10 active:scale-95 lg:hover:bg-white/10 transition-all pointer-events-auto"
       aria-label="Копировать"
     >
       {copied ? (
@@ -64,7 +76,7 @@ export function OrderModalContent() {
             target="_blank"
             rel="noreferrer"
             aria-label={link.label}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/20 backdrop-blur-sm transition-colors hover:bg-black/30"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/20 backdrop-blur-sm transition-all active:bg-black/40 active:scale-95 lg:hover:bg-black/30"
           >
             <Image src={link.icon} alt="" width={28} height={28}  unoptimized />
           </a>
