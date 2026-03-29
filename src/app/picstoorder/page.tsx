@@ -94,30 +94,24 @@ function OrderButton({ isMobile }: { isMobile: boolean }) {
             <div className={`absolute bottom-[calc(100%+12px)] transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"} ${isMobile ? 'left-1/2 -translate-x-1/2 flex gap-3' : 'left-0 right-0 flex justify-evenly'}`}>
                 <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className={`relative isolate flex items-center justify-center rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}
-                               before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md before:bg-black/20
-                               before:transition-opacity before:duration-[1500ms] before:-z-10 before:pointer-events-none
-                               ${isMenuOpen ? 'before:opacity-100' : 'before:opacity-0'}`}
+                    className={`relative block rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="object-contain"  unoptimized />
+                    <div className={`absolute inset-0 rounded-full bg-black/20 backdrop-blur-md transition-opacity duration-[1000ms] pointer-events-none -z-10 ${isMenuOpen ? 'opacity-100 delay-[500ms]' : 'opacity-0 delay-0'}`} />
+                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-contain"  unoptimized />
                 </a>
                 <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className={`relative isolate flex items-center justify-center rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}
-                               before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md before:bg-black/20
-                               before:transition-opacity before:duration-[1500ms] before:-z-10 before:pointer-events-none
-                               ${isMenuOpen ? 'before:opacity-100' : 'before:opacity-0'}`}
+                    className={`relative block rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/Instagram_icon.webp" alt="IG" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="object-contain"  unoptimized />
+                    <div className={`absolute inset-0 rounded-full bg-black/20 backdrop-blur-md transition-opacity duration-[1000ms] pointer-events-none -z-10 ${isMenuOpen ? 'opacity-100 delay-[500ms]' : 'opacity-0 delay-0'}`} />
+                    <Image src="/Instagram_icon.webp" alt="IG" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-contain"  unoptimized />
                 </a>
                 <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className={`relative isolate flex items-center justify-center rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}
-                               before:absolute before:inset-0 before:rounded-full before:backdrop-blur-md before:bg-black/20
-                               before:transition-opacity before:duration-[1500ms] before:-z-10 before:pointer-events-none
-                               ${isMenuOpen ? 'before:opacity-100' : 'before:opacity-0'}`}
+                    className={`relative block rounded-full border border-white/30 transition-transform hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/vk-logo.webp" alt="VK" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="object-contain"  unoptimized />
+                    <div className={`absolute inset-0 rounded-full bg-black/20 backdrop-blur-md transition-opacity duration-[1000ms] pointer-events-none -z-10 ${isMenuOpen ? 'opacity-100 delay-[500ms]' : 'opacity-0 delay-0'}`} />
+                    <Image src="/vk-logo.webp" alt="VK" width={isMobile ? 24 : 32} height={isMobile ? 24 : 32} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-contain"  unoptimized />
                 </a>
             </div>
 
