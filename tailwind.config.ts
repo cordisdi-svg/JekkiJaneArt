@@ -20,11 +20,9 @@ const config: Config = {
         abibas: ['Abibas', 'sans-serif'],
         fontatica: ['Fontatica4F', 'sans-serif'],
         negrita: ['NegritaPro', 'sans-serif'],
-        froh: ['FROH', 'sans-serif'],
         ravenholm: ['RavenholmBold', 'sans-serif'],
         comfortaa: ['Comfortaa', 'sans-serif'],
         'comfortaa-light': ['Comfortaa-Light', 'sans-serif'],
-        nunito: ['Nunito', 'sans-serif'],
       },
       keyframes: {
         'bg-scale': {

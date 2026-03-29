@@ -15,7 +15,7 @@ export type PaintingData = {
 export const availablePics: PaintingData[] = [
   {
     id: "pic1",
-    src: "/availablepics/pic1.png",
+    src: "/availablepics/pic1.webp",
     alt: "Девочка с котиком",
     title: "Девочка с котиком",
     description: {
@@ -31,7 +31,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic2",
-    src: "/availablepics/pic2.JPEG",
+    src: "/availablepics/pic2.webp",
     alt: "Единорог",
     title: "Единорог",
     description: {
@@ -47,7 +47,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic3",
-    src: "/availablepics/pic3.png",
+    src: "/availablepics/pic3.webp",
     alt: "Руки Микеланджело",
     title: "Руки Микеланджело",
     description: {
@@ -63,7 +63,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic4",
-    src: "/availablepics/pic4.png",
+    src: "/availablepics/pic4.webp",
     alt: "Джокер",
     title: "Джокер",
     description: {
@@ -79,7 +79,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic5",
-    src: "/availablepics/pic5.JPEG",
+    src: "/availablepics/pic5.webp",
     alt: "Харли",
     title: "Харли",
     description: {
@@ -95,7 +95,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic6",
-    src: "/availablepics/pic6.png",
+    src: "/availablepics/pic6.webp",
     alt: "Небесный кит",
     title: "Небесный кит",
     description: {
@@ -111,7 +111,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic8",
-    src: "/availablepics/pic8.png",
+    src: "/availablepics/pic8.webp",
     alt: "Морской закат",
     title: "Морской закат",
     description: {
@@ -127,7 +127,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic10",
-    src: "/availablepics/pic10.png",
+    src: "/availablepics/pic10.webp",
     alt: "Ангел V&S",
     title: "Ангел V&S",
     description: {
@@ -143,7 +143,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic11",
-    src: "/availablepics/pic11.JPEG",
+    src: "/availablepics/pic11.webp",
     alt: "Королева сердца",
     title: "Королева сердца",
     description: {
@@ -159,7 +159,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic12",
-    src: "/availablepics/pic12.JPEG",
+    src: "/availablepics/pic12.webp",
     alt: "Королева",
     title: "Королева",
     description: {
@@ -175,7 +175,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic13",
-    src: "/availablepics/pic13.png",
+    src: "/availablepics/pic13.webp",
     alt: "Любовь лягушек",
     title: "Любовь лягушек",
     description: {
@@ -191,7 +191,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic14",
-    src: "/availablepics/pic14.png",
+    src: "/availablepics/pic14.webp",
     alt: "Купидон",
     title: "Купидон",
     description: {
@@ -207,7 +207,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic15",
-    src: "/availablepics/pic15.png",
+    src: "/availablepics/pic15.webp",
     alt: "Аниме парочка",
     title: "Аниме парочка",
     description: {
@@ -223,7 +223,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic16",
-    src: "/availablepics/pic16.png",
+    src: "/availablepics/pic16.webp",
     alt: "Розовый закат",
     title: "Розовый закат",
     description: {
@@ -239,7 +239,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic17",
-    src: "/availablepics/pic17.png",
+    src: "/availablepics/pic17.webp",
     alt: "Мудрость Будды",
     title: "Мудрость Будды",
     description: {
@@ -255,7 +255,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic18",
-    src: "/availablepics/pic18.png",
+    src: "/availablepics/pic18.webp",
     alt: "Спокойствие Будды",
     title: "Спокойствие Будды",
     description: {
@@ -271,7 +271,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic19",
-    src: "/availablepics/pic19.png",
+    src: "/availablepics/pic19.webp",
     alt: "Влюблённые",
     title: "Влюблённые",
     description: {
@@ -287,7 +287,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic20",
-    src: "/availablepics/pic20.png",
+    src: "/availablepics/pic20.webp",
     alt: "Котик из Pinterest",
     title: "«Котик из Pinterest»",
     description: {
@@ -303,7 +303,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic21",
-    src: "/availablepics/pic21.png",
+    src: "/availablepics/pic21.webp",
     alt: "Давид",
     title: "Давид",
     description: {
@@ -319,7 +319,7 @@ export const availablePics: PaintingData[] = [
   },
   {
     id: "pic22",
-    src: "/availablepics/pic22.png",
+    src: "/availablepics/pic22.webp",
     alt: "Пальмы на закате",
     title: "Пальмы на закате",
     description: {
