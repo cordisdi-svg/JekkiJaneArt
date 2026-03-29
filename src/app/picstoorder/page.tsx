@@ -6,54 +6,7 @@ import { PageBackground } from "@/components/layout/PageBackground";
 import { PicsToOrderMarquee } from "@/components/carousel/PicsToOrderMarquee";
 
 // ─── data ──────────────────────────────────────────────────────────────────
-const BUTTONS = [
-    {
-        id: "order",
-        label: "Что вы можете заказать?",
-        text: `– интерьерную картину
-– портрет
-– копию понравившейся работы
-– авторскую композицию с нуля
-– картину под стиль бренда / заведения
-– серию картин для пространства
-– или что-то другое — спросите!`,
-    },
-    {
-        id: "process",
-        label: "Как проходит работа?",
-        text: `– Обсуждение запроса (идея, стиль, размеры, цветовая палитра)
-– Подбор референсов и визуальной концепции
-– Утверждение композиции
-– Процесс создания
-– Финальные правки (при необходимости)
-– Передача работы заказчику`,
-    },
-    {
-        id: "price",
-        label: "Стоимость и сроки",
-        text: `– 20×20 см — от 3 000 руб
-– 30×30 см — от 7 000 руб
-– 50×70 см — от 15 000 руб
-– 70×100 см — от 25 000 руб
-– 120×200 см — от 35 000 руб
-– Индивидуальный размер — по запросу
-
-Стоимость зависит от:
-— сложности работы
-— количества деталей
-— сроков
-— используемых материалов
-
-Срок выполнения: от 3 дней`,
-    },
-    {
-        id: "sizes",
-        label: "Шпаргалка по размерам",
-        text: null,
-    },
-] as const;
-
-type ButtonId = (typeof BUTTONS)[number]["id"];
+import { BUTTONS, type ButtonId } from "@/data/picsToOrderButtons";
 
 // Nav color (matches BottomNavigation)
 const NAV_BG = "rgba(30,22,40,0.82)";
@@ -138,24 +91,24 @@ function OrderButton({ isMobile }: { isMobile: boolean }) {
     return (
         <div className="relative w-full">
             {/* Social Buttons Layer */}
-            <div className={`absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 flex gap-3 transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"}`}>
+            <div className={`absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 flex ${isMobile ? 'gap-3' : 'gap-4'} transition-all duration-500 ease-out origin-bottom ${isMenuOpen ? "opacity-100 scale-100 translate-y-0 z-50 pointer-events-auto" : "opacity-0 scale-50 translate-y-4 z-[-1] pointer-events-none"}`}>
                 <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={22} height={22} className="object-contain"  unoptimized />
+                    <Image src="/Telegram_logo.svg.webp" alt="TG" width={isMobile ? 22 : 30} height={isMobile ? 22 : 30} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/Instagram_icon.webp" alt="IG" width={20} height={20} className="object-contain"  unoptimized />
+                    <Image src="/Instagram_icon.webp" alt="IG" width={isMobile ? 20 : 28} height={isMobile ? 20 : 28} className="object-contain"  unoptimized />
                 </a>
                 <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95 ${isMobile ? 'h-10 w-10' : 'h-14 w-14'}`}
                 >
-                    <Image src="/vk-logo.webp" alt="VK" width={22} height={22} className="object-contain"  unoptimized />
+                    <Image src="/vk-logo.webp" alt="VK" width={isMobile ? 22 : 30} height={isMobile ? 22 : 30} className="object-contain"  unoptimized />
                 </a>
             </div>
 
@@ -281,15 +234,6 @@ export default function PicsToOrderPage() {
     return (
         <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
             {showSizes && <SizesLightbox onClose={() => setShowSizes(false)} />}
-
-            {/* Google Font already loaded in layout.tsx via Playfair Display */}
-            <style>{`
-        @keyframes pto-pulse {
-          0%   { transform: scale(0.93); }
-          50%  { transform: scale(1.00); }
-          100% { transform: scale(0.93); }
-        }
-      `}</style>
 
             <div className="relative flex h-svh w-full flex-col overflow-hidden">
 

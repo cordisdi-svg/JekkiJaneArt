@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { TattooCarousel } from "@/components/carousel/TattooCarousel";
+
+export const metadata: Metadata = {
+  title: "Татуировка | JekkiJaneArt",
+  description: "Портфолио татуировок от JekkiJane. Индивидуальные эскизы и работы.",
+};
 
 export default function TattooPage() {
   return (

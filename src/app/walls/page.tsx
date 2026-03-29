@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { WallsMarquee } from "@/components/carousel/WallsMarquee";
+
+export const metadata: Metadata = {
+  title: "Роспись Стен | JekkiJaneArt",
+  description: "Художественная роспись стен и интерьера для квартир, кафе и студий от JekkiJane.",
+};
 
 export default function WallsPage() {
   return (

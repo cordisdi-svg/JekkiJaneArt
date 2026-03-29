@@ -74,8 +74,7 @@ function TypewriterBox({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AboutPage() {
   return (
-    <PageBackground backgroundSrc="/about/back.png">
-      <style>{`@keyframes blink { 50% { opacity: 0; } }`}</style>
+    <PageBackground backgroundSrc="/back-blur.webp">
 
       {/* ══════════════════ DESKTOP ══════════════════ */}
       <div
@@ -210,7 +209,7 @@ export default function AboutPage() {
                   objectPosition: "top",
                   display: "block",
                 }}
-              />
+               unoptimized />
             </div>
 
             {/* Box 3: typewriter, narrower, IndiKazka */}
@@ -257,7 +256,7 @@ export default function AboutPage() {
               fill
               priority
               style={{ objectFit: "cover", objectPosition: "top center" }}
-            />
+             unoptimized />
           </div>
         </div>
       </div>
@@ -386,7 +385,7 @@ export default function AboutPage() {
               fill
               priority
               style={{ objectFit: "cover", objectPosition: "top center" }}
-            />
+             unoptimized />
           </div>
         </div>
       </div>

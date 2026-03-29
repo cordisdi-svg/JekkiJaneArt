@@ -94,36 +94,6 @@ export function BottomNavigation() {
       }}
       aria-label="Bottom navigation"
     >
-      <style>{`
-        @keyframes slow-shine {
-          0%, 42.8% { transform: translateX(-300%) skewX(-25deg); }
-          100% { transform: translateX(400%) skewX(-25deg); }
-        }
-        .btn-shine-layer {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 50%;
-          background: linear-gradient(90deg, rgba(255,36,0,0), rgba(255,36,0,0.5), rgba(255,36,0,0));
-          animation: slow-shine 7s linear infinite;
-          pointer-events: none;
-        }
-        @keyframes arrow-move-left {
-          0%, 100% { transform: translateX(-6px); }
-          50% { transform: translateX(6px); }
-        }
-        @keyframes arrow-move-right {
-          0%, 100% { transform: translateX(6px); }
-          50% { transform: translateX(-6px); }
-        }
-        .arrow-anim-left {
-          animation: arrow-move-left 4s ease-in-out infinite;
-        }
-        .arrow-anim-right {
-          animation: arrow-move-right 4s ease-in-out infinite;
-        }
-      `}</style>
-
       <div className="hidden h-[var(--nav-height-desktop)] w-full lg:flex">
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
           <Triangle direction="left" className="arrow-anim-left" />

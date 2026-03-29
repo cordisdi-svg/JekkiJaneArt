@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { PaintingsCarousel } from "@/components/carousel/PaintingsCarousel";
+
+export const metadata: Metadata = {
+  title: "В наличии | JekkiJaneArt",
+  description: "Картины, находящиеся в наличии. Посмотрите работы, готовые к отправке.",
+};
 
 export default function AvailablePage() {
   return (

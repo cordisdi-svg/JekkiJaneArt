@@ -48,9 +48,8 @@
 
 
 
-/* Comfortaa */
 @font-face {
-  font-family: 'Comfortaa';
+  font-family: 'Comfortaa-Light';
   src: url('/fonts/Comfortaa/Comfortaa-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
@@ -172,4 +171,48 @@ picture {
   -webkit-user-select: none;
   pointer-events: none;
   /* Only for the pixel image itself */
+}
+
+/* ─── Global Animations ─── */
+@keyframes blink { 
+  50% { opacity: 0; } 
+}
+
+@keyframes pto-pulse {
+  0%   { transform: scale(0.93); }
+  50%  { transform: scale(1.00); }
+  100% { transform: scale(0.93); }
+}
+
+@keyframes slow-shine {
+  0%, 42.8% { transform: translateX(-300%) skewX(-25deg); }
+  100% { transform: translateX(400%) skewX(-25deg); }
+}
+
+.btn-shine-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, rgba(255,36,0,0), rgba(255,36,0,0.5), rgba(255,36,0,0));
+  animation: slow-shine 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes arrow-move-left {
+  0%, 100% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes arrow-move-right {
+  0%, 100% { transform: translateX(6px); }
+  50% { transform: translateX(-6px); }
+}
+
+.arrow-anim-left {
+  animation: arrow-move-left 4s ease-in-out infinite;
+}
+
+.arrow-anim-right {
+  animation: arrow-move-right 4s ease-in-out infinite;
 }

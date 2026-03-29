@@ -194,7 +194,7 @@ export function WearMarquee() {
                     className="object-cover"
                     sizes="100vw"
                     priority
-                 />
+                  unoptimized />
             </button>
         );
     }
@@ -224,7 +224,7 @@ export function WearMarquee() {
                             className="object-cover"
                             sizes="100vw"
                             priority={i < 2}
-                         />
+                          unoptimized />
                     </div>
                 ))}
             </div>

@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const MOBILE_SECTORS = [
   { id: 1, label: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.webp", heightPercent: 14, align: "center" as const },
-  { id: 2, label: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).JPG", heightPercent: 14, align: "center" as const },
+  { id: 2, label: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).webp", heightPercent: 14, align: "center" as const },
   { id: 3, label: "Картины амулеты", href: "/amulets", imageSrc: "/amulets/1-(tech).png", heightPercent: 22, align: "right-half" as const },
   { id: 4, label: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.webp", heightPercent: 22, align: "right-half" as const },
   { id: 5, label: "Одежда и обувь", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.webp", heightPercent: 14, align: "center" as const },

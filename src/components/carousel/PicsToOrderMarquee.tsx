@@ -5,17 +5,17 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
 
 const picsToOrderImages = [
-    { src: "/picstoorder/pic1.JPG", alt: "Картина 1" },
-    { src: "/picstoorder/pic2.JPG", alt: "Картина 2" },
-    { src: "/picstoorder/pic3.JPG", alt: "Картина 3" },
-    { src: "/picstoorder/pic4.JPG", alt: "Картина 4" },
-    { src: "/picstoorder/pic5.JPG", alt: "Картина 5" },
-    { src: "/picstoorder/pic6.PNG", alt: "Картина 6" },
-    { src: "/picstoorder/pic7.JPG", alt: "Картина 7" },
-    { src: "/picstoorder/pic8.JPG", alt: "Картина 8" },
-    { src: "/picstoorder/pic9.JPG", alt: "Картина 9" },
-    { src: "/picstoorder/pic10.JPG", alt: "Картина 10" },
-    { src: "/picstoorder/pic11.PNG", alt: "Картина 11" },
+    { src: "/picstoorder/pic1.webp", alt: "Картина 1" },
+    { src: "/picstoorder/pic2.webp", alt: "Картина 2" },
+    { src: "/picstoorder/pic3.webp", alt: "Картина 3" },
+    { src: "/picstoorder/pic4.webp", alt: "Картина 4" },
+    { src: "/picstoorder/pic5.webp", alt: "Картина 5" },
+    { src: "/picstoorder/pic6.webp", alt: "Картина 6" },
+    { src: "/picstoorder/pic7.webp", alt: "Картина 7" },
+    { src: "/picstoorder/pic8.webp", alt: "Картина 8" },
+    { src: "/picstoorder/pic9.webp", alt: "Картина 9" },
+    { src: "/picstoorder/pic10.webp", alt: "Картина 10" },
+    { src: "/picstoorder/pic11.webp", alt: "Картина 11" },
 ];
 
 export function PicsToOrderMarquee({ children }: { children?: React.ReactNode }) {
@@ -54,9 +54,10 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         }
     }, []);
 
-    // Sync isDragging and contentSize refs with state
+    // Sync refs with state
     useEffect(() => { isDraggingRef.current = isDragging; }, [isDragging]);
     useEffect(() => { contentSizeRef.current = contentSize; }, [contentSize]);
+    useEffect(() => { isDesktopRef.current = isDesktop; }, [isDesktop]);
 
     // No resize listener for device detection — isTouchDevice is evaluated once at load.
 
@@ -274,7 +275,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
                                 className="object-cover"
                                 priority
                                 draggable={false}
-                            />
+                             unoptimized />
                         </div>
                     ))}
                 </div>
@@ -294,7 +295,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
                                 className="object-cover"
                                 priority
                                 draggable={false}
-                            />
+                             unoptimized />
                         </div>
                     ))}
                 </div>

@@ -71,7 +71,7 @@ export function FlippingWearCard({ images, initialDelay = 0, interval = 3000 }: 
                             sizes="25vw"
                             className="object-cover"
                             priority={i < 2}
-                         />
+                          unoptimized />
                     </div>
                 ))}
             </div>

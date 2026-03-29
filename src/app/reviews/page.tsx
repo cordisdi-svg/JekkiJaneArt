@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { PageBackground } from "@/components/layout/PageBackground";
+
+export const metadata: Metadata = {
+  title: "Отзывы | JekkiJaneArt",
+  description: "Отзывы клиентов о картинах и росписи от JekkiJane.",
+};
 
 export default function ReviewsPage() {
   return (

@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { PageBackground } from "@/components/layout/PageBackground";
 import { AmuletsCarousel } from "@/components/amulets/AmuletsCarousel";
+
+export const metadata: Metadata = {
+  title: "Амулеты | JekkiJaneArt",
+  description: "Амулеты и обереги ручной работы от JekkiJane.",
+};
 
 export default function AmuletsPage() {
   return (
