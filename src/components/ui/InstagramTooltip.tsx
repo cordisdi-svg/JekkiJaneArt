@@ -44,7 +44,7 @@ export function InstagramTooltip() {
       if (!target) return;
 
       let isInstagram = false;
-      let el = target.closest("a") as HTMLAnchorElement | null;
+      const el = target.closest("a") as HTMLAnchorElement | null;
       if (el && el.href && el.href.toLowerCase().includes("instagram.com")) {
         isInstagram = true;
       }
