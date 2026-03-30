@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { BottomNavigation } from "@/components/nav/BottomNavigation";
 import { ModalProvider } from "@/components/modals/ModalProvider";
@@ -6,9 +7,20 @@ import { InteractionGuards } from "@/components/system/InteractionGuards";
 import { DeviceLayoutSync } from "@/components/system/DeviceLayoutSync";
 import { InstagramTooltip } from "@/components/ui/InstagramTooltip";
 
+const playfair = Playfair_Display({
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  variable: "--font-playfair",
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "JekkiJaneArt — искусство в уникальном стиле, делающее вашу жизнь, дом и образ ярче и эстетичнее",
   description: "Арт-галерея JekkiJaneArt где вы можете заказать воплощение любой своей художественной идеи на холсте, стене, одежде; выбрать из уже написанных картин или создать картину-проводник для своей энергии",
+  icons: {
+    icon: "/icon.jpeg",
+  },
   openGraph: {
     type: "website",
     title: "JekkiJaneArt — искусство в уникальном стиле, делающее вашу жизнь, дом и образ ярче и эстетичнее",
@@ -28,16 +40,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={playfair.variable}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
-          rel="stylesheet"
-        />
         <link rel="preload" href="/fonts/Abibas.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
-
       </head>
       <body>
         <InteractionGuards />
