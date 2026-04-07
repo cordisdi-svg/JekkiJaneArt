@@ -42,9 +42,9 @@ export function HomeSectorsMobile() {
 
   // Random picks are stable for the lifetime of this component instance
   const slides: Slide[] = useMemo(() => [
-    { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные\nкартины",  sub: "просто\nвыбери\nи закажи",                           href: "/available",     uniqueKey: '1', imagePos: "70% center", subLayoutType: "icon-adjacent" },
-    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я\nвоплощу\nеё",                 href: "/picstoorder",   uniqueKey: '2', imagePos: "70% center", subLayoutType: "icon-adjacent" },
-    { id: 3, imageSrc: "/walls/3.webp",             heading: "Арт\nИнтерьеры",     sub: "сделаю\nпространство\nуникальным\nобъектом",        href: "/walls",         uniqueKey: '3', imagePos: "30% center", subLayoutType: "icon-adjacent" },
+    { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные\nкартины",  sub: "просто\nвыбери\nи закажи",                           href: "/available",     uniqueKey: '1', subLayoutType: "icon-adjacent" }, // imagePos вычисляется динамически
+    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я\nвоплощу\nеё",                 href: "/picstoorder",   uniqueKey: '2', imagePos: "85% center", subLayoutType: "icon-adjacent" },
+    { id: 3, imageSrc: "/walls/3.webp",             heading: "Интерьеры",          sub: "сделаю\nпространство\nуникальным\nобъектом",        href: "/walls",         uniqueKey: '3', imagePos: "15% center", subLayoutType: "icon-adjacent" },
     { id: 4, imageSrc: "/amulets/mobile-main.webp", heading: "Картины\nталисманы", sub: "Создам твой личный проводник\nэнергии и намерений", href: "/amulets",       uniqueKey: '4', subLayoutType: "floating-high", subBottom: "60%" },
     { id: 5, imageSrc: pickRandom(WEAR_POOL),       heading: "Роспись\nодежды",    sub: "Сделаю твой образ\nнеповторимым",                   href: "/wear-and-shoes",uniqueKey: '5', subLayoutType: "floating-high", subBottom: "70%" },
     { id: 6, imageSrc: "/tattoo/1-mobile.webp",     heading: "Тату\nэскизы",       sub: "Разработаю дизайн\nтвоей татуировки",               href: "/tattoo",        uniqueKey: '6', subLayoutType: "floating-high", subBottom: "50%" },
@@ -177,8 +177,8 @@ export function HomeSectorsMobile() {
 
   const handleIconTap = useCallback(() => {
     if (exitedRef.current) return;
-    startExitAnimation("/about");
-  }, [startExitAnimation]);
+    router.push("/about");
+  }, [router]);
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -204,6 +204,11 @@ export function HomeSectorsMobile() {
           // For initial paint priority, optimize priority loading for the real first slide content
           const isPriority = slide.id === 1 && (i === 1 || i === extendedSlides.length - 1);
           
+          let dynamicImagePos = slide.imagePos;
+          if (slide.id === 1 && slide.imageSrc.includes("back1.webp")) {
+            dynamicImagePos = "85% center";
+          }
+          
           return (
             <div
               key={slide.uniqueKey}
@@ -227,7 +232,7 @@ export function HomeSectorsMobile() {
                   alt=""
                   fill
                   className="object-cover"
-                  style={slide.imagePos ? { objectPosition: slide.imagePos } : {}}
+                  style={dynamicImagePos ? { objectPosition: dynamicImagePos } : {}}
                   sizes="100vw"
                   unoptimized
                   priority={isPriority}
@@ -235,7 +240,7 @@ export function HomeSectorsMobile() {
               </div>
 
               {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+              <div className="absolute inset-0 bg-black/25 pointer-events-none" />
 
               {/* Text Elements Wrapper for fading out collectively during exit */}
               <div className={imageMode === "exit" && currentIndex === i ? styles.textExit : ""}>
@@ -294,9 +299,9 @@ export function HomeSectorsMobile() {
         className="pointer-events-none"
         style={{
           position: "absolute",
-          bottom: "0%", // прижим к низу
+          bottom: "2%", // небольшой гэп от низа
           left: 0,
-          width: "55vw", // увеличено на ~30%
+          width: "61vw", // увеличено ещё на 10%
           zIndex: 20,
         }}
       >
