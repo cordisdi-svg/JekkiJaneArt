@@ -43,8 +43,8 @@ export function HomeSectorsMobile() {
   // Random picks are stable for the lifetime of this component instance
   const slides: Slide[] = useMemo(() => [
     { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные\nкартины",  sub: "просто\nвыбери\nи закажи",                           href: "/available",     uniqueKey: '1', subLayoutType: "icon-adjacent" }, // imagePos вычисляется динамически
-    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я\nвоплощу\nеё",                 href: "/picstoorder",   uniqueKey: '2', imagePos: "85% center", subLayoutType: "icon-adjacent" },
-    { id: 3, imageSrc: "/walls/3.webp",             heading: "Интерьеры",          sub: "сделаю\nпространство\nуникальным\nобъектом",        href: "/walls",         uniqueKey: '3', imagePos: "15% center", subLayoutType: "icon-adjacent" },
+    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я\nвоплощу\nеё",                 href: "/picstoorder",   uniqueKey: '2', imagePos: "0% center", subLayoutType: "icon-adjacent" },
+    { id: 3, imageSrc: "/walls/3.webp",             heading: "Интерьеры",          sub: "сделаю\nпространство\nуникальным\nобъектом",        href: "/walls",         uniqueKey: '3', imagePos: "100% center", subLayoutType: "icon-adjacent" },
     { id: 4, imageSrc: "/amulets/mobile-main.webp", heading: "Картины\nталисманы", sub: "Создам твой личный проводник\nэнергии и намерений", href: "/amulets",       uniqueKey: '4', subLayoutType: "floating-high", subBottom: "60%" },
     { id: 5, imageSrc: pickRandom(WEAR_POOL),       heading: "Роспись\nодежды",    sub: "Сделаю твой образ\nнеповторимым",                   href: "/wear-and-shoes",uniqueKey: '5', subLayoutType: "floating-high", subBottom: "70%" },
     { id: 6, imageSrc: "/tattoo/1-mobile.webp",     heading: "Тату\nэскизы",       sub: "Разработаю дизайн\nтвоей татуировки",               href: "/tattoo",        uniqueKey: '6', subLayoutType: "floating-high", subBottom: "50%" },
@@ -206,7 +206,7 @@ export function HomeSectorsMobile() {
           
           let dynamicImagePos = slide.imagePos;
           if (slide.id === 1 && slide.imageSrc.includes("back1.webp")) {
-            dynamicImagePos = "85% center";
+            dynamicImagePos = "0% center";
           }
           
           return (
