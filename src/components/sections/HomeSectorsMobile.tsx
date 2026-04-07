@@ -1,95 +1,224 @@
 "use client";
 
+import { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
-const MOBILE_SECTORS = [
-  { id: 1, label: "Доступные картины", href: "/available", imageSrc: "/availablepics/tech2.webp", heightPercent: 14, align: "center" as const },
-  { id: 2, label: "Картины на заказ", href: "/picstoorder", imageSrc: "/picstoorder/pic1(tech).webp", heightPercent: 14, align: "center" as const },
-  { id: 3, label: "Картины амулеты", href: "/amulets", imageSrc: "/amulets/1-(tech).png", heightPercent: 22, align: "right-half" as const },
-  { id: 4, label: "Интерьеры", href: "/walls", imageSrc: "/walls/tech.webp", heightPercent: 22, align: "right-half" as const },
-  { id: 5, label: "Одежда и обувь", href: "/wear-and-shoes", imageSrc: "/wear-and-shoes/tech.webp", heightPercent: 14, align: "center" as const },
-  { id: 6, label: "Тату эскизы", href: "/tattoo", imageSrc: "/tattoo/tech.webp", heightPercent: 14, align: "center" as const }
+// ─── Slide data ───────────────────────────────────────────────────────────────
+
+const AVAILABLE_POOL = [
+  "/availablepics/back1.webp",
+  "/availablepics/back2.webp",
+  "/availablepics/back3.webp",
 ];
+
+const WEAR_POOL = [
+  "/wear-and-shoes/5.webp",
+  "/wear-and-shoes/2.webp",
+  "/wear-and-shoes/3.webp",
+];
+
+function pickRandom<T>(pool: T[]): T {
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+interface Slide {
+  id: number;
+  imageSrc: string;
+  heading: string;
+  sub: string;
+  href: string | null;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function HomeSectorsMobile() {
   const router = useRouter();
-  const [active, setActive] = useState<number | null>(null);
 
-  const handleNavigate = (targetHref: string, id: number) => {
-    setActive(id);
-    setTimeout(() => {
-      router.push(targetHref);
-    }, 500); // Small delay to show active state
-  };
+  // Random picks are stable for the lifetime of this component instance
+  const slides: Slide[] = useMemo(() => [
+    { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные картины",  sub: "просто выбери и закажи",                           href: "/available"     },
+    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание на заказ",  sub: "опиши свою идею и я воплощу её",                   href: "/picstoorder"   },
+    { id: 3, imageSrc: "/walls/3.webp",             heading: "Интерьеры",          sub: "Сделаю твоё пространство уникальным арт-объектом", href: "/walls"         },
+    { id: 4, imageSrc: "/amulets/mobile-main.webp", heading: "Картины-талисманы",  sub: "Создам твой личный проводник энергии и намерений", href: "/amulets"       },
+    { id: 5, imageSrc: pickRandom(WEAR_POOL),       heading: "Роспись одежды",     sub: "Сделаю твой образ неповторимым",                   href: "/wear-and-shoes"},
+    { id: 6, imageSrc: "/tattoo/1-mobile.webp",     heading: "Тату-эскизы",        sub: "Разработаю дизайн твоей татуировки",               href: "/tattoo"        },
+    { id: 7, imageSrc: "/mainpage/mainpage-back.webp", heading: "",               sub: "",                                                 href: null             },
+  ], []);
 
+  const N = slides.length;
+
+  // ─── Slider state ───────────────────────────────────────────────────────────
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const isAnimating = useRef(false);
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
+
+  const startY = useRef(0);
+  const startX = useRef(0);
+
+  const resetAnimating = useCallback(() => {
+    isAnimating.current = false;
+  }, []);
+
+  const startSlideTransition = useCallback((newIndex: number) => {
+    isAnimating.current = true;
+    setCurrentIndex(newIndex);
+
+    // Reset animating via transitionend (solution #10 — safety timeout parallel)
+    const safetyTimer = setTimeout(resetAnimating, 600);
+    sliderTrackRef.current?.addEventListener("transitionend", () => {
+      clearTimeout(safetyTimer);
+      resetAnimating();
+    }, { once: true });
+  }, [resetAnimating]);
+
+  const handleSwipe = useCallback((direction: "up" | "down") => {
+    if (direction === "up") {
+      startSlideTransition((currentIndex + 1) % N);
+    } else {
+      startSlideTransition((currentIndex - 1 + N) % N);
+    }
+  }, [currentIndex, N, startSlideTransition]);
+
+  // ─── Touch handlers (solution #6 — touchstart stays passive) ───────────────
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    startY.current = e.touches[0].clientY;
+    startX.current = e.touches[0].clientX;
+  }, []);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    const dy = startY.current - e.changedTouches[0].clientY;
+    const dx = Math.abs(startX.current - e.changedTouches[0].clientX);
+
+    // Ignore horizontal swipes and short taps
+    if (Math.abs(dy) < 40 || dx > Math.abs(dy)) return;
+    // Guard: only blocks the action, not the event handler itself
+    if (isAnimating.current) return;
+
+    handleSwipe(dy > 0 ? "up" : "down");
+  }, [handleSwipe]);
+
+  // ─── Tap handler (solution #3 — guard for href:null) ───────────────────────
+  const handleTap = useCallback((slide: Slide) => {
+    if (!slide.href) return;
+    console.log("Navigate to:", slide.href); // will be replaced in Step 4
+  }, []);
+
+  const handleIconTap = useCallback(() => {
+    console.log("Navigate to: /about"); // will be replaced in Step 4
+  }, []);
+
+  // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    <section className="relative h-full w-full overflow-hidden bg-black lg:hidden" aria-label="Мобильные разделы">
-      {/* Container for the sectors. */}
-      <div className="flex h-full w-full flex-col">
-        {MOBILE_SECTORS.map((sector, index) => {
-          const isNotLast = index !== MOBILE_SECTORS.length - 1;
-          const isActive = active === sector.id;
+    // Fixed wrapper — NO transform here (solution #2)
+    <div
+      className="fixed inset-0 overflow-hidden"
+      style={{ zIndex: 10 }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* SliderTrack — transform ONLY here */}
+      <div
+        ref={sliderTrackRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          height: `${N * 100}svh`,
+          transform: `translateY(-${currentIndex * 100}svh)`,
+          transition: "transform 550ms cubic-bezier(0.77,0,0.175,1)",
+        }}
+      >
+        {slides.map((slide) => (
+          <div
+            key={slide.id}
+            onClick={() => handleTap(slide)}
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "100svh",
+              overflow: "hidden",
+              cursor: slide.href ? "pointer" : "default",
+            }}
+          >
+            {/* Background image */}
+            <Image
+              src={slide.imageSrc}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="100vw"
+              unoptimized
+              priority={slide.id === 1}
+            />
 
-          return (
-            <button
-              key={sector.id}
-              onClick={() => handleNavigate(sector.href, sector.id)}
-              className="group relative flex w-full flex-shrink-0 items-center overflow-hidden border-orange-200/5 transition-opacity"
-              style={{
-                height: `${sector.heightPercent}%`,
-                borderBottomWidth: isNotLast ? "1px" : "0",
-                borderBottomColor: "#444444",
-                opacity: active !== null && !isActive ? 0.3 : 1
-              }}
-            >
-              {/* Background Image */}
-              <div className="absolute inset-0">
-                <Image src={sector.imageSrc} alt="" fill className="object-cover blur-[1px] animate-bg-scale" sizes="100vw"  unoptimized />
-              </div>
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-black/25" />
 
-              {/* Overlay for darkening the background */}
-              <div className="absolute inset-0 bg-black/[0.45] transition-colors group-active:bg-black/[0.65]" />
-
-              <div className={`relative z-10 px-4 ${sector.align === 'center' ? 'w-full text-center' : 'w-[41%] ml-auto text-center'}`}>
-                <span className="font-abibas text-[clamp(1.38rem,6.21vw,1.79rem)] font-semibold uppercase tracking-wider text-[#e5e5e5] whitespace-pre-line" style={{
-                  textShadow: "0 2px 6px rgba(90,0,0,0.95), 0 0 4px rgba(90,0,0,1)",
-                  WebkitTextStroke: "1px rgba(60,5,5,0.6)",
-                  paintOrder: "stroke"
-                }}>
-                  {sector.label}
+            {/* Heading — top left */}
+            {slide.heading && (
+              <div className="absolute top-[4%] left-[5%] right-[5%] z-10">
+                <span className="block font-fontatica uppercase tracking-wide text-[#f0ede6]"
+                  style={{ fontSize: "clamp(1.9rem, 8.5vw, 2.6rem)" }}>
+                  {slide.heading}
                 </span>
               </div>
-            </button>
-          );
-        })}
+            )}
+
+            {/* Sub — bottom right */}
+            {slide.sub && (
+              <div className="absolute bottom-[6%] right-[4%] z-10"
+                style={{ maxWidth: "58vw" }}>
+                <span className="block font-comfortaa-light text-right text-[rgba(240,237,230,0.88)]"
+                  style={{ fontSize: "clamp(0.9rem, 4vw, 1.25rem)" }}>
+                  {slide.sub}
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
-      {/* Central absolute mobile icon, strictly rectangular with no circle cropping */}
+      {/* FloatingIcon — SIBLING of SliderTrack, not inside transform (solution #2) */}
       <div
-        className="absolute left-0 top-1/2 z-20 flex items-center justify-start pointer-events-none -translate-y-1/2"
-        style={{ width: '63%', height: '63%' }}
+        style={{
+          position: "absolute",
+          bottom: "3%",
+          left: 0,
+          width: "40vw",
+          zIndex: 20,
+          pointerEvents: "none",
+        }}
       >
         <button
-          onClick={() => {
-            setActive(0);
-            setTimeout(() => router.push("/about"), 500);
-          }}
-          className="relative pointer-events-auto overflow-hidden transition-transform active:scale-95 flex items-center justify-center w-full h-full"
+          onClick={handleIconTap}
           aria-label="О художнице"
+          style={{
+            position: "relative",
+            display: "block",
+            width: "100%",
+            background: "none",
+            border: "none",
+            padding: 0,
+            pointerEvents: "auto",
+          }}
         >
-          {/* Main Icon scaled naturally to fit the new area, shifted to stay left-aligned, and brightened */}
           <Image
-            src="/mainpage/mainpage-icon-mobile.webp"
+            src="/mainpage/mainpage-icon-mobile2.png"
             alt="О художнице"
-            fill
-            className="object-contain object-left"
-            style={{ filter: 'brightness(1.15)' }}
-            sizes="63vw"
-           unoptimized />
+            width={400}
+            height={600}
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "contain",
+              objectPosition: "left bottom",
+              filter: "brightness(1.1)",
+              display: "block",
+            }}
+            unoptimized
+          />
         </button>
       </div>
-    </section>
+    </div>
   );
 }

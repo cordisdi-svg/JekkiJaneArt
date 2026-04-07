@@ -10,9 +10,13 @@ export default function HomePage() {
 
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
-      <div className="h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)]">
-        {isTouch ? <HomeSectorsMobile /> : <HomeSectorsDesktop />}
-      </div>
+      {isTouch ? (
+        <HomeSectorsMobile />
+      ) : (
+        <div className="h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)]">
+          <HomeSectorsDesktop />
+        </div>
+      )}
     </PageBackground>
   );
 }

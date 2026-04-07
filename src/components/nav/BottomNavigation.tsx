@@ -21,6 +21,7 @@ function navCellClass(isActive: boolean) {
 export function BottomNavigation() {
   const router = useRouter();
   const pathname = usePathname();
+  const isMobileHome = pathname === '/';
   const { openModal } = useModal();
 
   const [reviewsStatus, setReviewsStatus] = useState<"default" | "underDev">("default");
@@ -113,37 +114,39 @@ export function BottomNavigation() {
         </button>
       </div>
 
-      <div
-        className="relative flex h-[var(--nav-height-mobile)] w-full flex-col lg:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        {/* Swipe Indicators Overlay */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-0 opacity-70">
-          <div className="scale-75">
-            <Triangle direction="left" className="arrow-anim-left" />
+      {!isMobileHome && (
+        <div
+          className="relative flex h-[var(--nav-height-mobile)] w-full flex-col lg:hidden"
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {/* Swipe Indicators Overlay */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-0 opacity-70">
+            <div className="scale-75">
+              <Triangle direction="left" className="arrow-anim-left" />
+            </div>
+            <div className="scale-75">
+              <Triangle direction="right" className="arrow-anim-right" />
+            </div>
           </div>
-          <div className="scale-75">
-            <Triangle direction="right" className="arrow-anim-right" />
-          </div>
-        </div>
 
-        <div className="grid h-1/2 grid-cols-2">
-          <button type="button" className={`relative overflow-hidden ${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => openModal("order")}>
-            <div className="btn-shine-layer" />
-            <span className="relative z-10">Заказать</span>
-          </button>
-          <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+          <div className="grid h-1/2 grid-cols-2">
+            <button type="button" className={`relative overflow-hidden ${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => openModal("order")}>
+              <div className="btn-shine-layer" />
+              <span className="relative z-10">Заказать</span>
+            </button>
+            <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+          </div>
+          <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
+            <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.7vw,20px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
+            <button type="button" className={`${navCellClass(false)} text-[clamp(18px,4.6vw,25px)] leading-tight px-1`} onClick={handleReviewsClick}>
+              {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
+            </button>
+            <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4.4vw,23px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
+          </div>
         </div>
-        <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
-          <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.7vw,20px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
-          <button type="button" className={`${navCellClass(false)} text-[clamp(18px,4.6vw,25px)] leading-tight px-1`} onClick={handleReviewsClick}>
-            {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
-          </button>
-          <button type="button" className={`${navCellClass(false)} text-[clamp(16px,4.4vw,23px)] leading-tight px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
-        </div>
-      </div>
+      )}
     </nav>
   );
 }
