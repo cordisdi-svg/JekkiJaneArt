@@ -183,13 +183,8 @@ function HomeSectorsMobileContent() {
     if (exitedRef.current) return;
     exitedRef.current = true;
 
-    // Phase 1: текст растворяется (0–1500ms ease-out)
-    setExitPhase("text");
-
-    // Phase 2: картинка zoom+fade + hero reveal (t=1000ms, 500ms overlap с текстом)
-    timers.current.push(
-      window.setTimeout(() => setExitPhase("image"), 1000)
-    );
+    // Начинаем зум-распад сразу по нажатию (объединяем фазы текста и картинки)
+    setExitPhase("image");
 
     // Один navigate — защита от двойного вызова
     let navigated = false;
@@ -269,7 +264,13 @@ function HomeSectorsMobileContent() {
           return (
             <div
               key={slide.uniqueKey}
-              onClick={() => handleTap(slide)}
+              onPointerUp={(e) => {
+                // Если мы сильно сдвинули палец (свайп), игнорируем как тап
+                const dy = startY.current - e.clientY;
+                const dx = Math.abs(startX.current - e.clientX);
+                if (Math.abs(dy) > 10 || dx > 10) return;
+                handleTap(slide);
+              }}
               style={{
                 position: "relative",
                 width: "100%",
