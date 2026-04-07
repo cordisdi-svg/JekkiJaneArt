@@ -37,15 +37,14 @@ interface Slide {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-// Сопоставление маршрутов и их фоновых изображений (first state/hero map)
 const HERO_MAP: Record<string, string> = {
-  "/available": "/availablepics/back-full.webp",
-  "/picstoorder": "/mainpage/mainpage-back.webp",
-  "/walls": "/mainpage/mainpage-back.webp",
-  "/amulets": "/mainpage/mainpage-back.webp",
-  "/wear-and-shoes": "/mainpage/mainpage-back.webp",
-  "/tattoo": "/mainpage/mainpage-back.webp",
-  "/about": "/back-blur.webp",
+  "/available": "/mainpage/add-backs/1.webp",
+  "/picstoorder": "/mainpage/add-backs/2.webp",
+  "/walls": "/mainpage/add-backs/3.webp",
+  "/amulets": "/mainpage/add-backs/4.webp",
+  "/wear-and-shoes": "/mainpage/add-backs/5.webp",
+  "/tattoo": "/mainpage/add-backs/6.webp",
+  "/about": "/mainpage/add-backs/7.webp",
 };
 
 export function HomeSectorsMobile() {
@@ -197,14 +196,33 @@ function HomeSectorsMobileContent() {
     const navigate = () => {
       if (navigated) return;
       navigated = true;
+
+      // 🌉 DOM BRIDGE: фиксируем снимок поверх Next.js, чтобы пропустить "щелчок" пустого рендера новой страницы
+      // Теперь мост скрывается ГЛОБАЛЬНО в DeviceLayoutSync ПОСЛЕ того как роутинг реально завершится!
+      const bridgeId = "transition-bridge";
+      if (!document.getElementById(bridgeId)) {
+        const bridge = document.createElement("img");
+        bridge.id = bridgeId;
+        bridge.src = HERO_MAP[href] || "/mainpage/mainpage-back.webp";
+        bridge.style.position = "fixed";
+        bridge.style.inset = "0";
+        bridge.style.width = "100vw";
+        bridge.style.height = "100svh";
+        bridge.style.objectFit = "cover";
+        bridge.style.zIndex = "99999";
+        bridge.style.pointerEvents = "none";
+        bridge.style.transition = "opacity 0.7s ease";
+        document.body.appendChild(bridge);
+      }
+
       router.push(href);
     };
 
-    // Навигация после завершения визуала (image ends ~1700ms, push at 2100ms = safe buffer)
-    timers.current.push(window.setTimeout(navigate, 2100));
+    // Навигация (image ends 1000+1600 = 2600ms, push at 2600ms)
+    timers.current.push(window.setTimeout(navigate, 2600));
 
     // Safety fallback
-    timers.current.push(window.setTimeout(navigate, 2600));
+    timers.current.push(window.setTimeout(navigate, 3200));
   }, [router]);
 
   const handleTap = useCallback((slide: Slide) => {

@@ -20,9 +20,9 @@
   transition: opacity 1500ms ease-out;
 }
 
-/* ── Exit Phase 2: текущая картинка zoom + fade (700ms ease-out) ── */
+/* ── Exit Phase 2: текущая картинка zoom + fade (1600ms ease-out) ── */
 .imageExit {
   transform: scale(1.18);
   opacity: 0;
-  transition: transform 700ms ease-out, opacity 700ms ease-out;
+  transition: transform 1600ms ease-out, opacity 1600ms ease-out;
 }

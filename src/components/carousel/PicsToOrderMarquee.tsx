@@ -83,8 +83,11 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         };
     }, []); // Run once, uses refs
 
+    const mountTimeRef = useRef<number | null>(null);
+
     const animate = useCallback((timestamp: number) => {
         if (!lastTimestamp.current) lastTimestamp.current = timestamp;
+        if (!mountTimeRef.current) mountTimeRef.current = performance.now();
         const deltaTime = timestamp - lastTimestamp.current;
         lastTimestamp.current = timestamp;
 
@@ -95,8 +98,11 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         if (size > 0 && contentRef.current) {
             // Autoplay only if not dragging AND no inertia is active
             if (!dragging && !inertiaRafRef.current) {
-                const velocity = size / 72000;
-                scrollOffset.current += velocity * deltaTime;
+                // Задержка авто-кролла на 1200мс (ждём пока мост растворится)
+                if (performance.now() - mountTimeRef.current > 1200) {
+                    const velocity = size / 72000;
+                    scrollOffset.current += velocity * deltaTime;
+                }
             }
 
             if (isNaN(scrollOffset.current)) {

@@ -51,12 +51,15 @@ export function WearMarquee() {
     }, []);
 
     // 3. Mobile Autoplay & Wrapping
+    const mountTimeRef = useRef<number | null>(null);
+
     useEffect(() => {
         if (isDesktop) return;
 
         const animate = (time: number) => {
             if (lastTimeAnim.current === 0) {
                 lastTimeAnim.current = time;
+                if (!mountTimeRef.current) mountTimeRef.current = performance.now();
                 animationFrameId.current = requestAnimationFrame(animate);
                 return;
             }
@@ -64,18 +67,21 @@ export function WearMarquee() {
             lastTimeAnim.current = time;
 
             if (containerRef.current && trackRef.current && !isInteracting.current && !inertiaRafRef.current) {
-                const container = containerRef.current;
-                const track = trackRef.current;
-                const setHeight = track.scrollHeight / 2;
+                // Задержка движения на 1200мс (ждём растворения моста-заглушки)
+                if (mountTimeRef.current && performance.now() - mountTimeRef.current > 1200) {
+                    const container = containerRef.current;
+                    const track = trackRef.current;
+                    const setHeight = track.scrollHeight / 2;
 
-                if (setHeight > 0) {
-                    // Speed calculation: loop in 41s
-                    const speed = setHeight / 41000;
-                    container.scrollTop += speed * deltaTime;
+                    if (setHeight > 0) {
+                        // Speed calculation: loop in 41s
+                        const speed = setHeight / 41000;
+                        container.scrollTop += speed * deltaTime;
 
-                    // Seamless wrap
-                    if (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
-                    else if (container.scrollTop < 0) container.scrollTop += setHeight;
+                        // Seamless wrap
+                        if (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
+                        else if (container.scrollTop < 0) container.scrollTop += setHeight;
+                    }
                 }
             }
             animationFrameId.current = requestAnimationFrame(animate);

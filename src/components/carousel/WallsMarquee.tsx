@@ -53,10 +53,13 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
 
     // No resize listener for device detection — isTouchDevice is evaluated once at load.
 
+    const mountTimeRef = useRef<number | null>(null);
+
     useEffect(() => {
         const animate = (time: number) => {
             if (lastTimeAnim.current === 0) {
                 lastTimeAnim.current = time;
+                if (!mountTimeRef.current) mountTimeRef.current = performance.now();
                 animationFrameId.current = requestAnimationFrame(animate);
                 return;
             }
@@ -64,20 +67,23 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             lastTimeAnim.current = time;
 
             if (containerRef.current && marqueeRef.current && !isInteracting.current && !inertiaRafRef.current) {
-                const container = containerRef.current;
-                const marquee = marqueeRef.current;
-                const speed = getSpeed();
+                // Задержка движения на 1200мс (ждём растворения моста-заглушки)
+                if (mountTimeRef.current && performance.now() - mountTimeRef.current > 1200) {
+                    const container = containerRef.current;
+                    const marquee = marqueeRef.current;
+                    const speed = getSpeed();
 
-                if (isDesktop) {
-                    container.scrollLeft += speed * deltaTime;
-                    const setWidth = marquee.scrollWidth / 2;
-                    if (container.scrollLeft >= setWidth) container.scrollLeft -= setWidth;
-                    else if (container.scrollLeft < 0) container.scrollLeft += setWidth;
-                } else {
-                    container.scrollTop += speed * deltaTime;
-                    const setHeight = marquee.scrollHeight / 2;
-                    if (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
-                    else if (container.scrollTop < 0) container.scrollTop += setHeight;
+                    if (isDesktop) {
+                        container.scrollLeft += speed * deltaTime;
+                        const setWidth = marquee.scrollWidth / 2;
+                        if (container.scrollLeft >= setWidth) container.scrollLeft -= setWidth;
+                        else if (container.scrollLeft < 0) container.scrollLeft += setWidth;
+                    } else {
+                        container.scrollTop += speed * deltaTime;
+                        const setHeight = marquee.scrollHeight / 2;
+                        if (container.scrollTop >= setHeight) container.scrollTop -= setHeight;
+                        else if (container.scrollTop < 0) container.scrollTop += setHeight;
+                    }
                 }
             }
             animationFrameId.current = requestAnimationFrame(animate);
