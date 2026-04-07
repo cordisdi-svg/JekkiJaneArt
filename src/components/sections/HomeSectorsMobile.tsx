@@ -3,6 +3,7 @@
 import { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import styles from "./HomeSectorsMobile.module.css";
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
 
@@ -29,6 +30,9 @@ interface Slide {
   sub: string;
   href: string | null;
   uniqueKey: string;
+  imagePos?: string; // object-position
+  subLayoutType: "icon-adjacent" | "floating-high"; // для 1-3 и 4-6
+  subBottom?: string; // для 4-6
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -37,14 +41,14 @@ export function HomeSectorsMobile() {
   const router = useRouter();
 
   // Random picks are stable for the lifetime of this component instance
-  const slides = useMemo(() => [
-    { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные картины",  sub: "просто выбери и закажи",                           href: "/available"     },
-    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание на заказ",  sub: "опиши свою идею и я воплощу её",                   href: "/picstoorder"   },
-    { id: 3, imageSrc: "/walls/3.webp",             heading: "Интерьеры",          sub: "Сделаю твоё пространство уникальным арт-объектом", href: "/walls"         },
-    { id: 4, imageSrc: "/amulets/mobile-main.webp", heading: "Картины-талисманы",  sub: "Создам твой личный проводник энергии и намерений", href: "/amulets"       },
-    { id: 5, imageSrc: pickRandom(WEAR_POOL),       heading: "Роспись одежды",     sub: "Сделаю твой образ неповторимым",                   href: "/wear-and-shoes"},
-    { id: 6, imageSrc: "/tattoo/1-mobile.webp",     heading: "Тату-эскизы",        sub: "Разработаю дизайн твоей татуировки",               href: "/tattoo"        },
-    { id: 7, imageSrc: "/mainpage/mainpage-back.webp", heading: "",               sub: "",                                                 href: null             },
+  const slides: Slide[] = useMemo(() => [
+    { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные\nкартины",  sub: "просто\nвыбери\nи закажи",                           href: "/available",     uniqueKey: '1', imagePos: "70% center", subLayoutType: "icon-adjacent" },
+    { id: 2, imageSrc: "/walls/1.webp",             heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я\nвоплощу\nеё",                 href: "/picstoorder",   uniqueKey: '2', imagePos: "70% center", subLayoutType: "icon-adjacent" },
+    { id: 3, imageSrc: "/walls/3.webp",             heading: "Арт\nИнтерьеры",     sub: "сделаю\nпространство\nуникальным\nобъектом",        href: "/walls",         uniqueKey: '3', imagePos: "30% center", subLayoutType: "icon-adjacent" },
+    { id: 4, imageSrc: "/amulets/mobile-main.webp", heading: "Картины\nталисманы", sub: "Создам твой личный проводник\nэнергии и намерений", href: "/amulets",       uniqueKey: '4', subLayoutType: "floating-high", subBottom: "60%" },
+    { id: 5, imageSrc: pickRandom(WEAR_POOL),       heading: "Роспись\nодежды",    sub: "Сделаю твой образ\nнеповторимым",                   href: "/wear-and-shoes",uniqueKey: '5', subLayoutType: "floating-high", subBottom: "70%" },
+    { id: 6, imageSrc: "/tattoo/1-mobile.webp",     heading: "Тату\nэскизы",       sub: "Разработаю дизайн\nтвоей татуировки",               href: "/tattoo",        uniqueKey: '6', subLayoutType: "floating-high", subBottom: "50%" },
+    { id: 7, imageSrc: "/mainpage/mainpage-back.webp", heading: "",                sub: "",                                                 href: null,             uniqueKey: '7', subLayoutType: "floating-high" },
   ], []);
 
   const extendedSlides: Slide[] = useMemo(() => {
@@ -62,12 +66,22 @@ export function HomeSectorsMobile() {
   // index 1 corresponds to slide.id 1
   const [currentIndex, setCurrentIndex] = useState(1);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
+  const [imageMode, setImageMode] = useState<"zoom" | "exit">("zoom");
   
   const isAnimating = useRef(false);
+  const exitedRef = useRef(false);
   const sliderTrackRef = useRef<HTMLDivElement>(null);
+  const imageWrapperRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const startY = useRef(0);
   const startX = useRef(0);
+
+  // Сброс состояния выхода при переключении слайда
+  useEffect(() => {
+    exitedRef.current = false;
+    setImageMode("zoom");
+  }, [currentIndex]);
 
   const startSlideTransition = useCallback((newIndex: number) => {
     isAnimating.current = true;
@@ -137,21 +151,41 @@ export function HomeSectorsMobile() {
   }, [handleSwipe]);
 
   // ─── Tap handler ────────────────────────────────────────────────────────────
+  const startExitAnimation = useCallback((href: string) => {
+    if (exitedRef.current) return;
+    exitedRef.current = true;
+    setImageMode("exit");
+
+    const go = () => {
+      clearTimeout(timerRef.current);
+      router.push(href);
+    };
+
+    const el = imageWrapperRef.current;
+    if (el) {
+      el.addEventListener("transitionend", go, { once: true });
+      timerRef.current = setTimeout(go, 500); // safety fallback
+    } else {
+      setTimeout(go, 400);
+    }
+  }, [router]);
+
   const handleTap = useCallback((slide: Slide) => {
-    if (!slide.href) return;
-    console.log("Navigate to:", slide.href); // Step 4
-  }, []);
+    if (!slide.href || exitedRef.current) return;
+    startExitAnimation(slide.href);
+  }, [startExitAnimation]);
 
   const handleIconTap = useCallback(() => {
-    console.log("Navigate to: /about"); // Step 4
-  }, []);
+    if (exitedRef.current) return;
+    startExitAnimation("/about");
+  }, [startExitAnimation]);
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    // Fixed wrapper NO transform
+    // Fixed wrapper NO transform, touch-action: none to prevent native pull-to-refresh
     <div
       className="fixed inset-0 overflow-hidden"
-      style={{ zIndex: 10 }}
+      style={{ zIndex: 10, touchAction: "none", overscrollBehavior: "none" }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -182,40 +216,74 @@ export function HomeSectorsMobile() {
                 cursor: slide.href ? "pointer" : "default",
               }}
             >
-              {/* Background image */}
-              <Image
-                src={slide.imageSrc}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="100vw"
-                unoptimized
-                priority={isPriority}
-              />
+              {/* Image Wrapper to handle scale without conflicting transitions */}
+              <div
+                ref={currentIndex === i ? imageWrapperRef : undefined}
+                className={`absolute inset-0 ${imageMode === "exit" && currentIndex === i ? styles.imageExit : styles.imageZoom}`}
+              >
+                <Image
+                  key={slide.uniqueKey}
+                  src={slide.imageSrc}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  style={slide.imagePos ? { objectPosition: slide.imagePos } : {}}
+                  sizes="100vw"
+                  unoptimized
+                  priority={isPriority}
+                />
+              </div>
 
               {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/25" />
+              <div className="absolute inset-0 bg-black/40 pointer-events-none" />
 
-              {/* Heading */}
-              {slide.heading && (
-                <div className="absolute top-[4%] left-[5%] right-[5%] z-10">
-                  <span className="block font-fontatica uppercase tracking-wide text-[#f0ede6]"
-                    style={{ fontSize: "clamp(1.9rem, 8.5vw, 2.6rem)" }}>
+              {/* Text Elements Wrapper for fading out collectively during exit */}
+              <div className={imageMode === "exit" && currentIndex === i ? styles.textExit : ""}>
+                {/* Heading */}
+                {slide.heading && (
+                <div className="absolute top-[5%] left-[5%] right-[5%] z-10">
+                  <span className="block font-fontatica uppercase tracking-wide text-[#f5f2eb] whitespace-pre-line leading-[0.85]"
+                    style={{ 
+                      fontSize: "clamp(3.8rem, 16vw, 6rem)",
+                      textShadow: "0 4px 18px rgba(0,0,0,0.95)"
+                    }}>
                     {slide.heading}
                   </span>
                 </div>
               )}
 
-              {/* Sub */}
-              {slide.sub && (
-                <div className="absolute bottom-[6%] right-[4%] z-10"
-                  style={{ maxWidth: "58vw" }}>
-                  <span className="block font-comfortaa-light text-right text-[rgba(240,237,230,0.88)]"
-                    style={{ fontSize: "clamp(0.9rem, 4vw, 1.25rem)" }}>
+              {/* Subtitle - Layout variations */}
+              {slide.sub && slide.subLayoutType === "icon-adjacent" && (
+                <div className="absolute z-10 flex flex-col justify-center"
+                  style={{ 
+                    left: "58vw", 
+                    bottom: "2%", 
+                    right: "2%", 
+                    height: "45vw" // привязка к примерной высоте иконки
+                  }}>
+                  <span className="block font-comfortaa-light text-left text-white whitespace-pre-line leading-[1.1]"
+                    style={{ 
+                      fontSize: "clamp(1.4rem, 6.5vw, 2.5rem)",
+                      textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)"
+                    }}>
                     {slide.sub}
                   </span>
                 </div>
               )}
+
+              {slide.sub && slide.subLayoutType === "floating-high" && (
+                <div className="absolute right-[5%] left-[10%] z-10"
+                  style={{ bottom: slide.subBottom || "50%" }}>
+                  <span className="block font-comfortaa-light text-right text-white whitespace-pre-line leading-[1.2]"
+                    style={{ 
+                      fontSize: "clamp(1.3rem, 5.5vw, 2.2rem)",
+                      textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)"
+                    }}>
+                    {slide.sub}
+                  </span>
+                </div>
+              )}
+              </div>
             </div>
           );
         })}
@@ -223,13 +291,13 @@ export function HomeSectorsMobile() {
 
       {/* FloatingIcon SIBLING of SliderTrack */}
       <div
+        className="pointer-events-none"
         style={{
           position: "absolute",
-          bottom: "3%",
+          bottom: "0%", // прижим к низу
           left: 0,
-          width: "40vw",
+          width: "55vw", // увеличено на ~30%
           zIndex: 20,
-          pointerEvents: "none",
         }}
       >
         <button

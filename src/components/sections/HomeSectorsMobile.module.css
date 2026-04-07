@@ -1,0 +1,20 @@
+@keyframes slide-zoom {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.imageZoom {
+  animation: slide-zoom 14s ease-in-out infinite;
+}
+
+.imageExit {
+  animation: none;
+  transform: scale(1.15);
+  opacity: 0;
+  transition: transform 400ms ease-in, opacity 280ms ease-in;
+}
+
+.textExit {
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
