@@ -1,20 +1,28 @@
 @keyframes slide-zoom {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
 }
 
 .imageZoom {
   animation: slide-zoom 14s ease-in-out infinite;
 }
 
-.imageExit {
-  animation: none;
-  transform: scale(1.15);
-  opacity: 0;
-  transition: transform 400ms ease-in, opacity 280ms ease-in;
-}
-
+/* ── Exit Phase 1: текст растворяется (0–1500ms) ────────────────── */
 .textExit {
   opacity: 0;
-  transition: opacity 180ms ease-out;
+  transition: opacity 1500ms ease-out;
+}
+
+/* ── Exit Phase 2: текущая картинка zoom + fade (700ms ease-out) ── */
+.imageExit {
+  transform: scale(1.18);
+  opacity: 0;
+  transition: transform 700ms ease-out, opacity 700ms ease-out;
 }

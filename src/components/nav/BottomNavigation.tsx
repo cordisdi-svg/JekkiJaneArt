@@ -99,7 +99,18 @@ export function BottomNavigation() {
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
           <Triangle direction="left" className="arrow-anim-left" />
         </button>
-        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+        <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => {
+          const slideMap: Record<string, number> = {
+            "/available": 1,
+            "/picstoorder": 2,
+            "/walls": 3,
+            "/amulets": 4,
+            "/wear-and-shoes": 5,
+            "/tattoo": 6,
+          };
+          const slide = slideMap[pathname];
+          router.push(slide ? `/?slide=${slide}` : "/");
+        }}>На главную</button>
         <button type="button" className={`${navCellClass(false)} w-[16.25%] text-[clamp(16px,2.1vw,30px)] leading-none px-1`} onClick={() => openModal("siteCreator")}>Нужен сайт?</button>
         <button type="button" className={`relative overflow-hidden ${navCellClass(false)} w-[25%] text-[clamp(18.5px,2.5vw,36px)] leading-none px-1`} onClick={() => openModal("order")}>
           <div className="btn-shine-layer" />
@@ -136,7 +147,18 @@ export function BottomNavigation() {
               <div className="btn-shine-layer" />
               <span className="relative z-10">Заказать</span>
             </button>
-            <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => router.push("/")}>На главную</button>
+            <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => {
+              const slideMap: Record<string, number> = {
+                "/available": 1,
+                "/picstoorder": 2,
+                "/walls": 3,
+                "/amulets": 4,
+                "/wear-and-shoes": 5,
+                "/tattoo": 6,
+              };
+              const slide = slideMap[pathname];
+              router.push(slide ? `/?slide=${slide}` : "/");
+            }}>На главную</button>
           </div>
           <div className="grid h-1/2 grid-cols-3 border-t border-white/20">
             <button type="button" className={`${navCellClass(false)} text-[clamp(14px,3.7vw,20px)] leading-tight px-1`} onClick={() => openModal("certificates")}>Сертификаты</button>
