@@ -333,13 +333,13 @@ function HomeSectorsMobileContent() {
 
                 {/* Subtitle - Layout variations */}
                 {slide.sub && slide.subLayoutType === "icon-adjacent" && (
-                    <div className="absolute z-10 flex flex-col justify-center"
-                      style={{
-                        left: slide.id === 3 ? "30vw" : "58vw",
-                        bottom: slide.id === 2 ? "8%" : "2%",
-                        right: slide.id === 3 ? "2%" : (slide.id === 2 ? "8%" : "2%"),
-                        height: "45vw" // привязка к примерной высоте иконки
-                      }}>
+                  <div className="absolute z-10 flex flex-col justify-center"
+                    style={{
+                      left: slide.id === 3 ? "30vw" : "58vw",
+                      bottom: slide.id === 2 ? "8%" : "2%",
+                      right: slide.id === 3 ? "2%" : (slide.id === 2 ? "8%" : "2%"),
+                      height: "45vw" // привязка к примерной высоте иконки
+                    }}>
                     <span className={`block font-comfortaa-light text-white whitespace-pre-line leading-[1.1] ${slide.id === 2 || slide.id === 3 ? "text-right" : "text-left"}`}
                       style={{
                         fontSize: "clamp(1.6rem, 7.5vw, 3rem)",
@@ -347,11 +347,14 @@ function HomeSectorsMobileContent() {
                       }}>
                       {slide.id === 2 ? (
                         <>
-                          опиши{"\n"}свою идею{"\n"}и я воплощу её
+                          опиши{"\n"}свою <span className="font-bold">идею</span>{"\n"}и я <span className="font-bold">воплощу</span> её
                         </>
                       ) : slide.id === 3 ? (
                         <>
-                          Сделаю твоё{"\n"}пространство{"\n"}уникальным{"\n"}<span className="font-bold">арт-объектом</span>
+                          Сделаю твоё{"\n"}пространство{"\n"}уникальным{"\n"}
+                          <span className="font-fontatica leading-[0.5]" style={{ fontSize: '1.4em', display: 'inline-block', verticalAlign: 'baseline' }}>
+                            арт-объектом
+                          </span>
                         </>
                       ) : slide.sub}
                     </span>
@@ -387,8 +390,8 @@ function HomeSectorsMobileContent() {
                 {slide.id === 4 && (
                   <div className="absolute bottom-[5%] left-[5%] z-10 flex flex-col items-start"
                     style={{ textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
-                    <span className="font-marck text-white leading-tight" style={{ fontSize: "clamp(1.7rem, 7.2vw, 2.9rem)" }}>
-                      Зафиксируем их{"\n"}в <span className="font-bold">символе</span>{"\n"}который будет{"\n"}<span className="font-bold">помогать и поддерживать</span>
+                    <span className="font-marck text-white leading-tight whitespace-pre-line" style={{ fontSize: "clamp(1.7rem, 7.2vw, 2.9rem)" }}>
+                      Зафиксируй их{"\n"}в символе{"\n"}который будет{"\n"}помогать и{"\n"}поддерживать
                     </span>
                   </div>
                 )}
@@ -396,17 +399,19 @@ function HomeSectorsMobileContent() {
                 {slide.id === 5 && (
                   <div className="absolute bottom-[5%] left-[5%] z-10 flex flex-col items-start"
                     style={{ textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
-                    <span className="font-caveat text-white" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>Твоей фантазией</span>
-                    <span className="font-marck text-white font-bold" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>и моим мастерством</span>
-                    <span className="font-caveat text-white" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>создадим вещь которой</span>
-                    <span className="font-marck text-white font-bold" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>нет ни у кого другого</span>
+                    <div className="flex flex-col items-start" style={{ lineHeight: "0.6" }}>
+                      <span className="font-caveat text-white" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>Твоей фантазией</span>
+                      <span className="font-marck text-white font-bold" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>и моим мастерством</span>
+                      <span className="font-caveat text-white" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>создадим вещь которой</span>
+                      <span className="font-marck text-white font-bold" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>нет ни у кого другого</span>
+                    </div>
                   </div>
                 )}
 
                 {slide.id === 6 && (
                   <div className="absolute bottom-[5%] left-[5%] z-10 flex flex-col items-start"
                     style={{ textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
-                    <span className="font-marck text-white leading-tight" style={{ fontSize: "clamp(1.4rem, 6vw, 2.4rem)" }}>
+                    <span className="font-marck text-white leading-tight whitespace-pre-line" style={{ fontSize: "clamp(1.4rem, 6vw, 2.4rem)" }}>
                       искусство{"\n"}которое останется{"\n"}с тобой надолго
                     </span>
                   </div>
