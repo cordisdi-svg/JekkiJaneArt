@@ -64,11 +64,11 @@ function HomeSectorsMobileContent() {
   // Random picks are stable for the lifetime of this component instance
   const slides: Slide[] = useMemo(() => [
     { id: 1, imageSrc: pickRandom(AVAILABLE_POOL), heading: "Доступные\nкартины", sub: "просто\nвыбери\nи закажи", href: "/available", uniqueKey: '1', subLayoutType: "icon-adjacent" }, // imagePos вычисляется динамически
-    { id: 2, imageSrc: "/walls/1.webp", heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я\nвоплощу\nеё", href: "/picstoorder", uniqueKey: '2', imagePos: "0% center", subLayoutType: "icon-adjacent" },
-    { id: 3, imageSrc: "/walls/3.webp", heading: "Интерьеры", sub: "сделаю\nпространство\nуникальным\nобъектом", href: "/walls", uniqueKey: '3', imagePos: "100% center", subLayoutType: "icon-adjacent" },
+    { id: 2, imageSrc: "/walls/1.webp", heading: "Создание\nна заказ", sub: "опиши\nсвою идею\nи я воплощу её", href: "/picstoorder", uniqueKey: '2', imagePos: "0% center", subLayoutType: "icon-adjacent" },
+    { id: 3, imageSrc: "/walls/3.webp", heading: "Интерьеры", sub: "Сделаю твоё\nпространство\nуникальным\nарт-объектом", href: "/walls", uniqueKey: '3', imagePos: "100% center", subLayoutType: "icon-adjacent" },
     { id: 4, imageSrc: "/amulets/mobile-main.webp", heading: "Картины\nталисманы", sub: "Создам твой личный проводник\nэнергии и намерений", href: "/amulets", uniqueKey: '4', subLayoutType: "floating-high", subBottom: "64%" },
-    { id: 5, imageSrc: pickRandom(WEAR_POOL), heading: "Роспись\nодежды", sub: "Сделаю твой образ\nнеповторимым", href: "/wear-and-shoes", uniqueKey: '5', subLayoutType: "floating-high", subBottom: "70%" },
-    { id: 6, imageSrc: "/tattoo/1-mobile.webp", heading: "Тату\nэскизы", sub: "Разработаю дизайн\nтвоей татуировки", href: "/tattoo", uniqueKey: '6', subLayoutType: "floating-high", subBottom: "46%" },
+    { id: 5, imageSrc: pickRandom(WEAR_POOL), heading: "Роспись\nодежды", sub: "Сделаю твой образ\nнеповторимым", href: "/wear-and-shoes", uniqueKey: '5', subLayoutType: "floating-high", subBottom: "64%" },
+    { id: 6, imageSrc: "/tattoo/1-mobile.webp", heading: "Тату\nэскизы", sub: "Твоя тату будет\nарт-объектом\nкоторый идеально ляжет на\nтвой образ", href: "/tattoo", uniqueKey: '6', subLayoutType: "floating-high", subBottom: "46%" },
     { id: 7, imageSrc: "/mainpage/mainpage-back.webp", heading: "", sub: "", href: null, uniqueKey: '7', subLayoutType: "floating-high" },
   ], []);
 
@@ -323,7 +323,7 @@ function HomeSectorsMobileContent() {
                   <div className="absolute top-[5%] left-[5%] right-[5%] z-10">
                     <span className="block font-fontatica uppercase tracking-wide text-[#f5f2eb] whitespace-pre-line leading-[0.85]"
                       style={{
-                        fontSize: "clamp(3.8rem, 16vw, 6rem)",
+                        fontSize: "clamp(4.2rem, 18vw, 7rem)",
                         textShadow: "0 4px 18px rgba(0,0,0,0.95)"
                       }}>
                       {slide.heading}
@@ -333,32 +333,81 @@ function HomeSectorsMobileContent() {
 
                 {/* Subtitle - Layout variations */}
                 {slide.sub && slide.subLayoutType === "icon-adjacent" && (
-                  <div className="absolute z-10 flex flex-col justify-center"
-                    style={{
-                      left: "58vw",
-                      bottom: "2%",
-                      right: "2%",
-                      height: "45vw" // привязка к примерной высоте иконки
-                    }}>
-                    <span className="block font-comfortaa-light text-left text-white whitespace-pre-line leading-[1.1]"
+                    <div className="absolute z-10 flex flex-col justify-center"
                       style={{
-                        fontSize: "clamp(1.4rem, 6.5vw, 2.5rem)",
+                        left: slide.id === 3 ? "30vw" : "58vw",
+                        bottom: slide.id === 2 ? "8%" : "2%",
+                        right: slide.id === 3 ? "2%" : (slide.id === 2 ? "8%" : "2%"),
+                        height: "45vw" // привязка к примерной высоте иконки
+                      }}>
+                    <span className={`block font-comfortaa-light text-white whitespace-pre-line leading-[1.1] ${slide.id === 2 || slide.id === 3 ? "text-right" : "text-left"}`}
+                      style={{
+                        fontSize: "clamp(1.6rem, 7.5vw, 3rem)",
                         textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)"
                       }}>
-                      {slide.sub}
+                      {slide.id === 2 ? (
+                        <>
+                          опиши{"\n"}свою идею{"\n"}и я воплощу её
+                        </>
+                      ) : slide.id === 3 ? (
+                        <>
+                          Сделаю твоё{"\n"}пространство{"\n"}уникальным{"\n"}<span className="font-bold">арт-объектом</span>
+                        </>
+                      ) : slide.sub}
                     </span>
                   </div>
                 )}
 
                 {slide.sub && slide.subLayoutType === "floating-high" && (
                   <div className="absolute right-[5%] left-[10%] z-10"
-                    style={{ bottom: slide.subBottom || "50%" }}>
-                    <span className="block font-comfortaa-light text-right text-white whitespace-pre-line leading-[1.2]"
+                    style={{ bottom: slide.id === 4 ? "60%" : (slide.subBottom || "50%") }}>
+                    <span className="block font-comfortaa-light text-right text-white whitespace-pre-line"
                       style={{
-                        fontSize: "clamp(1.3rem, 5.5vw, 2.2rem)",
-                        textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)"
+                        fontSize: "clamp(1.5rem, 6.5vw, 2.6rem)",
+                        textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)",
+                        lineHeight: slide.id === 4 ? "1.0" : "1.2"
                       }}>
-                      {slide.sub}
+                      {slide.id === 4 ? (
+                        <>
+                          Создам твой личный <span className="font-fontatica" style={{ fontSize: '1.5em' }}>проводник</span>{"\n"}энергии и намерений
+                        </>
+                      ) : slide.id === 5 ? (
+                        <>
+                          Сделаю твой образ{"\n"}<span className="font-bold">неповторимым</span>
+                        </>
+                      ) : slide.id === 6 ? (
+                        <>
+                          Твоя тату будет{"\n"}<span className="font-bold">арт-объектом</span>{"\n"}который идеально ляжет на{"\n"}<span className="font-bold">твой образ</span>
+                        </>
+                      ) : slide.sub}
+                    </span>
+                  </div>
+                )}
+
+                {slide.id === 4 && (
+                  <div className="absolute bottom-[5%] left-[5%] z-10 flex flex-col items-start"
+                    style={{ textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
+                    <span className="font-marck text-white leading-tight" style={{ fontSize: "clamp(1.7rem, 7.2vw, 2.9rem)" }}>
+                      Зафиксируем их{"\n"}в <span className="font-bold">символе</span>{"\n"}который будет{"\n"}<span className="font-bold">помогать и поддерживать</span>
+                    </span>
+                  </div>
+                )}
+
+                {slide.id === 5 && (
+                  <div className="absolute bottom-[5%] left-[5%] z-10 flex flex-col items-start"
+                    style={{ textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
+                    <span className="font-caveat text-white" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>Твоей фантазией</span>
+                    <span className="font-marck text-white font-bold" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>и моим мастерством</span>
+                    <span className="font-caveat text-white" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>создадим вещь которой</span>
+                    <span className="font-marck text-white font-bold" style={{ fontSize: "clamp(1.8rem, 8vw, 3.2rem)" }}>нет ни у кого другого</span>
+                  </div>
+                )}
+
+                {slide.id === 6 && (
+                  <div className="absolute bottom-[5%] left-[5%] z-10 flex flex-col items-start"
+                    style={{ textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
+                    <span className="font-marck text-white leading-tight" style={{ fontSize: "clamp(1.4rem, 6vw, 2.4rem)" }}>
+                      искусство{"\n"}которое останется{"\n"}с тобой надолго
                     </span>
                   </div>
                 )}

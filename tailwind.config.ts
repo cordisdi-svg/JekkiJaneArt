@@ -23,6 +23,8 @@ const config: Config = {
         ravenholm: ['RavenholmBold', 'sans-serif'],
         comfortaa: ['Comfortaa', 'sans-serif'],
         'comfortaa-light': ['Comfortaa-Light', 'sans-serif'],
+        caveat: ['Caveat', 'cursive'],
+        marck: ['MarckScript', 'cursive'],
       },
       keyframes: {
         'bg-scale': {
