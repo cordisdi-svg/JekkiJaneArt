@@ -150,6 +150,7 @@ export function BottomNavigation() {
             </button>
             <button type="button" className={`${navCellClass(false)} border-t border-white/20 text-[clamp(23px,7vw,32px)] leading-none px-1`} onClick={() => {
               const slideMap: Record<string, number> = {
+                "/about": 7,
                 "/available": 1,
                 "/picstoorder": 2,
                 "/walls": 3,

@@ -336,8 +336,11 @@ function HomeSectorsMobileContent() {
                   className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'}`}
                 >
                   {/* Circular Hint */}
-                  {slide.href && (
-                    <div className="absolute right-[20%] bottom-[40%] flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-x-1/2 translate-y-1/2">
+                  {(slide.href || slide.id === 7) && (
+                    <div
+                      className="absolute right-[20%] flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-x-1/2 translate-y-1/2"
+                      style={{ bottom: slide.id === 7 ? "65.5%" : "40%" }}
+                    >
                       <span
                         className={`absolute z-20 font-comfortaa-light uppercase tracking-widest ${styles.hintWaveText}`}
                         style={{
@@ -488,16 +491,15 @@ function HomeSectorsMobileContent() {
               {/* Уникальный контент только для слайда 7 */}
               {slide.id === 7 && (
                 <div
-                  className="absolute inset-0 z-20 flex flex-col items-center px-[5%] overflow-y-auto"
+                  className="absolute inset-0 z-20 flex flex-col items-center px-0 overflow-y-auto"
                   style={{ paddingTop: "5%" }}
                 >
                   {/* Иконка */}
                   <div
                     style={{
                       position: "relative",
-                      width: "100%", // иконка во всю ширину контейнера (который 90% экрана)
-                      maxWidth: "400px",
-                      aspectRatio: "1/1",
+                      width: "100%",
+                      aspectRatio: "1/1.05", // Slightly taller to expand downward
                     }}
                   >
                     <button
@@ -508,21 +510,22 @@ function HomeSectorsMobileContent() {
                       className="relative block w-full h-full bg-none border-none p-0 cursor-pointer"
                       aria-label="О художнице"
                     >
+                      <span className={`${styles.scene7IconOverlayText} font-fontatica uppercase`}>
+                        о художнице
+                      </span>
                       <Image
                         src="/mainpage/mainpage-icon.webp"
                         alt="О художнице"
                         fill
                         className="object-contain object-top filter brightness-[1.1]"
+                        style={{ zIndex: 10 }}
                         unoptimized
                       />
-                      <span className={`${styles.scene7IconOverlayText} font-fontatica uppercase`}>
-                        о художнице
-                      </span>
                     </button>
                   </div>
 
                   {/* Кнопки */}
-                  <div className="w-full mt-4 flex flex-col gap-1 pb-10">
+                  <div className="w-full px-[5%] mt-2 flex flex-col gap-1 pb-10">
                     <button
                       className={styles.menuButton}
                       onClick={(e) => { e.stopPropagation(); openModal("order"); }}
