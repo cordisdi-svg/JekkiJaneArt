@@ -467,9 +467,9 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                             className="object-cover"
                             sizes="(max-width: 768px) 55vw, 20vw"
                          unoptimized />
-                        <div className={`magic-hint absolute inset-0 flex items-end justify-center ${mobile ? 'pb-2' : 'pb-4'} pointer-events-none opacity-0`}>
-                            <div className={`bg-black/40 ${mobile ? 'w-[18px] h-[18px]' : 'w-9 h-9'} flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)] border border-white/20 will-change-transform`}>
-                                <svg viewBox="0 0 24 24" className={`${mobile ? 'w-[10px] h-[10px]' : 'w-5 h-5'} stroke-white fill-transparent`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <div className={`magic-hint absolute inset-0 flex items-end justify-center ${mobile ? 'pb-4' : 'pb-4'} pointer-events-none opacity-0`}>
+                            <div className={`bg-black/40 ${mobile ? 'w-[36px] h-[36px]' : 'w-9 h-9'} flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)] border border-white/20 will-change-transform`}>
+                                <svg viewBox="0 0 24 24" className={`${mobile ? 'w-[20px] h-[20px]' : 'w-5 h-5'} stroke-white fill-transparent`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M12 11V6a2 2 0 1 1 4 0v7a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-1" />
                                     <path d="M11 11H9a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4V9a2 2 0 1 0-4 0v2" />
                                 </svg>

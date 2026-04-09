@@ -297,6 +297,29 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             onPointerCancel={handlePointerUp}
             onWheel={handleWheel}
         >
+            {/* Mobile Finger Hint ("листай") */}
+            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100 }}>
+                <div className="mobile-hint-finger flex flex-col items-center">
+                    <svg 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="rgba(255,255,255,0.7)" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        className="w-10 h-10 drop-shadow-md"
+                    >
+                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                        <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                    </svg>
+                    <span className="text-[10px] text-white/70 uppercase tracking-widest mt-1 font-comfortaa font-bold" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
+                        листай
+                    </span>
+                </div>
+            </div>
+
             <style jsx>{`
                 .marquee-container {
                     scrollbar-width: none;

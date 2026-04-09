@@ -189,6 +189,7 @@ picture {
   /* Only for the pixel image itself */
 }
 
+
 /* ─── Global Animations ─── */
 @keyframes blink { 
   50% { opacity: 0; } 
@@ -234,23 +235,88 @@ picture {
 }
 
 @keyframes swipeUp {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
+  0% { transform: translateY(20px); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; transform: translateY(-20px); }
+  100% { transform: translateY(-20px); opacity: 0; }
 }
 
 .animate-swipe-up {
   animation: swipeUp 2.5s infinite ease-in-out;
 }
+
+/* ─── Mobile Hints (for touch devices only) ─── */
+
+@keyframes hint-wave {
+  0%, 50% { opacity: 0; transform: scale(0.98); }
+  60% { opacity: 1; transform: scale(1); }
+  85% { opacity: 0; transform: scale(1.02); }
+  100% { opacity: 0; }
+}
+
+@keyframes hint-text-peak {
+  0%, 50% { opacity: 0; transform: scale(0.98); }
+  56% { opacity: 1; transform: scale(1); }
+  79% { opacity: 1; transform: scale(1); }
+  85% { opacity: 0; transform: scale(1.02); }
+  100% { opacity: 0; }
+}
+
+@keyframes finger-swipe-up {
+  0% { transform: translateY(40px); opacity: 0; }
+  7% { opacity: 1; }
+  43% { opacity: 1; }
+  50% { transform: translateY(-30px); opacity: 0; }
+  50.1%, 100% { transform: translateY(-30px); opacity: 0; }
+}
+
+@keyframes zoom-hint-fade {
+  0% { opacity: 0; transform: translateY(5px); }
+  15%, 40% { opacity: 1; transform: translateY(0); }
+  55%, 100% { opacity: 0; transform: translateY(-5px); }
+}
+
+.mobile-hint-wave {
+  animation: hint-wave 4s infinite ease-in-out;
+  opacity: 0;
+}
+
+.mobile-hint-text {
+  animation: hint-text-peak 4s infinite ease-in-out;
+  opacity: 0;
+}
+
+.mobile-hint-finger {
+  animation: finger-swipe-up 4s infinite ease-in-out;
+  opacity: 0;
+}
+
+.mobile-hint-zoom {
+  animation: zoom-hint-fade 4s infinite ease-in-out;
+  opacity: 0;
+}
+
+@keyframes hint-wave-immediate {
+  0% { opacity: 0; transform: scale(0.98); }
+  20% { opacity: 1; transform: scale(1); }
+  75% { opacity: 0; transform: scale(1.02); }
+  100% { opacity: 0; }
+}
+
+@keyframes hint-text-immediate {
+  0% { opacity: 0; transform: scale(0.98); }
+  15% { opacity: 1; transform: scale(1); }
+  85% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.02); }
+}
+
+.mobile-hint-wave-immediate {
+  animation: hint-wave-immediate 2.5s infinite ease-in-out;
+  opacity: 0;
+}
+
+.mobile-hint-text-immediate {
+  animation: hint-text-immediate 2.5s infinite ease-in-out;
+  opacity: 0;
+}
+

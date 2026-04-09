@@ -60,6 +60,7 @@ export function PaintingsCarousel() {
     const [expanded, setExpanded] = useState(false);
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [isIdle, setIsIdle] = useState(false);
 
     // Animation refs
     const posRef = useRef(0.0);
@@ -88,6 +89,7 @@ export function PaintingsCarousel() {
     const isPausedRef = useRef(false);
     const expandedRef = useRef(false);
     const orderMenuRef = useRef(false);
+    const isIdleRef = useRef(false);
 
     useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
     useEffect(() => { expandedRef.current = expanded; }, [expanded]);
@@ -245,6 +247,11 @@ export function PaintingsCarousel() {
                 overlayDivRef.current.style.transition = idle ? "opacity 0.4s ease" : "opacity 0.1s ease";
                 overlayDivRef.current.style.width = `${cw}px`;
                 overlayDivRef.current.style.height = `${ch}px`;
+
+                if (idle !== isIdleRef.current) {
+                    isIdleRef.current = idle;
+                    setIsIdle(idle);
+                }
             }
 
             rafId = requestAnimationFrame(loop);
@@ -450,6 +457,38 @@ export function PaintingsCarousel() {
                         className="pointer-events-none absolute flex gap-2"
                         style={{ bottom: "1.25%", height: "6%", left: "2.5%", right: "2.5%" }}
                     >
+                        {/* Mobile Click Hint ("жми") - sync with idle state inherited from parent div opacity */}
+                        {isIdle && (
+                            <div 
+                                key={isIdle ? "active" : "inactive"}
+                                className="hide-on-desktop absolute left-[83.3%] top-[-160%] -translate-x-1/2 -translate-y-[30px] pointer-events-none flex items-center justify-center w-[85px] h-[85px]"
+                            >
+                                <span 
+                                    className="absolute z-20 font-comfortaa-bold uppercase tracking-[0.2em] mobile-hint-text-immediate"
+                                    style={{ 
+                                        fontSize: "11px", 
+                                        color: "#C2185B", 
+                                        textShadow: "0 1px 4px rgba(255,255,255,0.4)" 
+                                    }}
+                                >
+                                    жми
+                                </span>
+                                <svg viewBox="0 0 100 100" width="100%" height="100%" className="absolute inset-0">
+                                    {[16, 21, 26, 31, 36].map((r, i) => (
+                                        <circle
+                                            key={i}
+                                            cx="50" cy="50" r={r}
+                                            stroke="#F48FB1"
+                                            strokeWidth={i % 2 === 0 ? "3.5" : "1.5"}
+                                            fill="none"
+                                            className="mobile-hint-wave-immediate"
+                                            style={{ animationDelay: `${i * 0.12}s` }}
+                                        />
+                                    ))}
+                                </svg>
+                            </div>
+                        )}
+
                         <button type="button"
                             onClick={e => { e.stopPropagation(); setIsOrderMenuOpen(v => !v); dwellRef.current = null; }}
                             className="pointer-events-auto flex-[2] rounded-xl border border-[#C2185B]/55 bg-white/82 text-[11px] sm:text-[12px] md:text-sm lg:text-[14.5px] font-comfortaa font-bold text-[#C2185B] shadow-lg transition-all hover:bg-white active:scale-[0.98] tracking-widest leading-none flex items-center justify-center"
