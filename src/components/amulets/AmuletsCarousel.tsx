@@ -791,7 +791,7 @@ function AmuletsMobileCarousel() {
 
 
             {/* Mobile Finger Hint ("листай") */}
-            <div className="absolute bottom-[16%] left-[4%] z-[30] pointer-events-none">
+            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100 }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 

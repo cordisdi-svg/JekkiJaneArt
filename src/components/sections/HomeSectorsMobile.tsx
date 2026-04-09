@@ -338,7 +338,7 @@ function HomeSectorsMobileContent() {
                   {/* Circular Hint */}
                   {(slide.href || slide.id === 7) && (
                     <div
-                      className="absolute right-[20%] flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-x-1/2 translate-y-1/2"
+                      className={`absolute flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-y-1/2 ${slide.id >= 4 ? 'left-[4%] translate-x-0' : 'right-[20%] translate-x-1/2'}`}
                       style={{ bottom: slide.id === 7 ? "65%" : "40%" }}
                     >
                       <span
