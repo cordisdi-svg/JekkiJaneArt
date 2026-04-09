@@ -15,7 +15,7 @@ const slides = [
     { src: "/wear-and-shoes/5.webp", alt: "Роспись одежды 5" },
 ];
 
-export function WearMarquee() {
+export function WearMarquee({ children }: { children?: React.ReactNode }) {
     const isTouchDevice = useIsTouchDevice();
     // Derived once from pointer capability — never changes during session.
     const isDesktop = !isTouchDevice;
@@ -25,6 +25,11 @@ export function WearMarquee() {
     const containerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
     const isInteracting = useRef(false);
+
+    // Interaction states
+    const [isMobileTextboxVisible, setIsMobileTextboxVisible] = useState(true);
+    const hideTextboxTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const startY = useRef(0);
     const initialScrollTop = useRef(0);
     const lastTimeAnim = useRef<number>(0);
@@ -93,6 +98,13 @@ export function WearMarquee() {
             lastTimeAnim.current = 0;
             stopInertia();
         };
+    }, [stopInertia, isDesktop]);
+
+    useEffect(() => {
+        return () => {
+            if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+            stopInertia();
+        };
     }, [stopInertia]);
 
     // 4. Mobile Pointer Handlers
@@ -100,6 +112,11 @@ export function WearMarquee() {
         if (isDesktop || !containerRef.current || !trackRef.current) return;
         isInteracting.current = true;
         stopInertia();
+
+        if (!isDesktop) {
+            if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+            setIsMobileTextboxVisible(false);
+        }
 
         const container = containerRef.current;
         const track = trackRef.current;
@@ -147,6 +164,13 @@ export function WearMarquee() {
     const handlePointerUp = () => {
         isInteracting.current = false;
         lastTimeAnim.current = 0;
+
+        if (!isDesktop) {
+            if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
+            hideTextboxTimeoutRef.current = setTimeout(() => {
+                setIsMobileTextboxVisible(true);
+            }, 1500);
+        }
 
         // Start Inertia
         if (Math.abs(velocityRef.current) > 0.1) {
@@ -200,7 +224,7 @@ export function WearMarquee() {
                     className="object-cover"
                     sizes="100vw"
                     priority
-                  unoptimized />
+                    unoptimized />
             </button>
         );
     }
@@ -208,32 +232,45 @@ export function WearMarquee() {
     // ─── MOBILE VIEW ───
     return (
         <div
-            ref={containerRef}
-            className="relative w-full overflow-hidden block"
+            className="marquee-wrapper relative w-full h-full overflow-hidden cursor-grab active:cursor-grabbing pointer-events-auto"
             style={{ height: SLIDE_H, touchAction: "none" }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
         >
-            <div ref={trackRef} className="flex flex-col">
-                {[...slides, ...slides].map((slide, i) => (
-                    <div
-                        key={i}
-                        className="relative flex-shrink-0 w-full"
-                        style={{ height: SLIDE_H }}
-                    >
-                        <Image
-                            src={slide.src}
-                            alt={slide.alt}
-                            fill
-                            className="object-cover"
-                            sizes="100vw"
-                            priority={i < 2}
-                          unoptimized />
-                    </div>
-                ))}
+            <div ref={containerRef} className="relative w-full h-full overflow-hidden">
+                <div ref={trackRef} className="flex flex-col">
+                    {[...slides, ...slides].map((slide, i) => (
+                        <div
+                            key={i}
+                            className="relative flex-shrink-0 w-full"
+                            style={{ height: SLIDE_H }}
+                        >
+                            <Image
+                                src={slide.src}
+                                alt={slide.alt}
+                                fill
+                                className="object-cover"
+                                sizes="100vw"
+                                priority={i < 2}
+                                unoptimized />
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
+            {children && (
+                <div
+                    data-visible={isDesktop || isMobileTextboxVisible}
+                    className={`group absolute inset-0 flex items-center justify-center transition-all duration-300 ${isDesktop ? 'pointer-events-auto' : 'pointer-events-none'} ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+                >
+                    <div className="relative z-20 w-full flex justify-center h-full">
+                        {children}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
