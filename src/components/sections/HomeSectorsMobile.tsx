@@ -319,52 +319,59 @@ function HomeSectorsMobileContent() {
               {/* LAYER 2: Текст и подсказки — растворяются вместе */}
               <div className={showHero ? styles.textExit : ""}>
                 
-                {/* Hints */}
-                {slide.href && (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px]">
-                    <span 
-                      className={`absolute z-20 font-comfortaa-light uppercase tracking-widest ${styles.hintWave}`} 
-                      style={{ 
-                        animationDelay: "0s", 
-                        fontSize: "clamp(0.7rem, 3.5vw, 1.2rem)", 
-                        color: "rgba(245, 242, 235, 0.9)", 
-                        textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,1)" 
-                      }}
-                    >
-                      жми
-                    </span>
-                    <svg viewBox="0 0 100 100" width="100%" height="100%" className="absolute inset-0">
-                      {[16, 26, 36, 46].map((r, i) => (
-                        <circle
-                          key={i}
-                          cx="50" cy="50" r={r}
-                          stroke="rgba(255,255,255,0.55)"
-                          strokeWidth="3"
+                {/* Hints wrapper with key to reset animation on slide change */}
+                <div 
+                  key={currentIndex}
+                  className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating.current || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'}`}
+                >
+                  {/* Circular Hint */}
+                  {slide.href && (
+                    <div className="absolute right-[20%] bottom-[40%] flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-x-1/2 translate-y-1/2">
+                      <span 
+                        className={`absolute z-20 font-comfortaa-light uppercase tracking-widest ${styles.hintWave}`} 
+                        style={{ 
+                          animationDelay: "0s", 
+                          fontSize: "clamp(0.7rem, 3.5vw, 1.2rem)", 
+                          color: "rgba(245, 242, 235, 0.9)", 
+                          textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,1)" 
+                        }}
+                      >
+                        жми
+                      </span>
+                      <svg viewBox="0 0 100 100" width="100%" height="100%" className="absolute inset-0">
+                        {[16, 21, 26, 31, 36, 41, 46].map((r, i) => (
+                          <circle
+                            key={i}
+                            cx="50" cy="50" r={r}
+                            stroke="rgba(255,255,255,0.55)"
+                            strokeWidth={i % 2 === 0 ? "3" : "1.2"}
+                            fill="none"
+                            className={styles.hintWave}
+                            style={{ animationDelay: `${i * 0.15}s` }}
+                          />
+                        ))}
+                      </svg>
+                    </div>
+                  )}
+                  
+                  {/* Scroll Hint */}
+                  <div className="absolute left-[15%] w-[70%] h-[4%] bottom-[2%]">
+                    <svg viewBox="0 0 200 60" width="100%" height="100%" preserveAspectRatio="none">
+                      {[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4].map((j, idx) => (
+                        <path
+                          key={idx}
+                          d={`M 0 ${j * 11} L 100 ${j * 11 + 14} L 200 ${j * 11}`}
+                          stroke="rgba(255,255,255,0.45)"
+                          strokeWidth={j % 1 === 0 ? "3.5" : "1.5"}
                           fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           className={styles.hintWave}
-                          style={{ animationDelay: `${i * 0.12}s` }}
+                          style={{ animationDelay: `${3 + idx * 0.12}s` }}
                         />
                       ))}
                     </svg>
                   </div>
-                )}
-                
-                <div className="absolute left-[15%] w-[70%] h-[4%] bottom-[2%] z-20 pointer-events-none">
-                  <svg viewBox="0 0 200 60" width="100%" height="100%" preserveAspectRatio="none">
-                    {[0, 1, 2, 3, 4].map((j) => (
-                      <path
-                        key={j}
-                        d={`M 0 ${j * 11} L 100 ${j * 11 + 14} L 200 ${j * 11}`}
-                        stroke="rgba(255,255,255,0.45)"
-                        strokeWidth="3.5"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className={styles.hintWave}
-                        style={{ animationDelay: `${j * 0.1}s` }}
-                      />
-                    ))}
-                  </svg>
                 </div>
 
                 {/* Heading */}

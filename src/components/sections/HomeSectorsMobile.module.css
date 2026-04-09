@@ -17,15 +17,20 @@
 /* ── Hints Animations ──────────────────────────────────────────────────────── */
 
 @keyframes hint-wave {
-  0% { opacity: 0; }
-  6% { opacity: 1; }
-  20% { opacity: 0; }
+  0% { opacity: 0; transform: scale(0.98); }
+  15% { opacity: 1; transform: scale(1); }
+  33% { opacity: 0; transform: scale(1.02); }
   100% { opacity: 0; }
 }
 
 .hintWave {
   opacity: 0;
-  animation: hint-wave 3s infinite linear;
+  animation: hint-wave 6s infinite ease-in-out;
+}
+
+.hintsHidden {
+  opacity: 0 !important;
+  pointer-events: none;
 }
 
 /* ── Exit Phase 1: текст растворяется (0–1500ms) ────────────────── */
