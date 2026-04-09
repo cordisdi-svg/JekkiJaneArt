@@ -25,7 +25,9 @@ export default function WearAndShoesPage() {
             {/* Текстовый блок сверху с подложкой и анимацией */}
             <div className="absolute inset-x-0 top-0 pt-4 px-6 z-10 pointer-events-none flex flex-col">
               <div
-                className="bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)] flex flex-col pointer-events-auto"
+                className="relative p-4 flex flex-col pointer-events-auto
+                           before:absolute before:inset-0 before:bg-black/25 before:backdrop-blur-md before:rounded-2xl before:border before:border-white/10 before:shadow-[0_0_20px_rgba(0,0,0,0.5)]
+                           before:opacity-0 group-data-[visible=true]:before:opacity-100 before:transition-opacity before:duration-[1500ms] before:pointer-events-none"
                 style={{
                   height: "calc(0.5 * (100svh - var(--nav-height-mobile) - 1rem))",
                 }}
