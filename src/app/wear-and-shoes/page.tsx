@@ -29,6 +29,11 @@ export default function WearAndShoesPage() {
                 style={{
                   height: "calc(0.5 * (100svh - var(--nav-height-mobile) - 1rem))",
                 }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onPointerMove={(e) => e.stopPropagation()}
+                onPointerUp={(e) => e.stopPropagation()}
+                onPointerCancel={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
               >
                 <style>{`
                     .custom-transparent-scrollbar::-webkit-scrollbar {
@@ -44,6 +49,11 @@ export default function WearAndShoesPage() {
                   ref={scrollRefMobile}
                   className="overflow-y-auto overscroll-contain custom-transparent-scrollbar pr-1"
                   style={{ touchAction: "pan-y" }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onPointerMove={(e) => e.stopPropagation()}
+                  onPointerUp={(e) => e.stopPropagation()}
+                  onPointerCancel={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <div className="text-white text-[15px] leading-[1.4] font-comfortaa-light">
                     <TypewriterText scrollRef={scrollRefMobile} delay={26}>
