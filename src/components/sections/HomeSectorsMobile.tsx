@@ -90,7 +90,7 @@ function HomeSectorsMobileContent() {
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [exitPhase, setExitPhase] = useState<ExitPhase>("idle");
 
-  const isAnimating = useRef(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const exitedRef = useRef(false);
   const sliderTrackRef = useRef<HTMLDivElement>(null);
   const timers = useRef<number[]>([]);
@@ -112,7 +112,7 @@ function HomeSectorsMobileContent() {
   }, []);
 
   const startSlideTransition = useCallback((newIndex: number) => {
-    isAnimating.current = true;
+    setIsAnimating(true);
     setIsTransitionEnabled(true);
     setCurrentIndex(newIndex);
   }, []);
@@ -131,7 +131,7 @@ function HomeSectorsMobileContent() {
         setIsTransitionEnabled(false);
         setCurrentIndex(1);
       }
-      isAnimating.current = false;
+      setIsAnimating(false);
     };
 
     track.addEventListener("transitionend", onTransitionEnd);
@@ -140,7 +140,7 @@ function HomeSectorsMobileContent() {
 
   // Safety fallback if transitionend doesn't fire
   useEffect(() => {
-    if (!isTransitionEnabled || !isAnimating.current) return;
+    if (!isTransitionEnabled || !isAnimating) return;
     const fallbackTimer = setTimeout(() => {
       if (currentIndex === 0) {
         setIsTransitionEnabled(false);
@@ -149,7 +149,7 @@ function HomeSectorsMobileContent() {
         setIsTransitionEnabled(false);
         setCurrentIndex(1);
       }
-      isAnimating.current = false;
+      setIsAnimating(false);
     }, 600); // Wait 600ms (550 + 50 buffer)
     return () => clearTimeout(fallbackTimer);
   }, [currentIndex, isTransitionEnabled, N]);
@@ -173,10 +173,10 @@ function HomeSectorsMobileContent() {
     const dx = Math.abs(startX.current - e.changedTouches[0].clientX);
 
     if (Math.abs(dy) < 40 || dx > Math.abs(dy)) return;
-    if (isAnimating.current || exitedRef.current) return; // block swipes during exit
+    if (isAnimating || exitedRef.current) return; // block swipes during exit
 
     handleSwipe(dy > 0 ? "up" : "down");
-  }, [handleSwipe]);
+  }, [handleSwipe, isAnimating]);
 
   // ─── Tap handler ────────────────────────────────────────────────────────────
   const startExitAnimation = useCallback((href: string) => {
@@ -322,7 +322,7 @@ function HomeSectorsMobileContent() {
                 {/* Hints wrapper with key to reset animation on slide change */}
                 <div 
                   key={currentIndex}
-                  className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating.current || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'}`}
+                  className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'}`}
                 >
                   {/* Circular Hint */}
                   {slide.href && (
