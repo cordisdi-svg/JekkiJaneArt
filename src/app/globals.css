@@ -232,3 +232,25 @@ picture {
 .arrow-anim-right {
   animation: arrow-move-right 4s ease-in-out infinite;
 }
+
+@keyframes swipeUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+.animate-swipe-up {
+  animation: swipeUp 2.5s infinite ease-in-out;
+}

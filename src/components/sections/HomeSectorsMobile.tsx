@@ -333,7 +333,7 @@ function HomeSectorsMobileContent() {
                 {/* Hints wrapper with key to reset animation on slide change */}
                 <div
                   key={currentIndex}
-                  className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'}`}
+                  className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'} ${slide.id === 7 ? styles.hintsOnTop : ''}`}
                 >
                   {/* Circular Hint */}
                   {(slide.href || slide.id === 7) && (
@@ -344,7 +344,7 @@ function HomeSectorsMobileContent() {
                       <span
                         className={`absolute z-20 font-comfortaa-light uppercase tracking-widest ${styles.hintWaveText}`}
                         style={{
-                          animationDelay: "2s",
+                          animationDelay: "1s",
                           fontSize: "clamp(0.7rem, 3.5vw, 1.2rem)",
                           color: "rgba(245, 242, 235, 0.9)",
                           textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,1)"
@@ -361,30 +361,39 @@ function HomeSectorsMobileContent() {
                             strokeWidth={i % 2 === 0 ? "3" : "1.2"}
                             fill="none"
                             className={styles.hintWave}
-                            style={{ animationDelay: `${2 + i * 0.15}s` }}
+                            style={{ animationDelay: `${1 + i * 0.1}s` }}
                           />
                         ))}
                       </svg>
                     </div>
                   )}
 
-                  {/* Scroll Hint */}
-                  <div className="absolute left-[5%] w-[90%] h-[4%] bottom-[2%]">
-                    <svg viewBox="0 0 200 60" width="100%" height="100%" preserveAspectRatio="none">
-                      {[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4].map((j, idx) => (
-                        <path
-                          key={idx}
-                          d={`M 0 ${j * 11} L 100 ${j * 11 + 14} L 200 ${j * 11}`}
-                          stroke="rgba(255,255,255,0.45)"
-                          strokeWidth={j % 1 === 0 ? "3.5" : "1.5"}
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className={styles.hintWave}
-                          style={{ animationDelay: `${5 + idx * 0.12}s` }}
-                        />
-                      ))}
-                    </svg>
+                  {/* Finger View Hint - Acts like the waves but with specific positioning and 2s active duration */}
+                  <div 
+                    className={`absolute bottom-[12%] w-[12vw] h-[12vw] max-w-[60px] max-h-[60px] ${slide.id <= 3 ? 'left-[8%]' : 'right-[8%]'}`}
+                  >
+                    <div 
+                      className={styles.fingerHint}
+                      style={{ animationDelay: '1s' }}
+                    >
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="rgba(255,255,255,0.7)" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        className="w-full h-full filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+                      >
+                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+                        <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                      </svg>
+                      <span className="block text-center font-comfortaa-light text-[10px] text-white/70 uppercase tracking-widest mt-1" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
+                        листай
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -557,7 +566,6 @@ function HomeSectorsMobileContent() {
           );
         })}
       </div>
-
     </div>
   );
 }

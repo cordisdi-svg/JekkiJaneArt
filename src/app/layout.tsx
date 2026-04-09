@@ -45,10 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" href="/fonts/Abibas.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
       </head>
       <body>
-        <InteractionGuards />
-        <DeviceLayoutSync />
-        <InstagramTooltip />
         <ModalProvider>
+          <InteractionGuards />
+          <DeviceLayoutSync />
+          <InstagramTooltip />
           <div className="w-full h-full relative">
             <main className="w-full h-full">
               {children}
