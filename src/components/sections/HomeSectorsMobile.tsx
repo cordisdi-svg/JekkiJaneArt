@@ -4,6 +4,7 @@ import { useRef, useState, useMemo, useCallback, useEffect, Suspense } from "rea
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./HomeSectorsMobile.module.css";
+import { useModal } from "@/components/modals/ModalProvider";
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
 
@@ -60,6 +61,16 @@ type ExitPhase = "idle" | "text" | "image";
 function HomeSectorsMobileContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { openModal } = useModal();
+
+  const [reviewsStatus, setReviewsStatus] = useState<"default" | "underDev">("default");
+
+  const handleReviewsClick = () => {
+    setReviewsStatus("underDev");
+    setTimeout(() => {
+      setReviewsStatus("default");
+    }, 3000);
+  };
 
   // Random picks are stable for the lifetime of this component instance
   const slides: Slide[] = useMemo(() => [
@@ -474,48 +485,69 @@ function HomeSectorsMobileContent() {
                 )}
               </div>
 
-              {/* Уникальная иконка только для слайда 7 */}
+              {/* Уникальный контент только для слайда 7 */}
               {slide.id === 7 && (
                 <div
-                  className="absolute pointer-events-none z-20"
-                  style={{
-                    top: "5%", // перенесли вверх (отступ как у заглавий)
-                    left: 0,
-                    width: "79vw", // 61vw * 1.3 ≈ 79vw (увеличено на 30%)
-                  }}
+                  className="absolute inset-0 z-20 flex flex-col items-center px-[5%] overflow-y-auto"
+                  style={{ paddingTop: "5%" }}
                 >
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleIconTap();
-                    }}
-                    aria-label="О художнице"
+                  {/* Иконка */}
+                  <div
                     style={{
                       position: "relative",
-                      display: "block",
-                      width: "100%",
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      pointerEvents: "auto",
+                      width: "100%", // иконка во всю ширину контейнера (который 90% экрана)
+                      maxWidth: "400px",
+                      aspectRatio: "1/1",
                     }}
                   >
-                    <Image
-                      src="/mainpage/mainpage-icon-mobile2.png"
-                      alt="О художнице"
-                      width={400}
-                      height={600}
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                        objectPosition: "left top", // выравнивание по верху
-                        filter: "brightness(1.1)",
-                        display: "block",
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleIconTap();
                       }}
-                      unoptimized
-                    />
-                  </button>
+                      className="relative block w-full h-full bg-none border-none p-0 cursor-pointer"
+                      aria-label="О художнице"
+                    >
+                      <Image
+                        src="/mainpage/mainpage-icon.webp"
+                        alt="О художнице"
+                        fill
+                        className="object-contain object-top filter brightness-[1.1]"
+                        unoptimized
+                      />
+                      <span className={`${styles.scene7IconOverlayText} font-fontatica uppercase`}>
+                        о художнице
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Кнопки */}
+                  <div className="w-full mt-4 flex flex-col gap-1 pb-10">
+                    <button
+                      className={styles.menuButton}
+                      onClick={(e) => { e.stopPropagation(); openModal("order"); }}
+                    >
+                      Заказать
+                    </button>
+                    <button
+                      className={styles.menuButton}
+                      onClick={(e) => { e.stopPropagation(); openModal("siteCreator"); }}
+                    >
+                      Нужен сайт?
+                    </button>
+                    <button
+                      className={styles.menuButton}
+                      onClick={(e) => { e.stopPropagation(); openModal("certificates"); }}
+                    >
+                      Сертификаты
+                    </button>
+                    <button
+                      className={styles.menuButton}
+                      onClick={(e) => { e.stopPropagation(); handleReviewsClick(); }}
+                    >
+                      {reviewsStatus === "underDev" ? "В разработке" : "Отзывы"}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
