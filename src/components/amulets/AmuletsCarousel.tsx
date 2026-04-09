@@ -642,6 +642,7 @@ function AmuletsMobileCarousel() {
         <div
             ref={containerRef}
             className="relative w-full h-full flex flex-col items-center justify-start overflow-hidden"
+            style={{ touchAction: "none", overscrollBehavior: "none" }}
             onTouchStart={(e) => { setIsPaused(true); handleTouchStart(e); }}
             onTouchEnd={(e) => { setIsPaused(false); handleTouchEnd(e); }}
             onTouchCancel={() => setIsPaused(false)}
