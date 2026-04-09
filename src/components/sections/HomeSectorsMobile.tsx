@@ -339,7 +339,7 @@ function HomeSectorsMobileContent() {
                   {(slide.href || slide.id === 7) && (
                     <div
                       className="absolute right-[20%] flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-x-1/2 translate-y-1/2"
-                      style={{ bottom: slide.id === 7 ? "65.5%" : "40%" }}
+                      style={{ bottom: slide.id === 7 ? "65%" : "40%" }}
                     >
                       <span
                         className={`absolute z-20 font-comfortaa-light uppercase tracking-widest ${styles.hintWaveText}`}
@@ -499,7 +499,7 @@ function HomeSectorsMobileContent() {
                     style={{
                       position: "relative",
                       width: "100%",
-                      aspectRatio: "1/1.05", // Slightly taller to expand downward
+                      aspectRatio: "1/0.9",
                     }}
                   >
                     <button
@@ -525,7 +525,7 @@ function HomeSectorsMobileContent() {
                   </div>
 
                   {/* Кнопки */}
-                  <div className="w-full px-[5%] mt-2 flex flex-col gap-1 pb-10">
+                  <div className="w-full px-[5%] mt-4 flex flex-col gap-1 pb-10">
                     <button
                       className={styles.menuButton}
                       onClick={(e) => { e.stopPropagation(); openModal("order"); }}
