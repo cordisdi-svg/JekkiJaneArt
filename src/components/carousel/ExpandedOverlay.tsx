@@ -322,14 +322,13 @@ export function ExpandedOverlay({
             setShowPinchHint(false);
             if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
             if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
-            if (isTouch) {
-                hintTimerRef.current = setTimeout(() => {
-                    if (!hasPinchedRef.current && magnifierActiveRef.current) {
-                        setShowPinchHint(true);
-                        hintAnimTimerRef.current = setTimeout(() => setShowPinchHint(false), 3000);
-                    }
-                }, 2500);
-            }
+            // Show navigation arrows hint on both touch (pinch) and desktop (magnifier active)
+            hintTimerRef.current = setTimeout(() => {
+                if (!hasPinchedRef.current && magnifierActiveRef.current) {
+                    setShowPinchHint(true);
+                    hintAnimTimerRef.current = setTimeout(() => setShowPinchHint(false), 3000);
+                }
+            }, 2500);
 
             if (!rafTrackingRef.current) {
                 const track = () => {
@@ -690,16 +689,16 @@ export function ExpandedOverlay({
                     onLoad={handleImageLoad}
                 />
 
-                {/* Mobile Zoom Hint ("зум") */}
-                <div className="hide-on-desktop absolute bottom-4 right-4 z-20 pointer-events-none" style={{ visibility: zoomHintVisible ? 'visible' : 'hidden' }}>
+                {/* Zoom Hint ("зум") — mobile + desktop */}
+                <div className="absolute bottom-4 right-4 z-20 pointer-events-none" style={{ visibility: zoomHintVisible ? 'visible' : 'hidden' }}>
                     <div className="mobile-hint-zoom flex flex-col items-center" style={{ animationDelay: '1s' }}>
-                        <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg viewBox="0 0 24 24" className="w-8 h-8 md:w-10 md:h-10 fill-none stroke-white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             <line x1="11" y1="8" x2="11" y2="14"></line>
                             <line x1="8" y1="11" x2="14" y2="11"></line>
                         </svg>
-                        <span className="text-[10px] text-white uppercase tracking-widest mt-1 font-comfortaa font-bold" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
+                        <span className="text-[10px] md:text-[11px] text-white uppercase tracking-widest mt-1 font-comfortaa font-bold" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
                             зум
                         </span>
                     </div>

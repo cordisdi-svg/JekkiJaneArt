@@ -466,7 +466,7 @@ export function PaintingsCarousel() {
                         {isIdle && (
                             <div 
                                 key={isIdle ? "active" : "inactive"}
-                                className="hide-on-desktop absolute left-[83.3%] top-[-160%] -translate-x-1/2 -translate-y-[35px] pointer-events-none flex items-center justify-center w-[85px] h-[85px]"
+                                className="absolute left-[83.3%] top-[-160%] -translate-x-1/2 -translate-y-[35px] pointer-events-none flex items-center justify-center w-[85px] h-[85px] md:w-[100px] md:h-[100px]"
                                 style={{ opacity: 0.45, visibility: expandHintVisible ? 'visible' : 'hidden' }}
                             >
                                 <span 
