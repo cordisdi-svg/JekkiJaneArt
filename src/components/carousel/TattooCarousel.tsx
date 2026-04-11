@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, useCallback, useState } from "react";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 const N = 9;
 const SPEED = (2 * Math.PI) / (20 * 60); // 20 sec/rev at 60fps
@@ -85,6 +86,12 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
     const previewImgRef = useRef<HTMLDivElement>(null);
     const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
+    // Hint counter — hide "пальчик" hint after 3 long-press previews
+    const { visible: holdHintVisible, increment: incrementHoldHint } = useHintCounter('tattoo_hold');
+    // Ref mirror so the rAF loop can read without stale closure
+    const holdHintVisibleRef = useRef(true);
+    useEffect(() => { holdHintVisibleRef.current = holdHintVisible; }, [holdHintVisible]);
+
     // Long-press refs
     const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const pointerDownPosRef = useRef({ x: 0, y: 0 });
@@ -129,6 +136,7 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
                 pausedRef.current = true;
                 stopInertia();
                 longPressArmedRef.current = false; // Disarm once fired
+                incrementHoldHint();
             }
         }, 175);
     };
@@ -351,7 +359,7 @@ export function TattooCarousel({ mobile = false }: { mobile?: boolean }) {
 
                 const hintEl = el.querySelector('.magic-hint') as HTMLElement | null;
                 if (hintEl) {
-                    if (i === bestIdx && t > 0.985 && activeIdx === null && !isHoldingRef.current) {
+                    if (i === bestIdx && t > 0.985 && activeIdx === null && !isHoldingRef.current && holdHintVisibleRef.current) {
                         // Normalize t from 0.985 to 1.0 into 0.0 to 1.0
                         const nt = (t - 0.985) / 0.015;
                         hintEl.style.opacity = nt.toString();

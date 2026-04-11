@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./HomeSectorsMobile.module.css";
 import { useModal } from "@/components/modals/ModalProvider";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 // ─── Slide data ───────────────────────────────────────────────────────────────
 
@@ -64,6 +65,10 @@ function HomeSectorsMobileContent() {
   const { openModal } = useModal();
 
   const [reviewsStatus, setReviewsStatus] = useState<"default" | "underDev">("default");
+
+  // ─── Hint counters (hide after 3 actions, reset on reload or after 5 min) ───
+  const { visible: scrollHintVisible, increment: incrementScrollHint } = useHintCounter('home_scroll');
+  const { visible: tapHintVisible, increment: incrementTapHint } = useHintCounter('home_tap');
 
   const handleReviewsClick = () => {
     setReviewsStatus("underDev");
@@ -166,12 +171,13 @@ function HomeSectorsMobileContent() {
   }, [currentIndex, isTransitionEnabled, N]);
 
   const handleSwipe = useCallback((direction: "up" | "down") => {
+    incrementScrollHint();
     if (direction === "up") {
       startSlideTransition(currentIndex + 1);
     } else {
       startSlideTransition(currentIndex - 1);
     }
-  }, [currentIndex, startSlideTransition]);
+  }, [currentIndex, startSlideTransition, incrementScrollHint]);
 
   // ─── Touch handlers (passive touchstart) ────────────────────────────────────
   const onTouchStart = useCallback((e: React.TouchEvent) => {
@@ -233,8 +239,9 @@ function HomeSectorsMobileContent() {
 
   const handleTap = useCallback((slide: Slide) => {
     if (!slide.href || exitedRef.current) return;
+    incrementTapHint();
     startExitAnimation(slide.href);
-  }, [startExitAnimation]);
+  }, [startExitAnimation, incrementTapHint]);
 
   const handleIconTap = useCallback(() => {
     startExitAnimation("/about");
@@ -339,7 +346,7 @@ function HomeSectorsMobileContent() {
                   {(slide.href || slide.id === 7) && (
                     <div
                       className={`absolute flex items-center justify-center w-[25vw] h-[25vw] max-w-[120px] max-h-[120px] translate-y-1/2 ${slide.id >= 4 ? 'left-[4%] translate-x-0' : 'right-[20%] translate-x-1/2'}`}
-                      style={{ bottom: slide.id === 7 ? "65%" : "40%" }}
+                      style={{ bottom: slide.id === 7 ? "65%" : "40%", visibility: tapHintVisible ? 'visible' : 'hidden' }}
                     >
                       <span
                         className={`absolute z-20 font-comfortaa-light uppercase tracking-widest ${styles.hintWaveText}`}
@@ -371,6 +378,7 @@ function HomeSectorsMobileContent() {
                   {/* Finger View Hint - Acts like the waves but with specific positioning and 2s active duration */}
                   <div 
                     className={`absolute bottom-[12%] w-[12vw] h-[12vw] max-w-[60px] max-h-[60px] ${slide.id <= 3 ? 'left-[8%]' : 'right-[8%]'}`}
+                    style={{ visibility: scrollHintVisible ? 'visible' : 'hidden' }}
                   >
                     <div 
                       className={styles.fingerHint}

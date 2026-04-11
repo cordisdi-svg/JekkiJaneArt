@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 const wallsImages = [
     { src: '/walls/1.webp', alt: 'Роспись 1' },
@@ -18,6 +19,9 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
     const marqueeRef = useRef<HTMLDivElement>(null);
     // Derived once from pointer capability — never changes during session.
     const isDesktop = !isTouchDevice;
+
+    // Hint counter — hide "листай" after 3 mobile scrolls
+    const { visible: scrollHintVisible, increment: incrementScrollHint } = useHintCounter('walls_scroll');
 
     // Interaction states
     const isInteracting = useRef(false);
@@ -110,6 +114,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
         if (!isDesktop) {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
             setIsMobileTextboxVisible(false);
+            incrementScrollHint();
         }
 
         const container = containerRef.current;
@@ -298,7 +303,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             onWheel={handleWheel}
         >
             {/* Mobile Finger Hint ("листай") */}
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100 }}>
+            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 

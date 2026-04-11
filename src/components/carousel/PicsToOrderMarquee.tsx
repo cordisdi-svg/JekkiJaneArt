@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 const picsToOrderImages = [
     { src: "/picstoorder/pic1.webp", alt: "Картина 1" },
@@ -22,6 +23,9 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
     const isTouchDevice = useIsTouchDevice();
     // Derived once from pointer capability — never changes during session.
     const isDesktop = !isTouchDevice;
+
+    // Hint counter — hide "листай" after 3 carousel scrolls on mobile
+    const { visible: scrollHintVisible, increment: incrementScrollHint } = useHintCounter('picstoorder_scroll');
     const [isMobileTextboxVisible, setIsMobileTextboxVisible] = useState(true);
     const hideTextboxTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -139,6 +143,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         if (!isDesktop) {
             if (hideTextboxTimeoutRef.current) clearTimeout(hideTextboxTimeoutRef.current);
             setIsMobileTextboxVisible(false);
+            incrementScrollHint();
         }
 
         dragStartPos.current = pos;
@@ -256,7 +261,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             onTouchCancel={handleTouchCancel}
         >
             {/* Mobile Finger Hint ("листай") */}
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100 }}>
+            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 

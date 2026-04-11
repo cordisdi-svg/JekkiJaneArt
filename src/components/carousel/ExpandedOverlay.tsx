@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PaintingData } from "@/data/availablePics";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 // ─── Expanded overlay (covers full viewport including nav) ────────────────────
 export function ExpandedOverlay({ 
@@ -18,6 +19,10 @@ export function ExpandedOverlay({
 }) {
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
     const [showPinchHint, setShowPinchHint] = useState(false);
+
+    // Hint counters (hide after 3 actions, reset on reload or after 5 min)
+    const { visible: zoomHintVisible, increment: incrementZoomHint } = useHintCounter('overlay_zoom');
+    const { visible: pinchHintVisible, increment: incrementPinchHint } = useHintCounter('overlay_pinch');
 
     // Hint animation refs
     const hintTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -391,6 +396,7 @@ export function ExpandedOverlay({
 
         pressTimerRef.current = setTimeout(() => {
             toggleMagnifierDOM(true);
+            incrementZoomHint(); // count mobile magnifier activation
         }, 300); // 300ms mobile activation delay
     };
 
@@ -418,6 +424,7 @@ export function ExpandedOverlay({
         if (secondaryPointerRef.current && e.pointerId === secondaryPointerRef.current.id) {
             if (!hasPinchedRef.current) {
                 hasPinchedRef.current = true;
+                incrementPinchHint(); // count pinch usage
                 setShowPinchHint(false);
                 if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
                 if (hintAnimTimerRef.current) clearTimeout(hintAnimTimerRef.current);
@@ -646,7 +653,7 @@ export function ExpandedOverlay({
                 </div>
 
                 {/* Mobile pinch hint layered directly inside magnifier to exit its edges cleanly */}
-                {showPinchHint && (
+                {showPinchHint && pinchHintVisible && (
                     <div className="absolute inset-0 pointer-events-none z-10 w-full h-full">
                         <div className="absolute left-[5%] top-1/2 text-gray-200 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] pinch-hint-left">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
@@ -684,7 +691,7 @@ export function ExpandedOverlay({
                 />
 
                 {/* Mobile Zoom Hint ("зум") */}
-                <div className="hide-on-desktop absolute bottom-4 right-4 z-20 pointer-events-none">
+                <div className="hide-on-desktop absolute bottom-4 right-4 z-20 pointer-events-none" style={{ visibility: zoomHintVisible ? 'visible' : 'hidden' }}>
                     <div className="mobile-hint-zoom flex flex-col items-center" style={{ animationDelay: '1s' }}>
                         <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>

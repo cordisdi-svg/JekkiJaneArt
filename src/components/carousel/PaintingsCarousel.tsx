@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { availablePics, PaintingData } from "@/data/availablePics";
 import { ExpandedOverlay } from "./ExpandedOverlay";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function mod(n: number, m: number) { return ((n % m) + m) % m; }
@@ -54,6 +55,9 @@ export function PaintingsCarousel() {
     const isTouchDevice = useIsTouchDevice();
     const items = availablePics;
     const n = items.length;
+
+    // Hint counter — hide "жми" after 3 expand-to-view taps on mobile
+    const { visible: expandHintVisible, increment: incrementExpandHint } = useHintCounter('paintings_expand');
 
     // React state — updated only at commit or UI toggles
     const [overlayItem, setOverlayItem] = useState<PaintingData>(items[0]);
@@ -364,6 +368,7 @@ export function PaintingsCarousel() {
         // Handle Tap on Center
         else if (dragTotalRef.current < 5 && Math.abs(dx) < 5 && Math.abs(dy) < 5) {
             if (clickTargetRef.current?.closest("[data-expand-target]")) {
+                incrementExpandHint();
                 setExpanded(true);
             }
         }
@@ -462,7 +467,7 @@ export function PaintingsCarousel() {
                             <div 
                                 key={isIdle ? "active" : "inactive"}
                                 className="hide-on-desktop absolute left-[83.3%] top-[-160%] -translate-x-1/2 -translate-y-[35px] pointer-events-none flex items-center justify-center w-[85px] h-[85px]"
-                                style={{ opacity: 0.45 }}
+                                style={{ opacity: 0.45, visibility: expandHintVisible ? 'visible' : 'hidden' }}
                             >
                                 <span 
                                     className="absolute z-20 font-comfortaa-bold uppercase tracking-[0.2em] mobile-hint-text-immediate"

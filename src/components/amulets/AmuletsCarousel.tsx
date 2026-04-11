@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useHintCounter } from "@/lib/useHintCounter";
 
 const AMULET_IMAGES = [
     { src: "/amulets/1.webp", alt: "Amulet 1" },
@@ -485,6 +486,9 @@ function AmuletsMobileCarousel() {
     const [isAnimating, setIsAnimating] = useState(false);
     const [animationDirection, setAnimationDirection] = useState<"next" | "prev">("next");
 
+    // Hint counter — hide "листай" after 3 swipes on mobile
+    const { visible: scrollHintVisible, increment: incrementScrollHint } = useHintCounter('amulets_scroll');
+
     // States ported from Desktop
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
     const [showEighthSprite, setShowEighthSprite] = useState(false);
@@ -599,6 +603,7 @@ function AmuletsMobileCarousel() {
         if (Math.abs(dy) > 50) { // Vertical swipe
             if (dy > 50) { // Swipe up
                 if (activeSeq === null) {
+                    incrementScrollHint();
                     next();
                 } else if (!activeSeq.flipped) {
                     setHasAutoFlipped(true); // Stop auto-flip if user flips manually
@@ -611,6 +616,7 @@ function AmuletsMobileCarousel() {
                     setHasAutoFlipped(true); // User manually flipped back, do not auto-flip again
                     setActiveSeq((prev: ActiveSeqState | null) => prev ? { ...prev, flipped: false } : null);
                 } else if (activeSeq === null) {
+                    incrementScrollHint();
                     prev();
                 }
             }
@@ -791,7 +797,7 @@ function AmuletsMobileCarousel() {
 
 
             {/* Mobile Finger Hint ("листай") */}
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100 }}>
+            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 
