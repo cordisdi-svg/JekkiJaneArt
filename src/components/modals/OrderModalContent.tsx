@@ -22,7 +22,7 @@ function CopyButton({ textToCopy }: { textToCopy: string }) {
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        try { document.execCommand('copy'); } catch {}
+        try { document.execCommand('copy'); } catch { }
         textArea.remove();
       }
       setCopied(true);

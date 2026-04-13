@@ -6,13 +6,13 @@ import { PaintingData } from "@/data/availablePics";
 import { useHintCounter } from "@/lib/useHintCounter";
 
 // ─── Expanded overlay (covers full viewport including nav) ────────────────────
-export function ExpandedOverlay({ 
-    item, 
+export function ExpandedOverlay({
+    item,
     onClose,
     onNext,
     onPrev
-}: { 
-    item: PaintingData; 
+}: {
+    item: PaintingData;
     onClose: () => void;
     onNext?: () => void;
     onPrev?: () => void;
@@ -153,7 +153,7 @@ export function ExpandedOverlay({
             }
 
             const renderLeft = containerRect.left + (containerRect.width - renderWidth) / 2;
-            const renderTop  = containerRect.top  + (containerRect.height - renderHeight) / 2;
+            const renderTop = containerRect.top + (containerRect.height - renderHeight) / 2;
 
             visibleRectRef.current = {
                 left: renderLeft,
@@ -165,7 +165,7 @@ export function ExpandedOverlay({
             };
 
             if (zoomedImageRef.current) {
-                zoomedImageRef.current.style.width  = `${renderWidth}px`;
+                zoomedImageRef.current.style.width = `${renderWidth}px`;
                 zoomedImageRef.current.style.height = `${renderHeight}px`;
             }
 
@@ -254,7 +254,7 @@ export function ExpandedOverlay({
         }
 
         // Smooth interpolation (runs every rAF frame)
-        currentZoomRef.current   += (targetZoomRef.current   - currentZoomRef.current)   * 0.15;
+        currentZoomRef.current += (targetZoomRef.current - currentZoomRef.current) * 0.15;
         currentOffsetXRef.current += (targetOffsetXRef.current - currentOffsetXRef.current) * 0.15;
         currentOffsetYRef.current += (targetOffsetYRef.current - currentOffsetYRef.current) * 0.15;
 
@@ -264,7 +264,7 @@ export function ExpandedOverlay({
         const magY = clampedY - magSize / 2 + currentOffsetYRef.current;
 
         magnifierRef.current.style.transform = `translate3d(${magX}px, ${magY}px, 0)`;
-        magnifierRef.current.style.width  = `${magSize}px`;
+        magnifierRef.current.style.width = `${magSize}px`;
         magnifierRef.current.style.height = `${magSize}px`;
 
         // Relative position inside the visible image (clientX/Y — no coordinate swap).
@@ -282,7 +282,7 @@ export function ExpandedOverlay({
         const maxTransX = 0;
         const minTransX = magSize - (rect.width * zoom);
         const finalTransX = minTransX > maxTransX
-            ? (magSize - rect.width  * zoom) / 2
+            ? (magSize - rect.width * zoom) / 2
             : Math.max(minTransX, Math.min(maxTransX, transX));
 
         const maxTransY = 0;
@@ -308,10 +308,10 @@ export function ExpandedOverlay({
             targetZoomRef.current = 2;
             currentZoomRef.current = 2;
             // No X offset — no coordinate swap.
-            targetOffsetXRef.current  = 0;
+            targetOffsetXRef.current = 0;
             currentOffsetXRef.current = 0;
             // Y offset: lens floats above finger on touch, centered on cursor on desktop.
-            targetOffsetYRef.current  = isTouch ? -(magSize / 2 + 10) : 0;
+            targetOffsetYRef.current = isTouch ? -(magSize / 2 + 10) : 0;
             currentOffsetYRef.current = targetOffsetYRef.current;
 
             magnifierRef.current.style.opacity = '1';
@@ -578,7 +578,7 @@ export function ExpandedOverlay({
 
     const handleContainerPointerUp = (e: React.PointerEvent) => {
         if (!e.isPrimary || swipeStartXRef.current === null || swipeStartYRef.current === null) return;
-        
+
         if (magnifierActiveRef.current) {
             swipeStartXRef.current = null;
             swipeStartYRef.current = null;
@@ -751,17 +751,17 @@ export function ExpandedOverlay({
                             <a href="http://t.me/jinnyji" target="_blank" rel="noreferrer"
                                 className="absolute left-[25%] md:left-[19%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
-                                <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.webp" alt="TG" fill className="object-contain"  unoptimized /></div>
+                                <div className="relative w-full h-full scale-[0.9]"><Image src="/Telegram_logo.svg.webp" alt="TG" fill className="object-contain" unoptimized /></div>
                             </a>
                             <a href="https://www.instagram.com/jekki.jane.art/" target="_blank" rel="noreferrer"
                                 className="absolute left-[50%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
-                                <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.webp" alt="IG" fill className="object-contain"  unoptimized /></div>
+                                <div className="relative w-full h-full scale-[0.8]"><Image src="/Instagram_icon.webp" alt="IG" fill className="object-contain" unoptimized /></div>
                             </a>
                             <a href="https://vk.ru/id437361077" target="_blank" rel="noreferrer"
                                 className="absolute left-[75%] md:left-[81%] -translate-x-1/2 pointer-events-auto aspect-square h-full rounded-full border border-white/40 drop-shadow-lg shadow-black/50 overflow-hidden hover:scale-105 active:scale-95 transition-transform bg-white/10 backdrop-blur-md flex items-center justify-center mix-blend-screen"
                             >
-                                <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.webp" alt="VK" fill className="object-contain"  unoptimized /></div>
+                                <div className="relative w-[110%] h-[110%]"><Image src="/vk-logo.webp" alt="VK" fill className="object-contain" unoptimized /></div>
                             </a>
                         </div>
                     </div>

@@ -94,8 +94,12 @@ export function BaseModal({ isOpen, onClose, children, modalType }: BaseModalPro
       >
         <div
           ref={contentRef}
-          className={`w-full rounded-t-2xl bg-black/25 backdrop-blur-md border border-white/10 p-6 lg:max-w-lg lg:rounded-xl text-white/95 ${
-            modalType === 'order' ? 'max-h-none overflow-hidden lg:overflow-y-auto' : 'max-h-[80vh] overflow-y-auto lg:max-h-none'
+          className={`w-full flex-col rounded-t-2xl bg-black/25 backdrop-blur-md border border-white/10 p-6 lg:max-w-xl flex lg:rounded-xl text-white/95 ${
+            modalType === 'order' 
+              ? 'max-h-none overflow-hidden lg:overflow-y-auto' 
+              : modalType === 'siteCreator'
+              ? 'max-h-[85vh] lg:max-h-[85vh] overflow-hidden'
+              : 'max-h-[80vh] overflow-y-auto lg:max-h-[80vh]'
           }`}
           style={{ 
             fontFamily: "'Comfortaa', sans-serif",

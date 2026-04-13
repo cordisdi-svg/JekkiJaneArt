@@ -49,19 +49,26 @@ const HERO_MAP: Record<string, string> = {
   "/about": "/mainpage/add-backs/7.webp",
 };
 
-export function HomeSectorsMobile() {
-  return (
-    <Suspense fallback={null}>
-      <HomeSectorsMobileContent />
-    </Suspense>
-  );
-}
-
 type ExitPhase = "idle" | "text" | "image";
 
-function HomeSectorsMobileContent() {
-  const router = useRouter();
+function SlideParamHandler({ onSlide }: { onSlide: (slide: number) => void }) {
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const slideParam = searchParams?.get("slide");
+    if (slideParam) {
+      const parsed = parseInt(slideParam, 10);
+      if (!isNaN(parsed)) {
+        onSlide(parsed);
+      }
+    }
+  }, [searchParams, onSlide]);
+
+  return null;
+}
+
+export function HomeSectorsMobile() {
+  const router = useRouter();
   const { openModal } = useModal();
 
   const [reviewsStatus, setReviewsStatus] = useState<"default" | "underDev">("default");
@@ -101,8 +108,13 @@ function HomeSectorsMobileContent() {
 
   // ─── Slider state ───────────────────────────────────────────────────────────
   // index 1 corresponds to slide.id 1
-  const initialSlideRef = useRef(parseInt(searchParams?.get("slide") || "1", 10));
-  const [currentIndex, setCurrentIndex] = useState(isNaN(initialSlideRef.current) ? 1 : initialSlideRef.current);
+  const initialSlideRef = useRef(1);
+  const [currentIndex, setCurrentIndex] = useState(1);
+
+  const handleSlideParam = useCallback((slide: number) => {
+    initialSlideRef.current = slide;
+    setCurrentIndex(slide);
+  }, []);
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [exitPhase, setExitPhase] = useState<ExitPhase>("idle");
 
@@ -256,6 +268,10 @@ function HomeSectorsMobileContent() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      <Suspense fallback={null}>
+        <SlideParamHandler onSlide={handleSlideParam} />
+      </Suspense>
+
       {/* SliderTrack */}
       <div
         ref={sliderTrackRef}
@@ -376,20 +392,20 @@ function HomeSectorsMobileContent() {
                   )}
 
                   {/* Finger View Hint - Acts like the waves but with specific positioning and 2s active duration */}
-                  <div 
+                  <div
                     className={`absolute bottom-[12%] w-[12vw] h-[12vw] max-w-[60px] max-h-[60px] ${slide.id <= 3 ? 'left-[8%]' : 'right-[8%]'}`}
                     style={{ visibility: scrollHintVisible ? 'visible' : 'hidden' }}
                   >
-                    <div 
+                    <div
                       className={styles.fingerHint}
                       style={{ animationDelay: '1s' }}
                     >
-                      <svg 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="rgba(255,255,255,0.7)" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.7)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                         className="w-full h-full filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
                       >

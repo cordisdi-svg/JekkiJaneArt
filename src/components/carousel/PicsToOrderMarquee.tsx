@@ -239,7 +239,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
         // On desktop, map vertical wheel (deltaY) OR horizontal wheel (deltaX) to scrolling
         // On trackpads, deltaX usually is larger for horizontal swipes. On mice, deltaY is present.
         const amount = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-        
+
         // Add minimal threshold to avoid micro-jitters
         if (Math.abs(amount) > 1) {
             scrollOffset.current += amount;
@@ -259,7 +259,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchCancel}
-        >}
+        >
             <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
@@ -302,7 +302,6 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
                     <span className="text-[11px] text-white/70 uppercase tracking-widest mt-1 font-comfortaa font-bold" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
                         листай
                     </span>
-                </div>
                 </div>
             </div>
             <div
@@ -357,45 +356,49 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
                 </div>
             </div>
 
-            {/* Desktop Controls */}
-            {isDesktop && (
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onTouchStart={(e) => e.stopPropagation()}
-                        onClick={(e) => { e.stopPropagation(); handleManualScroll('prev'); }}
-                        className="pointer-events-auto w-12 h-12 flex items-center justify-center text-white/80 hover:scale-110 hover:text-white transition-all active:scale-95"
-                        title="Назад"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M15 18l-6-6 6-6" />
-                        </svg>
-                    </button>
-                    <button
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onTouchStart={(e) => e.stopPropagation()}
-                        onClick={(e) => { e.stopPropagation(); handleManualScroll('next'); }}
-                        className="pointer-events-auto w-12 h-12 flex items-center justify-center text-white/80 hover:scale-110 hover:text-white transition-all active:scale-95"
-                        title="Вперед"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 18l6-6-6-6" />
-                        </svg>
-                    </button>
-                </div>
-            )}
-
-            {/* STICKY OVERLAY LAYER: Always centered, never scrolls */}
-            {children && (
-                <div
-                    data-visible={isDesktop || isMobileTextboxVisible}
-                    className={`group absolute inset-0 transition-all duration-300 ${isDesktop ? 'pointer-events-auto' : 'pointer-events-none'} ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+            {/* Desktop Controls */ }
+    {
+        isDesktop && (
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onClick={(e) => { e.stopPropagation(); handleManualScroll('prev'); }}
+                    className="pointer-events-auto w-12 h-12 flex items-center justify-center text-white/80 hover:scale-110 hover:text-white transition-all active:scale-95"
+                    title="Назад"
                 >
-                    <div className="relative z-20 w-full h-full flex justify-center">
-                        {children}
-                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </button>
+                <button
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onClick={(e) => { e.stopPropagation(); handleManualScroll('next'); }}
+                    className="pointer-events-auto w-12 h-12 flex items-center justify-center text-white/80 hover:scale-110 hover:text-white transition-all active:scale-95"
+                    title="Вперед"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
+                </button>
+            </div>
+        )
+    }
+
+    {/* STICKY OVERLAY LAYER: Always centered, never scrolls */ }
+    {
+        children && (
+            <div
+                data-visible={isDesktop || isMobileTextboxVisible}
+                className={`group absolute inset-0 transition-all duration-300 ${isDesktop ? 'pointer-events-auto' : 'pointer-events-none'} ${(!isDesktop && !isMobileTextboxVisible) ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+            >
+                <div className="relative z-20 w-full h-full flex justify-center">
+                    {children}
                 </div>
-            )}
-        </div>
+            </div>
+        )
+    }
+        </div >
     );
 }

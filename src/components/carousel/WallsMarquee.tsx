@@ -305,13 +305,13 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             {/* Mobile Finger Hint ("листай") */}
             <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
-                    <svg 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="rgba(255,255,255,0.7)" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="rgba(255,255,255,0.7)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="w-10 h-10 drop-shadow-md"
                     >
                         <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
@@ -365,7 +365,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                                     className="object-cover"
                                     priority
                                     draggable={false}
-                                 unoptimized />
+                                    unoptimized />
                             </div>
                         ))}
                     </div>
@@ -385,7 +385,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                                     className="object-cover"
                                     priority
                                     draggable={false}
-                                 unoptimized />
+                                    unoptimized />
                             </div>
                         ))}
                     </div>
