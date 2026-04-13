@@ -31,29 +31,47 @@ export function SiteCreatorModalContent() {
   return (
     <div className="flex flex-col h-full text-sm leading-relaxed overflow-hidden" style={{ fontFamily: "Comfortaa, sans-serif" }}>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto pr-2 flex flex-col gap-6 disable-default-scrollbar relative pb-4">
-        
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto pr-2 flex flex-col gap-5 disable-default-scrollbar relative pb-4"
+        onTouchStart={(e) => {
+          if (scrollRef.current && scrollRef.current.scrollTop > 0) {
+            e.currentTarget.dataset.startedNotAtTop = "true";
+          } else {
+            e.currentTarget.dataset.startedNotAtTop = "false";
+          }
+        }}
+        onTouchMove={(e) => {
+          if (e.currentTarget.dataset.startedNotAtTop === "true" || (scrollRef.current && scrollRef.current.scrollTop > 0)) {
+            e.stopPropagation();
+          }
+        }}
+      >
+
         <div className="text-center mt-1">
-          <p className="font-fontatica text-xl mb-1 text-[#A01648] drop-shadow-[0_0_8px_rgba(205,38,100,0.4)]">Web-разработка</p>
+          <p className="font-fontatica text-2xl md:text-3xl mb-0 text-white drop-shadow-md">Web-разработка</p>
         </div>
 
         <div className="space-y-5">
           {/* Motion */}
           <div>
-            <p className="text-[16px] leading-tight mb-2">
-              <span className="font-bold">Motion-лендинг</span> — мощная презентация вашего продукта или бизнеса
-            </p>
-            <ul className="space-y-1.5 pl-1 text-[14px]" style={{ fontWeight: 300 }}>
+            <div className="flex gap-2.5 items-start mb-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="mt-[5px] flex-shrink-0 text-[#A01648] brightness-150 drop-shadow-[0_0_5px_rgba(205,38,100,0.4)]"><path d="M5 3l14 9-14 9V3z" /></svg>
+              <p className="text-[16px] leading-tight">
+                <span className="font-bold">Motion-лендинг</span> — мощная презентация вашего продукта или бизнеса
+              </p>
+            </div>
+            <ul className="space-y-1.5 pl-6 text-[14px]" style={{ fontWeight: 300 }}>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Интерактив, анимации, плавные переходы и динамичный интерфейс усиливающие восприятие продукта и удержание внимания</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Грамотный маршрут пользователя на сайте</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Сильный визуальный эффект и акцент на главных продающих сторонах продукта</span>
               </li>
             </ul>
@@ -61,20 +79,23 @@ export function SiteCreatorModalContent() {
 
           {/* Multiview */}
           <div>
-            <p className="text-[16px] leading-tight mb-2">
-              <span className="font-bold">Многостраничный сайт</span> — полноценная платформа для вашего продукта или бизнеса
-            </p>
-            <ul className="space-y-1.5 pl-1 text-[14px]" style={{ fontWeight: 300 }}>
+            <div className="flex gap-2.5 items-start mb-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="mt-[5px] flex-shrink-0 text-[#A01648] brightness-150 drop-shadow-[0_0_5px_rgba(205,38,100,0.4)]"><path d="M5 3l14 9-14 9V3z" /></svg>
+              <p className="text-[16px] leading-tight">
+                <span className="font-bold">Многостраничный сайт</span> — полноценная платформа для вашего продукта или бизнеса
+              </p>
+            </div>
+            <ul className="space-y-1.5 pl-6 text-[14px]" style={{ fontWeight: 300 }}>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Продуманная структура и логика взаимодействия с акцентом на визуальную подачу, балансом информативности, удобства пользования и навигации</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Последовательная подача информации и целостный визуальный стиль.</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Интеграция функционала: личный кабинет, формы, оплаты</span>
               </li>
             </ul>
@@ -82,20 +103,23 @@ export function SiteCreatorModalContent() {
 
           {/* Tilda */}
           <div>
-            <p className="text-[16px] leading-tight mb-2">
-              <span className="font-bold">Tilda</span> — быстрый запуск сайта или мультиссылки
-            </p>
-            <ul className="space-y-1.5 pl-1 text-[14px]" style={{ fontWeight: 300 }}>
+            <div className="flex gap-2.5 items-start mb-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="mt-[5px] flex-shrink-0 text-[#A01648] brightness-150 drop-shadow-[0_0_5px_rgba(205,38,100,0.4)]"><path d="M5 3l14 9-14 9V3z" /></svg>
+              <p className="text-[16px] leading-tight">
+                <span className="font-bold">Tilda</span> — быстрый запуск лендинга или мультиссылки
+              </p>
+            </div>
+            <ul className="space-y-1.5 pl-6 text-[14px]" style={{ fontWeight: 300 }}>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Индивидуальная настройка, адаптация под задачи и аккуратный визуальный результат</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Узнаваемый &quot;блочный&quot; стиль</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Быстрая сборка и самая низкая цена на рынке</span>
               </li>
             </ul>
@@ -103,16 +127,19 @@ export function SiteCreatorModalContent() {
 
           {/* Support */}
           <div>
-            <p className="text-[16px] leading-tight mb-2">
-              <span className="font-bold">Доработка/поддержка</span> - работа с уже существующим сайтом
-            </p>
-            <ul className="space-y-1.5 pl-1 text-[14px]" style={{ fontWeight: 300 }}>
+            <div className="flex gap-2.5 items-start mb-2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="mt-[5px] flex-shrink-0 text-[#A01648] brightness-150 drop-shadow-[0_0_5px_rgba(205,38,100,0.4)]"><path d="M5 3l14 9-14 9V3z" /></svg>
+              <p className="text-[16px] leading-tight">
+                <span className="font-bold">Доработка/поддержка</span> - работа с уже существующим сайтом
+              </p>
+            </div>
+            <ul className="space-y-1.5 pl-6 text-[14px]" style={{ fontWeight: 300 }}>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Внесение нового контента/механик, починка багов</span>
               </li>
               <li className="flex gap-2 items-start">
-                <span className="text-[#A01648] mt-[2px] brightness-150">➔</span>
+                <span className="font-semibold text-white/80 mt-[1px]">•</span>
                 <span>Сотрудничество на постоянной основе</span>
               </li>
             </ul>
@@ -126,7 +153,7 @@ export function SiteCreatorModalContent() {
         </div>
 
         <div>
-          <p className="font-fontatica text-xl mb-3 mt-1 text-center text-[#A01648] drop-shadow-[0_0_8px_rgba(205,38,100,0.4)]">Этапы</p>
+          <p className="font-fontatica text-2xl md:text-3xl mb-1 mt-1 text-center text-white drop-shadow-md">Этапы</p>
           <ul className="space-y-3 pl-2" style={{ fontWeight: 300 }}>
             <li className="flex gap-2 items-start">
               <span className="font-semibold text-white/50 mt-[2px]">•</span>
@@ -160,12 +187,12 @@ export function SiteCreatorModalContent() {
       <div className="shrink-0 pt-4 mt-2 border-t border-white/10 relative">
         <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10 shadow-sm relative z-10">
           <p className="font-semibold text-[15px] mb-2 text-[#A01648] brightness-150 drop-shadow-[0_0_8px_rgba(205,38,100,0.5)]">
-            На данный момент беру 3 промо-кейса со скидкой 30% от рынка
+            Сейчас беру 3 промо-кейса со скидкой 30% от рынка
           </p>
-          
+
           <div className="flex items-center justify-center gap-2 mb-3">
             <span className="text-white/80 font-light mt-0.5">доступно:</span>
-            <span className="flex items-center justify-center bg-[#A01648]/20 border border-[#A01648]/50 text-[#A01648] font-bold rounded-md min-w-[28px] h-7 px-2 brightness-150 shadow-inner">
+            <span className="flex items-center justify-center bg-black/40 border border-black text-white font-bold rounded-md min-w-[28px] h-7 px-2 shadow-inner">
               3
             </span>
           </div>
@@ -190,7 +217,7 @@ export function SiteCreatorModalContent() {
         {!hasScrolled && (
           <div className="absolute -top-6 left-0 right-0 flex justify-center w-full pointer-events-none z-[1100] lg:hidden">
             <svg width="40" height="10" viewBox="0 0 60 15" fill="none" className="animate-bounce opacity-70 drop-shadow-lg" style={{ animationDuration: '2s' }}>
-              <path d="M2 2L30 12L58 2" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 2L30 12L58 2" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         )}
