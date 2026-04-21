@@ -5,6 +5,9 @@ import { PaintingsCarousel } from "@/components/carousel/PaintingsCarousel";
 export const metadata: Metadata = {
   title: "В наличии | JekkiJaneArt",
   description: "Картины, находящиеся в наличии. Посмотрите работы, готовые к отправке.",
+  alternates: {
+    canonical: "/available",
+  },
 };
 
 export default function AvailablePage() {

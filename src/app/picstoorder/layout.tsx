@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Картины на заказ | JekkiJaneArt',
   description: 'Заказать интерьерную картину, портрет или копию работы от JekkiJane.',
+  alternates: {
+    canonical: '/picstoorder',
+  },
 };
 
 export default function PicsToOrderLayout({

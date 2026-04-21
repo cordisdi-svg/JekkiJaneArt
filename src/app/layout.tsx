@@ -16,25 +16,35 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jekkiart.ru"),
   title: "JekkiJaneArt — искусство в уникальном стиле, делающее вашу жизнь, дом и образ ярче и эстетичнее",
   description: "Арт-галерея JekkiJaneArt где вы можете заказать воплощение любой своей художественной идеи на холсте, стене, одежде; выбрать из уже написанных картин или создать картину-проводник для своей энергии",
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/icon.jpeg",
+    apple: "/icon.jpeg",
   },
   openGraph: {
     type: "website",
+    siteName: "JekkiJaneArt",
+    locale: "ru_RU",
     title: "JekkiJaneArt — искусство в уникальном стиле, делающее вашу жизнь, дом и образ ярче и эстетичнее",
     description: "Арт-галерея JekkiJaneArt где вы можете заказать воплощение любой своей художественной идеи на холсте, стене, одежде; выбрать из уже написанных картин или создать картину-проводник для своей энергии",
     url: "https://jekkiart.ru",
     images: [{
-      url: "https://raw.githubusercontent.com/cordisdi-svg/JekkiJaneArt/f2ac6d0bc33c6d548209d35c6f245277c1b46f32/public/og-image.jpg"
+      url: "/og-image.jpg",
+      width: 1200,
+      height: 630,
+      alt: "JekkiJaneArt — искусство в уникальном стиле",
     }]
   },
   twitter: {
     card: "summary_large_image",
     title: "JekkiJaneArt — искусство в уникальном стиле, делающее вашу жизнь, дом и образ ярче и эстетичнее",
     description: "Арт-галерея JekkiJaneArt где вы можете заказать воплощение любой своей художественной идеи на холсте, стене, одежде; выбрать из уже написанных картин или создать картину-проводник для своей энергии",
-    images: ["https://raw.githubusercontent.com/cordisdi-svg/JekkiJaneArt/f2ac6d0bc33c6d548209d35c6f245277c1b46f32/public/og-image.jpg"]
+    images: ["/og-image.jpg"]
   }
 };
 

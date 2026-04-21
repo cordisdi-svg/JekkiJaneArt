@@ -5,6 +5,9 @@ import { AmuletsCarousel } from "@/components/amulets/AmuletsCarousel";
 export const metadata: Metadata = {
   title: "Амулеты | JekkiJaneArt",
   description: "Амулеты и обереги ручной работы от JekkiJane.",
+  alternates: {
+    canonical: "/amulets",
+  },
 };
 
 export default function AmuletsPage() {

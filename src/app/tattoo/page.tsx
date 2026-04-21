@@ -6,6 +6,9 @@ import { TattooCarousel } from "@/components/carousel/TattooCarousel";
 export const metadata: Metadata = {
   title: "Татуировка | JekkiJaneArt",
   description: "Портфолио татуировок от JekkiJane. Индивидуальные эскизы и работы.",
+  alternates: {
+    canonical: "/tattoo",
+  },
 };
 
 export default function TattooPage() {
