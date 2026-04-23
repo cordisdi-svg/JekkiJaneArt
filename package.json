@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "next build",
+    "build": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion",
     "dev": "next dev",
     "start": "next start",
     "lint": "next lint",
