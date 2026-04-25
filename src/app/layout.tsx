@@ -19,9 +19,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://jekkiart.ru"),
   title: "JekkiJaneArt — искусство в уникальном стиле, делающее вашу жизнь, дом и образ ярче и эстетичнее",
   description: "Арт-галерея JekkiJaneArt где вы можете заказать воплощение любой своей художественной идеи на холсте, стене, одежде; выбрать из уже написанных картин или создать картину-проводник для своей энергии",
-  alternates: {
-    canonical: "/",
-  },
   icons: {
     icon: "/icon.jpeg",
     apple: "/icon.jpeg",

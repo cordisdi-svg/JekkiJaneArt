@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { orderedRoutes } from "@/data/routes";
 import { useModal } from "@/components/modals/ModalProvider";
+import Link from "next/link";
 
 function Triangle({ direction, className = "" }: { direction: "left" | "right"; className?: string }) {
   return (
@@ -95,6 +96,13 @@ export function BottomNavigation() {
       }}
       aria-label="Bottom navigation"
     >
+      {/* Hidden links for SEO (Googlebot indexing) */}
+      <div className="sr-only" aria-hidden="true">
+        {orderedRoutes.map(route => (
+          <Link key={route.path} href={route.path}>{route.label}</Link>
+        ))}
+      </div>
+
       <div className="hidden h-[var(--nav-height-desktop)] w-full lg:flex">
         <button type="button" className="flex h-full w-[5%] items-center justify-center border-r border-white/20" onClick={handlePrev} aria-label="Предыдущая страница">
           <Triangle direction="left" className="arrow-anim-left" />
