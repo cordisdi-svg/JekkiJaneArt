@@ -12,33 +12,33 @@
 
 .imageZoom {
   animation: slide-zoom 14s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* ── Hints Animations ──────────────────────────────────────────────────────── */
 
 @keyframes hint-wave {
-  0%, 50% { opacity: 0; transform: scale(0.98); }
-  60% { opacity: 1; transform: scale(1); }
-  85% { opacity: 0; transform: scale(1.02); }
-  100% { opacity: 0; }
+  0%, 50% { opacity: 0; }
+  60% { opacity: 1; }
+  85%, 100% { opacity: 0; }
 }
 
 @keyframes hint-text-peak {
-  0%, 50% { opacity: 0; transform: scale(0.98); }
-  56% { opacity: 1; transform: scale(1); }
-  79% { opacity: 1; transform: scale(1); }
-  85% { opacity: 0; transform: scale(1.02); }
-  100% { opacity: 0; }
+  0%, 50% { opacity: 0; }
+  56%, 79% { opacity: 1; }
+  85%, 100% { opacity: 0; }
 }
 
 .hintWave {
   opacity: 0;
   animation: hint-wave 4s infinite ease-in-out;
+  will-change: opacity;
 }
 
 .hintWaveText {
   opacity: 0;
   animation: hint-text-peak 4s infinite ease-in-out;
+  will-change: opacity;
 }
 
 .hintsHidden {
@@ -57,6 +57,7 @@
 .fingerHint {
   opacity: 0;
   animation: finger-swipe-up 4s infinite ease-in-out;
+  will-change: transform, opacity;
 }
 
 .hintsOnTop {
@@ -95,8 +96,9 @@
   width: 100%;
   height: clamp(50px, 8vh, 80px);
   background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  will-change: transform;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   color: #f5f2eb;

@@ -370,7 +370,7 @@ export function HomeSectorsMobile() {
                           animationDelay: "1s",
                           fontSize: "clamp(0.7rem, 3.5vw, 1.2rem)",
                           color: "rgba(245, 242, 235, 0.9)",
-                          textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,1)"
+                          textShadow: "0 2px 6px rgba(0,0,0,0.9)"
                         }}
                       >
                         жми
@@ -427,7 +427,7 @@ export function HomeSectorsMobile() {
                     <span className="block font-fontatica uppercase tracking-wide text-[#f5f2eb] whitespace-pre-line leading-[0.85]"
                       style={{
                         fontSize: "clamp(4.2rem, 18vw, 7rem)",
-                        textShadow: "0 4px 18px rgba(0,0,0,0.95)"
+                        textShadow: "0 3px 12px rgba(0,0,0,0.9)"
                       }}>
                       {slide.heading}
                     </span>
@@ -446,7 +446,7 @@ export function HomeSectorsMobile() {
                     <span className={`block font-comfortaa-light text-white whitespace-pre-line leading-[1.1] ${slide.id === 2 || slide.id === 3 ? "text-right" : "text-left"}`}
                       style={{
                         fontSize: "clamp(1.6rem, 7.5vw, 3rem)",
-                        textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)"
+                        textShadow: "0 2px 10px rgba(0,0,0,0.85)"
                       }}>
                       {slide.id === 2 ? (
                         <>
@@ -470,7 +470,7 @@ export function HomeSectorsMobile() {
                     <span className="block font-comfortaa-light text-right text-white whitespace-pre-line"
                       style={{
                         fontSize: "clamp(1.5rem, 6.5vw, 2.6rem)",
-                        textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6)",
+                        textShadow: "0 2px 10px rgba(0,0,0,0.85)",
                         lineHeight: slide.id === 4 ? "1.0" : "1.2"
                       }}>
                       {slide.id === 4 ? (

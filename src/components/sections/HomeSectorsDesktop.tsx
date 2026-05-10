@@ -197,7 +197,8 @@ export function HomeSectorsDesktop() {
               overflow: "hidden",
               opacity: isDim ? 0.3 : 1,
               transform: isHovered ? "translateY(-10px) scale(1.01)" : "translateY(0) scale(1)",
-              filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
+              filter: isHovered ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none",
+              willChange: isHovered ? "transform, filter" : "auto"
             }}
           >
             <span
@@ -219,7 +220,7 @@ export function HomeSectorsDesktop() {
                   transform: "translate(-50%, -50%)"
                 }}
               >
-                <Image src={sector.imageSrc} alt="" fill className="object-cover animate-bg-scale" sizes="100vw"  unoptimized />
+                <Image src={sector.imageSrc} alt="" fill className="object-cover animate-bg-scale" sizes="100vw" style={{ willChange: "transform" }} unoptimized />
               </div>
             </span>
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.27)" : "rgba(0,0,0,0.35)" }} />
@@ -252,7 +253,7 @@ export function HomeSectorsDesktop() {
                 transform: `translate(-50%, -50%) translate(${offset.dx}px, ${offset.dy}px)`,
                 maxWidth: "80%",
                 textWrap: "balance",
-                textShadow: "0 2px 12px rgba(156,15,6,0.85), 0 0 6px rgba(156,15,6,0.9)",
+                textShadow: "0 2px 10px rgba(156,15,6,0.85)",
                 WebkitTextStroke: "3px rgba(60,5,5,0.85)",
                 paintOrder: "stroke",
                 zIndex: 3
@@ -278,7 +279,8 @@ export function HomeSectorsDesktop() {
           overflow: "visible",
           opacity: active !== null && active !== "center" ? 0.35 : 1,
           transform: hovered === "center" ? "translate(-50%,-50%) translateY(-10px) scale(1.01)" : "translate(-50%,-50%)",
-          filter: hovered === "center" ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none"
+          filter: hovered === "center" ? "drop-shadow(0 10px 24px rgba(0,0,0,0.45))" : "none",
+          willChange: hovered === "center" ? "transform, filter" : "auto"
         }}
       >
         <span className="absolute inset-0 rounded-full bg-black/28 transition-colors duration-200" style={{ backgroundColor: hovered === "center" ? "rgba(0,0,0,0.28)" : "rgba(0,0,0,0.38)", zIndex: 1 }} />
@@ -292,7 +294,7 @@ export function HomeSectorsDesktop() {
             bottom: "10%",
             zIndex: 6,
             opacity: hovered === "center" ? 1 : 0,
-            textShadow: "0 2px 12px rgba(156,15,6,0.85), 0 0 6px rgba(156,15,6,0.9)",
+            textShadow: "0 2px 10px rgba(156,15,6,0.85)",
             WebkitTextStroke: "2px rgba(60,5,5,0.85)",
             paintOrder: "stroke"
           }}

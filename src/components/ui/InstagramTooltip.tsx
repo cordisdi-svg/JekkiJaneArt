@@ -50,12 +50,14 @@ export function InstagramTooltip() {
       if (isInstagram && el) {
         clearTimeout(timeoutId);
         
-        const rect = el.getBoundingClientRect();
-        setPos({
-          x: rect.left + rect.width / 2,
-          y: rect.top - 8
+        requestAnimationFrame(() => {
+          const rect = el!.getBoundingClientRect();
+          setPos({
+            x: rect.left + rect.width / 2,
+            y: rect.top - 8
+          });
+          setVisible(true);
         });
-        setVisible(true);
       }
     };
 
