@@ -87,8 +87,8 @@ export function BottomNavigation() {
       onClick={(e) => e.stopPropagation()}
       style={{
         background: "rgba(0, 0, 0, 0.15)", // Matching walls page bg-black/15
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         contain: "layout",
         borderTop: "1px solid rgba(255,255,255,0.12)",
         fontFamily: "Fontatica4F",

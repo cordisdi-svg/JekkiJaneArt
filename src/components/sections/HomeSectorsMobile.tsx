@@ -357,6 +357,7 @@ export function HomeSectorsMobile() {
                 <div
                   key={currentIndex}
                   className={`absolute inset-0 z-20 pointer-events-none transition-opacity duration-300 ${isAnimating || exitPhase !== 'idle' ? styles.hintsHidden : 'opacity-100'} ${slide.id === 7 ? styles.hintsOnTop : ''}`}
+                  style={{ transform: "translateZ(0)" }}
                 >
                   {/* Circular Hint */}
                   {(slide.href || slide.id === 7) && (

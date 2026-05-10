@@ -173,11 +173,18 @@ export function HomeSectorsDesktop() {
 
   return (
     <section ref={hostRef} className="relative hidden h-[calc(100vh-var(--nav-height-desktop))] w-full lg:block" aria-label="Главные разделы">
+      <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden>
+        <defs>
+          <mask id="global-sector-hole-mask" x="0" y="0" width={size.width} height={size.height} maskUnits="userSpaceOnUse">
+            <rect x="0" y="0" width={size.width} height={size.height} fill="white" />
+            <circle cx={size.width / 2} cy={size.height / 2} r={holeRadius} fill="black" />
+          </mask>
+        </defs>
+      </svg>
       {shaped.map((sector) => {
         const isDim = active !== null && active !== sector.id;
         const isHovered = hovered === sector.id;
         const offset = LABEL_OFFSET[sector.id] ?? { dx: 0, dy: 0 };
-        const maskId = `sector-border-hole-mask-${sector.id}`;
 
         return (
           <button
@@ -226,13 +233,7 @@ export function HomeSectorsDesktop() {
             <span className="absolute inset-0 bg-black/30 transition-colors duration-200" style={{ backgroundColor: isHovered ? "rgba(0,0,0,0.27)" : "rgba(0,0,0,0.35)" }} />
 
             <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${size.width} ${size.height}`} preserveAspectRatio="none" aria-hidden>
-              <defs>
-                <mask id={maskId} x="0" y="0" width={size.width} height={size.height} maskUnits="userSpaceOnUse">
-                  <rect x="0" y="0" width={size.width} height={size.height} fill="white" />
-                  <circle cx={size.width / 2} cy={size.height / 2} r={holeRadius} fill="black" />
-                </mask>
-              </defs>
-              <g mask={`url(#${maskId})`}>
+              <g mask="url(#global-sector-hole-mask)">
                 <path
                   d={pointsToPath(sector.points)}
                   fill="none"
