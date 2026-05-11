@@ -14,9 +14,9 @@ export function DeviceLayoutSync() {
                        (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
         
         if (isTouch) {
-            document.body.classList.add("is-touch");
+            document.documentElement.classList.add("is-touch");
         } else {
-            document.body.classList.add("is-desktop");
+            document.documentElement.classList.add("is-desktop");
         }
     }, []);
 

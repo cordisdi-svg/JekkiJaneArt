@@ -30,6 +30,9 @@ export function InstagramTooltip() {
     let timeoutId: NodeJS.Timeout;
 
     const handleMouseOver = (e: MouseEvent) => {
+      // На тач-устройствах не реагируем на hover
+      if (document.documentElement.classList.contains("is-touch")) return;
+      
       const target = e.target as HTMLElement;
       if (!target) return;
 
@@ -62,6 +65,8 @@ export function InstagramTooltip() {
     };
 
     const handleMouseOut = (e: MouseEvent) => {
+      if (document.documentElement.classList.contains("is-touch")) return;
+      
       const target = e.target as HTMLElement;
       if (!target) return;
 
@@ -85,20 +90,64 @@ export function InstagramTooltip() {
       }
     };
 
-    const handleClick = () => {
-      setVisible(false);
+    const handleClickCapture = (e: MouseEvent) => {
+      // Перехватываем клик только на тач-устройствах
+      if (!document.documentElement.classList.contains("is-touch")) {
+        setVisible(false);
+        return;
+      }
+
+      const target = e.target as HTMLElement;
+      if (!target) return;
+
+      let isInstagram = false;
+      let el = target.closest("a") as HTMLAnchorElement | null;
+      
+      if (el && el.href && el.href.toLowerCase().includes("instagram.com")) {
+        isInstagram = true;
+      }
+
+      if (!isInstagram && target.tagName === "IMG") {
+        const img = target as HTMLImageElement;
+        if (img.src && img.src.toLowerCase().includes("instagram")) {
+          isInstagram = true;
+          el = target.closest('a') as HTMLAnchorElement | null;
+        }
+      }
+
+      if (isInstagram && el) {
+        // Блокируем стандартный переход
+        e.preventDefault();
+        e.stopPropagation();
+
+        const rect = el.getBoundingClientRect();
+        setPos({
+          x: rect.left + rect.width / 2,
+          y: rect.top - 8
+        });
+        setVisible(true);
+        
+        clearTimeout(timeoutId);
+        // Запускаем переход через 1 секунду
+        timeoutId = setTimeout(() => {
+          window.open(el!.href, '_blank');
+        }, 1000);
+      } else {
+        setVisible(false);
+      }
     };
 
     document.addEventListener("mouseover", handleMouseOver, { passive: true });
     document.addEventListener("mouseout", handleMouseOut, { passive: true });
-    document.addEventListener("click", handleClick, { passive: true });
-    document.addEventListener("touchstart", handleClick, { passive: true });
+    document.addEventListener("click", handleClickCapture, { capture: true });
+    document.addEventListener("touchstart", () => {
+      // We don't hide on touchstart anymore because we want to intercept click
+    }, { passive: true });
 
     return () => {
       document.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseout", handleMouseOut);
-      document.removeEventListener("click", handleClick);
-      document.removeEventListener("touchstart", handleClick);
+      document.removeEventListener("click", handleClickCapture, { capture: true });
       clearTimeout(timeoutId);
     };
   }, []);
@@ -108,7 +157,7 @@ export function InstagramTooltip() {
   // Calculate dynamic position to prevent screen overflow
   // On mobile, tooltips can easily go off-screen.
   const margin = 12;
-  const tooltipWidth = 280; // Approximate width or we could use tooltipRef
+  const tooltipWidth = 230; // Уменьшенная ширина для 2-х строк
   const windowWidth = typeof window !== "undefined" ? window.innerWidth : 1000;
   
   // Clamp left position
@@ -121,7 +170,7 @@ export function InstagramTooltip() {
   return (
     <div
       ref={tooltipRef}
-      className="fixed z-[99999] pointer-events-none px-3 py-1.5 bg-[#4A4A4A]/90 backdrop-blur-sm border border-white/10 text-white font-light text-[11px] whitespace-normal sm:whitespace-nowrap rounded-lg shadow-xl tracking-wide transition-opacity duration-200"
+      className="fixed z-[99999] pointer-events-none px-3 py-1.5 bg-[#4A4A4A]/90 backdrop-blur-sm border border-white/10 text-white font-light text-[11px] rounded-lg shadow-xl tracking-wide transition-opacity duration-200 flex items-center justify-center"
       style={{ 
         left: leftPos, 
         top: pos.y, 
@@ -130,8 +179,8 @@ export function InstagramTooltip() {
         fontFamily: "Comfortaa, sans-serif" 
       }}
     >
-      <div className="text-center">
-        Организация признана экстремистской и запрещена на территории РФ
+      <div className="text-center leading-tight">
+        Организация признана экстремистской<br/>и запрещена на территории РФ
       </div>
       {/* Arrow pointing down - adjusted to always point at the icon */}
       <div 

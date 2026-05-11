@@ -190,7 +190,7 @@ export function PaintingsCarousel() {
                     }
                 } else {
                     // Idle / dwell
-                    if (!isPausedRef.current && !expandedRef.current && !orderMenuRef.current) {
+                    if (!isPausedRef.current && !expandedRef.current && !orderMenuRef.current && !isTouching) {
                         if (dwellRef.current === null) dwellRef.current = ts;
                         else if (ts - dwellRef.current >= DWELL_MS) {
                             dwellRef.current = null;

@@ -51,6 +51,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" className={playfair.variable}>
       <head>
         <link rel="preload" href="/fonts/subset-Fontatica4F.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var isTouch = window.matchMedia('(pointer: coarse)').matches || (navigator.maxTouchPoints || 0) > 0;
+                if (isTouch) { document.documentElement.classList.add('is-touch'); }
+                else { document.documentElement.classList.add('is-desktop'); }
+              })();
+            `
+          }}
+        />
       </head>
       <body>
         <ModalProvider>
