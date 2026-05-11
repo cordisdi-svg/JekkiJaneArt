@@ -217,15 +217,6 @@ const Cursor = React.forwardRef<HTMLSpanElement, { char?: string }>(({ char }, r
     if (char) {
         return (
             <span ref={ref} className="typewriter-cursor">
-                <style>{`
-          @keyframes vertical-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-          .typewriter-cursor {
-            display: inline-block;
-            font-weight: 700;
-            animation: vertical-blink 1s step-end infinite;
-            margin-left: 2px;
-          }
-        `}</style>
                 {char}
             </span>
         );
@@ -234,20 +225,16 @@ const Cursor = React.forwardRef<HTMLSpanElement, { char?: string }>(({ char }, r
     return (
         <span
             ref={ref}
+            className="typewriter-cursor-default"
             style={{
                 display: "inline-block",
                 width: "2px",
                 height: "1em",
                 background: "rgba(255,255,255,0.8)",
                 verticalAlign: "text-bottom",
-                marginLeft: "1px",
-                animation: "blink-messenger 1s step-end infinite",
+                marginLeft: "1px"
             }}
-        >
-            <style>{`
-        @keyframes blink-messenger { 50% { opacity: 0; } }
-      `}</style>
-        </span>
+        />
     );
 });
 

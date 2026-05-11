@@ -9,6 +9,9 @@ const nextConfig = {
     unoptimized: true,
     formats: ['image/webp', 'image/avif'],
   },
+  experimental: {
+    optimizePackageImports: ['next/navigation', 'next/image'],
+  },
 };
 
 export default nextConfig;

@@ -5,7 +5,8 @@ import { BottomNavigation } from "@/components/nav/BottomNavigation";
 import { ModalProvider } from "@/components/modals/ModalProvider";
 import { InteractionGuards } from "@/components/system/InteractionGuards";
 import { DeviceLayoutSync } from "@/components/system/DeviceLayoutSync";
-import { InstagramTooltip } from "@/components/ui/InstagramTooltip";
+import dynamic from "next/dynamic";
+const InstagramTooltip = dynamic(() => import("@/components/ui/InstagramTooltip").then(mod => ({ default: mod.InstagramTooltip })), { ssr: false });
 
 const playfair = Playfair_Display({
   subsets: ["latin", "cyrillic"],

@@ -326,4 +326,18 @@ picture {
   opacity: 0;
   will-change: opacity;
 }
+
+/* ─── Typewriter Cursor Animations ─── */
+@keyframes vertical-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.typewriter-cursor {
+  display: inline-block;
+  font-weight: 700;
+  animation: vertical-blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink-messenger { 50% { opacity: 0; } }
+.typewriter-cursor-default {
+  animation: blink-messenger 1s step-end infinite;
+}
 

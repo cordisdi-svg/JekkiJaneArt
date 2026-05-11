@@ -2,9 +2,11 @@
 
 import { createContext, useContext, useMemo, useState } from "react";
 import { BaseModal } from "@/components/modals/BaseModal";
-import { OrderModalContent } from "@/components/modals/OrderModalContent";
-import { CertificatesModalContent } from "@/components/modals/CertificatesModalContent";
-import { SiteCreatorModalContent } from "@/components/modals/SiteCreatorModalContent";
+import dynamic from "next/dynamic";
+
+const OrderModalContent = dynamic(() => import("@/components/modals/OrderModalContent").then(mod => ({ default: mod.OrderModalContent })), { ssr: false });
+const CertificatesModalContent = dynamic(() => import("@/components/modals/CertificatesModalContent").then(mod => ({ default: mod.CertificatesModalContent })), { ssr: false });
+const SiteCreatorModalContent = dynamic(() => import("@/components/modals/SiteCreatorModalContent").then(mod => ({ default: mod.SiteCreatorModalContent })), { ssr: false });
 
 type ModalType = "order" | "certificates" | "siteCreator";
 
