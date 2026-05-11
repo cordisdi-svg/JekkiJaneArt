@@ -17,6 +17,13 @@ export function ExpandedOverlay({
     onNext?: () => void;
     onPrev?: () => void;
 }) {
+    const [isClosing, setIsClosing] = useState(false);
+    
+    const handleClose = useCallback(() => {
+        setIsClosing(true);
+        setTimeout(onClose, 700);
+    }, [onClose]);
+
     const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
     const [showPinchHint, setShowPinchHint] = useState(false);
 
@@ -101,7 +108,7 @@ export function ExpandedOverlay({
         // Evaluate touch capability once at mount (stable for the lifetime of the overlay)
         isTouchDeviceRef.current = window.matchMedia('(pointer: coarse)').matches;
 
-        const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+        const h = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
         window.addEventListener("keydown", h);
         document.body.classList.add("overlay-open");
 
@@ -126,7 +133,7 @@ export function ExpandedOverlay({
             if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
             stopInertia();
         };
-    }, [onClose, stopInertia]);
+    }, [handleClose, stopInertia]);
 
     // ─── Magnifier Logic ───
 
@@ -596,7 +603,7 @@ export function ExpandedOverlay({
             else if (dx < 0 && onNext) onNext();
         } else if (dy > 100 && Math.abs(dy) > Math.abs(dx)) {
             // Свайп вниз для закрытия
-            onClose();
+            handleClose();
         }
     };
 
@@ -604,22 +611,27 @@ export function ExpandedOverlay({
 
     return (
         <div
-            className="fixed inset-0 flex flex-col md:flex-row items-center justify-center p-[2vh] md:p-[3svh] pb-[max(2vh,env(safe-area-inset-bottom)+5px)] gap-[3vh] md:gap-[4svh] w-full h-full mx-auto max-w-[1600px] bg-black/70"
-            style={{ zIndex: 9999, backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}
+            className={`fixed inset-0 flex flex-col md:flex-row items-center justify-center p-[2vh] md:p-[3svh] pb-[max(2vh,env(safe-area-inset-bottom)+5px)] gap-[3vh] md:gap-[4svh] w-full h-full mx-auto max-w-[1600px] transition-all duration-[700ms] ease-in-out ${isClosing ? "translate-y-[100vh] opacity-0" : "translate-y-0 opacity-100"}`}
+            style={{ 
+                zIndex: 9999, 
+                backdropFilter: isClosing ? "none" : "blur(5px)", 
+                WebkitBackdropFilter: isClosing ? "none" : "blur(5px)",
+                backgroundColor: isClosing ? "rgba(0,0,0,0)" : "rgba(0,0,0,0.7)"
+            }}
             onPointerDown={handleContainerPointerDown}
             onPointerMove={handleContainerPointerMove}
             onPointerUp={handleContainerPointerUp}
             onPointerCancel={handleContainerPointerUp}
             onClick={(e) => {
                 if (!suppressClickRef.current && !wasSwipeRef.current && e.target === e.currentTarget) {
-                    onClose();
+                    handleClose();
                 }
             }}
         >
             {/* Close Button Top Right */}
             <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="absolute top-4 right-2 md:right-4 z-[10000] flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl hover:bg-white/20 active:scale-90 transition-all cursor-pointer"
                 aria-label="Закрыть"
             >
