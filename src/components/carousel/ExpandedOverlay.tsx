@@ -594,6 +594,9 @@ export function ExpandedOverlay({
         if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 150) {
             if (dx > 0 && onPrev) onPrev();
             else if (dx < 0 && onNext) onNext();
+        } else if (dy > 100 && Math.abs(dy) > Math.abs(dx)) {
+            // Свайп вниз для закрытия
+            onClose();
         }
     };
 
@@ -709,6 +712,7 @@ export function ExpandedOverlay({
             <div
                 className="relative z-10 w-full flex-1 md:flex-[1.2] lg:flex-1 h-full max-h-[40vh] md:max-h-none flex flex-col bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
             >
                 {/* Scrollable Content Container (Title, Body, Stats) */}
                 <div
