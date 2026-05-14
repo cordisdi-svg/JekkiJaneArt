@@ -89,13 +89,13 @@ export function PaintingsCarousel() {
     const centerHRef = useRef(320); // px height of center slot
     const isMobileRef = useRef(false);
 
-    // Mirrors of state for rAF (avoid stale closure)
+    // Mirrors of state for rAF (avoid stale closure) — synced SYNCHRONOUSLY in handlers
     const isPausedRef = useRef(false);
     const expandedRef = useRef(false);
     const orderMenuRef = useRef(false);
     const isIdleRef = useRef(false);
 
-    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+    // Sync expandedRef and orderMenuRef via useEffect (these don't need frame-level sync)
     useEffect(() => { expandedRef.current = expanded; }, [expanded]);
     useEffect(() => { orderMenuRef.current = isOrderMenuOpen; }, [isOrderMenuOpen]);
 
@@ -176,7 +176,7 @@ export function PaintingsCarousel() {
                 const toTarget = snapTarget - posRef.current;
                 const hasVelocity = Math.abs(velocityRef.current) > 0.00001;
                 const isOffCenter = Math.abs(toTarget) > 0.001;
-                const isTouching = tStartX.current !== null;
+                const isTouching = isTouchingRef.current;
 
                 if (hasVelocity || (isOffCenter && !isTouching)) {
                     // Unified inertia + snap: no phase switch, one continuous curve
@@ -316,6 +316,8 @@ export function PaintingsCarousel() {
     const tLastT = useRef<number | null>(null);
     const dragTotalRef = useRef<number>(0);
     const clickTargetRef = useRef<Element | null>(null);
+    // Явный флаг «тач активен» — не зависит от tStartX, сбрасывается в любом пути
+    const isTouchingRef = useRef(false);
 
     const onPointerDown = (e: React.PointerEvent) => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -332,6 +334,8 @@ export function PaintingsCarousel() {
         tLastT.current = Date.now();
         dragTotalRef.current = 0;
         dwellRef.current = null;
+        isTouchingRef.current = true;  // синхронный сигнал для rAF
+        isPausedRef.current = true;    // синхронный — не ждём useEffect
         setIsPaused(true);
     };
     const onPointerMove = (e: React.PointerEvent) => {
@@ -347,18 +351,27 @@ export function PaintingsCarousel() {
         tLastX.current = e.clientX;
         tLastT.current = Date.now();
     };
-    const onPointerUp = (e: React.PointerEvent) => {
+    const releaseTouch = (e: React.PointerEvent) => {
+        isTouchingRef.current = false;  // синхронный сброс для rAF
+        isPausedRef.current = false;    // синхронный — не ждём useEffect
         setIsPaused(false);
         const el = e.currentTarget as HTMLElement;
         if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
 
-        if (tStartX.current === null || tStartY.current === null) return;
+        if (tStartX.current === null || tStartY.current === null) {
+            tLastX.current = null;
+            clickTargetRef.current = null;
+            return;
+        }
         const dx = e.clientX - tStartX.current;
         const dy = e.clientY - tStartY.current;
         tStartX.current = tStartY.current = null;
         tLastX.current = null;
 
-        if (expanded) return;
+        if (expanded) {
+            clickTargetRef.current = null;
+            return;
+        }
 
         // Handle Swipe
         if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40 && Math.abs(velocityRef.current) < 0.02) {
@@ -375,6 +388,9 @@ export function PaintingsCarousel() {
 
         clickTargetRef.current = null;
     };
+    // Алиасы для onPointerUp и onPointerCancel
+    const onPointerUp = releaseTouch;
+    const onPointerCancel = releaseTouch;
 
     return (
         <>
@@ -391,9 +407,9 @@ export function PaintingsCarousel() {
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
-                onPointerCancel={onPointerUp}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
+                onPointerCancel={onPointerCancel}
+                onMouseEnter={() => { isPausedRef.current = true; setIsPaused(true); }}
+                onMouseLeave={() => { isPausedRef.current = false; setIsPaused(false); }}
             >
                 <ArrowBtn direction="left" onClick={() => arrowNav(-1)} />
                 <ArrowBtn direction="right" onClick={() => arrowNav(1)} />

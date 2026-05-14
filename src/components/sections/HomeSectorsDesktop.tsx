@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Sector = {
@@ -142,10 +142,17 @@ const buildSectorShape = (sector: Sector, size: Size): SectorShape => {
 
 export function HomeSectorsDesktop() {
   const router = useRouter();
+  const pathname = usePathname();
   const hostRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<Size>({ width: 1280, height: 720 });
   const [active, setActive] = useState<number | "center" | null>(null);
   const [hovered, setHovered] = useState<number | "center" | null>(null);
+
+  // Сбрасываем active при смене pathname (после навигации обратно на главную)
+  useEffect(() => {
+    setActive(null);
+    setHovered(null);
+  }, [pathname]);
 
   useEffect(() => {
     const element = hostRef.current;
@@ -168,7 +175,8 @@ export function HomeSectorsDesktop() {
   const trigger = (target: number | "center", href: string) => {
     if (active !== null) return;
     setActive(target);
-    window.setTimeout(() => router.push(href), 1000);
+    // Короткая задержка только для визуального эффекта выделения
+    window.setTimeout(() => router.push(href), 300);
   };
 
   return (
