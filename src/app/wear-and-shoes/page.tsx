@@ -69,10 +69,10 @@ export default function WearAndShoesPage() {
         </div>
 
         {/* ── ДЕСКТОП: два изображения + текст по центру ── */}
-        <div className="hidden md:flex flex-row items-stretch justify-center gap-4 px-4 w-full h-full py-[2vh]">
+        <div className="hidden md:flex flex-row items-center justify-center gap-6 px-6 w-full h-full py-[2vh]">
 
           {/* Изображение 1 (левое) */}
-          <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
+          <div className="h-full max-h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl max-h-[70vh] xl:max-h-[75vh] 2xl:max-h-[78vh] max-w-[24vw] xl:max-w-[26vw] 2xl:max-w-[380px] min-h-[300px] min-w-[206px]">
             <FlippingWearCard
               images={["/wear-and-shoes/1.webp", "/wear-and-shoes/2.webp", "/wear-and-shoes/3.webp", "/wear-and-shoes/4.webp", "/wear-and-shoes/5.webp"]}
               initialDelay={6000}
@@ -81,7 +81,7 @@ export default function WearAndShoesPage() {
           </div>
 
           {/* Текстовая зона: растянута по высоте контейнера */}
-          <div className="flex-1 flex flex-col justify-stretch h-full max-w-[550px] lg:max-w-[650px]">
+          <div className="flex-1 flex flex-col justify-stretch h-full min-w-[260px] lg:min-w-[360px] max-w-[550px] lg:max-w-[650px]">
             <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 lg:p-6 lg:pr-3 border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.6)] w-full flex flex-col h-full overflow-hidden">
               <div className="flex flex-col h-full overflow-hidden text-white text-[16px] xl:text-[20px] leading-[1.3] relative pl-1 pr-1">
                 <style>{`
@@ -123,7 +123,7 @@ export default function WearAndShoesPage() {
           </div>
 
           {/* Изображение 2 (правое) */}
-          <div className="h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl">
+          <div className="h-full max-h-full aspect-[11/16] flex-shrink-0 drop-shadow-2xl max-h-[70vh] xl:max-h-[75vh] 2xl:max-h-[78vh] max-w-[24vw] xl:max-w-[26vw] 2xl:max-w-[380px] min-h-[300px] min-w-[206px]">
             <FlippingWearCard
               images={["/wear-and-shoes/3.webp", "/wear-and-shoes/4.webp", "/wear-and-shoes/5.webp", "/wear-and-shoes/1.webp", "/wear-and-shoes/2.webp"]}
               initialDelay={2500}

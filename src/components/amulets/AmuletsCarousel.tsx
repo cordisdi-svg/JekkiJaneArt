@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useIsDesktopLayout } from "@/lib/deviceDetect";
 import { useHintCounter } from "@/lib/useHintCounter";
 
 const AMULET_IMAGES = [
@@ -102,9 +102,9 @@ function SequenceSpotlight({ flipped, images, rounded = true }: { flipped: boole
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export function AmuletsCarousel() {
-    const isMobile = useIsTouchDevice(); // touch device → mobile carousel, stable across orientation changes
+    const isDesktop = useIsDesktopLayout(1024);
 
-    if (isMobile) {
+    if (!isDesktop) {
         return <AmuletsMobileCarousel />;
     }
 
@@ -797,7 +797,7 @@ function AmuletsMobileCarousel() {
 
 
             {/* Mobile Finger Hint ("листай") */}
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
+            <div className="lg:hidden absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 
@@ -821,7 +821,7 @@ function AmuletsMobileCarousel() {
 
             {/* Control Area (Overlay Bottom 15%) - Constrained to Image Width */}
             <div className="absolute bottom-0 left-0 right-0 h-[15%] flex items-center justify-center z-30 pointer-events-none px-4 pb-2">
-                <div className="h-full aspect-[11/16] max-h-full flex items-center justify-evenly pointer-events-auto" style={{ width: 'calc((100svh - var(--nav-height-mobile) - 1rem) * 0.85 * 11 / 16)' }}>
+                <div className="h-full aspect-[11/16] max-h-full flex items-center justify-evenly pointer-events-auto" style={{ width: 'calc((100svh - var(--nav-height) - 1rem) * 0.85 * 11 / 16)' }}>
                     {SEQUENCES.map((seq, i) => {
                         const isActive = activeSeq !== null && activeSeq.seqIdx === i;
                         return (

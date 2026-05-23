@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useIsDesktopLayout } from "@/lib/deviceDetect";
 import { useHintCounter } from "@/lib/useHintCounter";
 
 const picsToOrderImages = [
@@ -20,9 +20,8 @@ const picsToOrderImages = [
 ];
 
 export function PicsToOrderMarquee({ children }: { children?: React.ReactNode }) {
-    const isTouchDevice = useIsTouchDevice();
-    // Derived once from pointer capability — never changes during session.
-    const isDesktop = !isTouchDevice;
+    const isDesktop = useIsDesktopLayout(768);
+    const isTouchDevice = !isDesktop;
 
     // Hint counter — hide "листай" after 3 carousel scrolls on mobile
     const { visible: scrollHintVisible, increment: incrementScrollHint } = useHintCounter('picstoorder_scroll');
@@ -260,7 +259,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchCancel}
         >
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
+            <div className="lg:hidden absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 
@@ -283,7 +282,7 @@ export function PicsToOrderMarquee({ children }: { children?: React.ReactNode })
             </div>
 
             {/* Desktop Finger Hint ("листай") — swipe right (L→R) */}
-            <div className="hide-on-mobile absolute bottom-[8%] left-[5%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
+            <div className="hidden lg:block absolute bottom-[8%] left-[5%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="hint-finger-right flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 

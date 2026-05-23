@@ -54,9 +54,13 @@ export function ExpandedOverlay({
     const magnifierRef = useRef<HTMLDivElement>(null);
     const zoomedImageRef = useRef<HTMLImageElement>(null);
 
-    // Stable touch-device flag (pointer: coarse). useRef so it's read in rAF/callbacks
-    // without stale closures, and is safe on hybrid devices (evaluated once at mount).
-    const isTouchDeviceRef = useRef(false);
+    // Dynamically tracks the type of pointer used in the current interaction session
+    // Initialized from the global touch class to prevent null/undefined issues prior to first interaction.
+    const lastPointerTypeRef = useRef<string>(
+        typeof document !== 'undefined' && document.documentElement.classList.contains("is-touch")
+            ? 'touch'
+            : 'mouse'
+    );
 
     const visibleRectRef = useRef<{ left: number, top: number, width: number, height: number, intrinsicWidth: number, intrinsicHeight: number } | null>(null);
     const magnifierActiveRef = useRef(false);
@@ -105,8 +109,9 @@ export function ExpandedOverlay({
     }, [item]);
 
     useEffect(() => {
-        // Evaluate touch capability once at mount (stable for the lifetime of the overlay)
-        isTouchDeviceRef.current = window.matchMedia('(pointer: coarse)').matches;
+        // Evaluate touch capability once at mount as default based on the global synced class, then dynamically update via pointer events
+        const isTouchClass = typeof document !== 'undefined' && document.documentElement.classList.contains("is-touch");
+        lastPointerTypeRef.current = isTouchClass ? 'touch' : 'mouse';
 
         const h = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
         window.addEventListener("keydown", h);
@@ -221,7 +226,7 @@ export function ExpandedOverlay({
         const clampedX = Math.max(rect.left, Math.min(x, rect.left + rect.width));
         const clampedY = Math.max(rect.top, Math.min(y, rect.top + rect.height));
 
-        const isTouch = isTouchDeviceRef.current;
+        const isTouch = lastPointerTypeRef.current === 'touch' && (typeof window !== 'undefined' && window.innerWidth < 768);
         // magSize: desktop uses 300px lens; touch uses ~60% of the shorter viewport edge
         // clamped to [160, 220] so it scales with screen but stays usable on tiny phones.
         const magSize = isTouch
@@ -305,7 +310,7 @@ export function ExpandedOverlay({
         if (!magnifierRef.current) return;
         magnifierActiveRef.current = visible;
         if (visible) {
-            const isTouch = isTouchDeviceRef.current;
+            const isTouch = lastPointerTypeRef.current === 'touch' && (typeof window !== 'undefined' && window.innerWidth < 768);
             // Derive initial magSize the same way updateMagnifierDOM does,
             // so offsets are coherent from the first frame.
             const magSize = isTouch
@@ -378,6 +383,7 @@ export function ExpandedOverlay({
     };
 
     const handlePointerDownImage = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         if (e.pointerType === 'mouse') {
             targetZoomRef.current = 3;
             return;
@@ -407,6 +413,7 @@ export function ExpandedOverlay({
     };
 
     const handlePointerMoveImage = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         if (e.pointerType === 'mouse') {
             if (isInsideVisibleRect(e.clientX, e.clientY)) {
                 pointerCoordsRef.current = { x: e.clientX, y: e.clientY };
@@ -455,6 +462,7 @@ export function ExpandedOverlay({
     };
 
     const handlePointerUpImage = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         if (e.pointerType === 'mouse') {
             targetZoomRef.current = 2;
             return;
@@ -474,6 +482,7 @@ export function ExpandedOverlay({
     };
 
     const handlePointerLeaveImage = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         if (e.pointerType === 'mouse') {
             targetZoomRef.current = 2;
             hideMagnifier();
@@ -561,8 +570,9 @@ export function ExpandedOverlay({
     const wasSwipeRef = useRef(false);
 
     const handleContainerPointerDown = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         // Swipe-to-navigate is a touch-only interaction
-        if (!e.isPrimary || !isTouchDeviceRef.current) return;
+        if (!e.isPrimary || lastPointerTypeRef.current !== 'touch') return;
         if (magnifierActiveRef.current) return;
         swipeStartXRef.current = e.clientX;
         swipeStartYRef.current = e.clientY;
@@ -570,6 +580,7 @@ export function ExpandedOverlay({
     };
 
     const handleContainerPointerMove = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         // Cancel swipe if secondary pointer (pinch) or magnifier activates
         if (!e.isPrimary || magnifierActiveRef.current) {
             swipeStartXRef.current = null;
@@ -584,6 +595,7 @@ export function ExpandedOverlay({
     };
 
     const handleContainerPointerUp = (e: React.PointerEvent) => {
+        lastPointerTypeRef.current = e.pointerType;
         if (!e.isPrimary || swipeStartXRef.current === null || swipeStartYRef.current === null) return;
 
         if (magnifierActiveRef.current) {
@@ -795,7 +807,7 @@ export function ExpandedOverlay({
                 .social-popup-size {
                     height: calc(max(20px, 5cqh) * 1.5);
                 }
-                @media (pointer: fine) {
+                @media (min-width: 1024px) {
                     .social-popup-size {
                         height: calc(max(20px, 5cqh) * 3);
                     }

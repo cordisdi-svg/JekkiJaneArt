@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useIsDesktopLayout } from "@/lib/deviceDetect";
 import { useHintCounter } from "@/lib/useHintCounter";
 
 const wallsImages = [
@@ -14,11 +14,10 @@ const wallsImages = [
 ];
 
 export function WallsMarquee({ children }: { children?: React.ReactNode }) {
-    const isTouchDevice = useIsTouchDevice();
+    const isDesktop = useIsDesktopLayout(768);
+    const isTouchDevice = !isDesktop;
     const containerRef = useRef<HTMLDivElement>(null);
     const marqueeRef = useRef<HTMLDivElement>(null);
-    // Derived once from pointer capability — never changes during session.
-    const isDesktop = !isTouchDevice;
 
     // Hint counter — hide "листай" after 3 mobile scrolls
     const { visible: scrollHintVisible, increment: incrementScrollHint } = useHintCounter('walls_scroll');
@@ -303,7 +302,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
             onWheel={handleWheel}
         >
             {/* Mobile Finger Hint ("листай") */}
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
+            <div className="lg:hidden absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg
                         viewBox="0 0 24 24"
@@ -337,7 +336,7 @@ export function WallsMarquee({ children }: { children?: React.ReactNode }) {
                     display: flex;
                     flex-direction: column;
                 }
-                @media (pointer: fine) {
+                @media (min-width: 768px) {
                     .run-marquee {
                         flex-direction: row;
                         width: max-content;

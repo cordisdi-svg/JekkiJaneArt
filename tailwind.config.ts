@@ -8,11 +8,11 @@ const config: Config = {
   ],
   theme: {
     screens: {
-      'sm': { 'raw': '(min-width: 640px) and (pointer: fine)' },
-      'md': { 'raw': '(min-width: 768px) and (pointer: fine)' },
-      'lg': { 'raw': '(min-width: 1024px) and (pointer: fine)' },
-      'xl': { 'raw': '(min-width: 1280px) and (pointer: fine)' },
-      '2xl': { 'raw': '(min-width: 1536px) and (pointer: fine)' },
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
     },
     extend: {
       fontFamily: {

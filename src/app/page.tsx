@@ -7,10 +7,10 @@ const HomeSectorsDesktop = dynamic(() => import("@/components/sections/HomeSecto
 export default function HomePage() {
   return (
     <PageBackground backgroundSrc="/mainpage/mainpage-back.webp">
-      <div className="hide-on-desktop">
+      <div className="block lg:hidden">
         <HomeSectorsMobile />
       </div>
-      <div className="hide-on-mobile h-[100svh] w-full overflow-hidden pb-[var(--nav-height-mobile)]">
+      <div className="hidden lg:block h-[100svh] w-full overflow-hidden pb-[var(--nav-height-desktop)]">
         <HomeSectorsDesktop />
       </div>
     </PageBackground>

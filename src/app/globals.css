@@ -98,10 +98,15 @@
 
 }
 
-html.is-desktop body {
-  --nav-height: var(--nav-height-desktop);
-  height: auto;
-  overflow: visible;
+/* Layout model is driven by viewport WIDTH, not pointer type.
+   This ensures DevTools, touch laptops, and iPad desktop-mode all
+   behave like real desktop when the screen is wide enough. */
+@media (min-width: 1024px) {
+  body {
+    --nav-height: var(--nav-height-desktop);
+    height: auto;
+    overflow: visible;
+  }
 }
 
 * {
@@ -118,13 +123,13 @@ body {
   overflow-x: hidden;
 }
 
-html.is-touch body {
-  height: 100svh;
-  overflow: hidden;
+@media (max-width: 1023px) {
+  body {
+    height: 100svh;
+    overflow: hidden;
+  }
 }
 
-html.is-desktop .hide-on-desktop { display: none !important; }
-html.is-touch .hide-on-mobile { display: none !important; }
 
 body.overlay-open nav {
   visibility: hidden;

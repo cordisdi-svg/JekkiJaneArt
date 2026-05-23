@@ -10,14 +10,56 @@ export function DeviceLayoutSync() {
     useEffect(() => {
         // Мы НЕ используем useIsTouchDevice() хук здесь во избежание мерцания.
         // Добавлен maxTouchPoints для правильного определения iPad в десктопном режиме.
-        const isTouch = window.matchMedia('(pointer: coarse)').matches || 
-                       (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+        const mediaQuery = window.matchMedia('(pointer: coarse)');
         
-        if (isTouch) {
-            document.documentElement.classList.add("is-touch");
+        const checkPointer = () => {
+            const isTouch = mediaQuery.matches || 
+                           (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+            if (isTouch) {
+                document.documentElement.classList.remove("is-desktop");
+                document.documentElement.classList.add("is-touch");
+            } else {
+                document.documentElement.classList.remove("is-touch");
+                document.documentElement.classList.add("is-desktop");
+            }
+        };
+
+        checkPointer();
+
+        // Динамическое отслеживание при изменении свойств экрана
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', checkPointer);
         } else {
-            document.documentElement.classList.add("is-desktop");
+            mediaQuery.addListener(checkPointer);
         }
+
+        // Live pointer interaction tracker: dynamically switches is-touch / is-desktop on first interaction (pointerdown or pointermove)
+        const handlePointerActivity = (e: PointerEvent) => {
+            if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+                if (!document.documentElement.classList.contains("is-touch")) {
+                    document.documentElement.classList.remove("is-desktop");
+                    document.documentElement.classList.add("is-touch");
+                }
+            } else if (e.pointerType === 'mouse') {
+                if (!document.documentElement.classList.contains("is-desktop")) {
+                    document.documentElement.classList.remove("is-touch");
+                    document.documentElement.classList.add("is-desktop");
+                }
+            }
+        };
+
+        window.addEventListener("pointerdown", handlePointerActivity, { passive: true });
+        window.addEventListener("pointermove", handlePointerActivity, { passive: true });
+
+        return () => {
+            if (mediaQuery.removeEventListener) {
+                mediaQuery.removeEventListener('change', checkPointer);
+            } else {
+                mediaQuery.removeListener(checkPointer);
+            }
+            window.removeEventListener("pointerdown", handlePointerActivity);
+            window.removeEventListener("pointermove", handlePointerActivity);
+        };
     }, []);
 
     // 🌉 GLOBAL BRIDGE REMOVER: Удаляет скриншот-мост только КОГДА роутинг полностью завершился!

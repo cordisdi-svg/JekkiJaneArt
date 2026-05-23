@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useIsTouchDevice } from "@/lib/deviceDetect";
+import { useIsDesktopLayout } from "@/lib/deviceDetect";
 import { useHintCounter } from "@/lib/useHintCounter";
 
 // Высота одного слайда = активная зона
@@ -17,9 +17,8 @@ const slides = [
 ];
 
 export function WearMarquee({ children }: { children?: React.ReactNode }) {
-    const isTouchDevice = useIsTouchDevice();
-    // Derived once from pointer capability — never changes during session.
-    const isDesktop = !isTouchDevice;
+    const isDesktop = useIsDesktopLayout(768);
+    const isTouchDevice = !isDesktop;
     const [desktopIndex, setDesktopIndex] = useState(0);
 
     // Hint counter — hide "листай" after 3 mobile scrolls
@@ -245,7 +244,7 @@ export function WearMarquee({ children }: { children?: React.ReactNode }) {
             onPointerCancel={handlePointerUp}
         >
             {/* Mobile Finger Hint ("листай") */}
-            <div className="hide-on-desktop absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
+            <div className="lg:hidden absolute bottom-[8%] left-[4%] pointer-events-none" style={{ zIndex: 100, visibility: scrollHintVisible ? 'visible' : 'hidden' }}>
                 <div className="mobile-hint-finger flex flex-col items-center">
                     <svg 
                         viewBox="0 0 24 24" 
